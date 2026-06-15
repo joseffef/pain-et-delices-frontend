@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Livreur — Petit Délices</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <header>
+    <div class="logo">🥐 Petit Délices</div>
+    <img src="../images/logo.png" alt="Logo" class="logo-img" style="margin: 0; max-width: 100px;">
+    <div style="display:flex; align-items:center; gap:16px">
+      <span id="header-user" style="font-size:13px; opacity:0.85"></span>
+      <button onclick="seDeconnecter()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:6px; cursor:pointer;">🚪 Déconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <h1>🚚 Mes livraisons</h1>
+    <p>Historique et commandes à domicile</p>
+    <div id="liste-livraisons"></div>
+  </main>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="../config.js"></script>
+
+  <script src="../auth.js"></script>
+  <script>
+    // Utiliser les variables globales de config.js
+const API    = window.API;
+const socket = window.socket;
+    let user = null
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+      user = verifierConnexion(["livreur", "admin"])
+      if (user) {
+        document.getElementById("header-user").textContent = `👋 ${user.nom}`
+        chargerLivraisons()
+      }
+    })
+
+    socket.on("rafraichir_commandes", () => {
+      console.log("🔄 Mise à jour des livraisons reçue !")
+      chargerLivraisons()
+    })
+
+    async function chargerLivraisons() {
+      try {
+        let commandes = await fetch(API + "/commandes").then(r => r.json())
+        
+        let livraisons = commandes.filter(c => 
+          c.livraison === "domicile" && c.statut !== "Annulée"
+        )
+        
+        livraisons.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        
+        let div = document.getElementById("liste-livraisons")
+        let nomLivreurActuel = user ? user.nom : "Inconnu"
+
+        if (livraisons.length === 0) {
+          div.innerHTML = '<p style="color:#999; margin-top:20px; text-align:center;">✅ Aucune livraison.</p>'
+          return
+        }
+
+        div.innerHTML = livraisons.map(function(cmd) {
+          let total = cmd.produits
+            ? cmd.produits.reduce((s, p) => s + Number(p.prix) * Number(p.quantite), 0)
+            : 0
+
+          let produitsList = cmd.produits
+            ? cmd.produits.map(p => `<li>${p.nom} × ${p.quantite}</li>`).join("")
+            : ""
+
+          let couleur = {
+            "En attente": "orange",
+            "En préparation": "bleu",
+            "Prêt": "vert",
+            "En livraison": "#17a2b8",
+            "Livrée": "gris",
+            "Livré": "gris"
+          }[cmd.statut] || "gris"
+
+          let estLivree = (cmd.statut || "").toLowerCase().includes("livr")
+
+          // ✅ CORRECTION : Vérifier d'abord si c'est livrée, puis qui l'a prise
+          let actionButton = ""
+          
+          if (estLivree) {
+            // ✅ PRIORITÉ 1 : Si c'est livré, afficher "Commande livrée"
+            actionButton = `<span style="color:#28a745; font-size:13px; font-weight:bold;">✅ Commande livrée</span>`
+          } 
+          else if (cmd.statut === "Prêt" && !cmd.livreur_assigne) {
+            // PRIORITÉ 2 : Prête et personne ne l'a prise
+            actionButton = `<button class="btn-avancer" style="background:#17a2b8; color:white; font-weight:bold;" onclick="prendreCommande(${cmd.id})">🚀 Prendre la commande</button>`
+          } 
+          else if (cmd.livreur_assigne === nomLivreurActuel) {
+            // PRIORITÉ 3 : C'est moi qui l'ai prise
+            actionButton = `<button class="btn-avancer" onclick="marquerLivre(${cmd.id})">✅ Marquer livré</button>`
+          } 
+          else if (cmd.livreur_assigne) {
+            // PRIORITÉ 4 : Un autre livreur l'a prise
+            actionButton = `<span style="color:#dc3545; font-size:13px; font-weight:bold; background:#f8d7da; padding:6px 12px; border-radius:6px;">🔒 Prise par ${cmd.livreur_assigne}</span>`
+          } 
+          else {
+            // PRIORITÉ 5 : En attente de préparation
+            actionButton = `<span style="color:#999; font-size:13px;">⏳ En attente de préparation</span>`
+          }
+
+          let infoTraçabilité = ""
+          if (cmd.pris_par_chef) {
+            infoTraçabilité += `<div style="font-size:12px; color:#17a2b8; margin-top:8px; font-style:italic;">👨‍🍳 Préparée par : <strong>${cmd.pris_par_chef}</strong></div>`
+          }
+          if (cmd.livreur_assigne) {
+            infoTraçabilité += `<div style="font-size:12px; color:#28a745; margin-top:4px; font-style:italic;">🚚 Assignée à : <strong>${cmd.livreur_assigne}</strong></div>`
+          }
+          if (cmd.livre_par) {
+            infoTraçabilité += `<div style="font-size:12px; color:#28a745; margin-top:4px; font-style:italic;">✅ Livrée par : <strong>${cmd.livre_par}</strong></div>`
+          }
+
+          return `
+            <div class="carte-commande" style="${estLivree ? 'opacity: 0.8; border-left-color: #28a745;' : (cmd.livreur_assigne === nomLivreurActuel ? 'border-left-color: #17a2b8; border-left-width: 8px;' : '')}">
+              <div class="commande-header">
+                <div>
+                  <h3>👤 ${cmd.client}</h3>
+                  <span class="commande-tel">📞 ${cmd.telephone || ""}</span>
+                </div>
+                <span class="badge" style="background:${couleur === 'orange' ? '#fff3cd' : couleur === 'bleu' ? '#cce5ff' : couleur === 'vert' ? '#d4edda' : couleur === '#17a2b8' ? '#d1ecf1' : '#e2e3e5'}; color:${couleur === 'orange' ? '#856404' : couleur === 'bleu' ? '#004085' : couleur === 'vert' ? '#155724' : couleur === '#17a2b8' ? '#0c5460' : '#383d41'}">
+                  ${cmd.statut}
+                </span>
+              </div>
+              <ul class="commande-produits">${produitsList}</ul>
+              ${infoTraçabilité}
+              <div class="commande-footer">
+                <div>
+                  <span class="commande-total">Total : ${total} DH</span>
+                  ${cmd.date ? `<span class="commande-date">📅 ${cmd.date}</span>` : ""}
+                  ${cmd.notes ? `<span class="commande-notes">📝 ${cmd.notes}</span>` : ""}
+                </div>
+                <div class="commande-actions">
+                  ${actionButton}
+                </div>
+              </div>
+            </div>
+          `
+        }).join("")
+      } catch(err) {
+        console.error("Erreur:", err)
+      }
+    }
+
+    async function prendreCommande(id) {
+      if (!confirm("Voulez-vous prendre cette commande en charge ?")) return;
+      
+      let nomLivreur = user ? user.nom : "Inconnu";
+      
+      try {
+        let response = await fetch(API + "/commandes/" + id + "/assigner-livreur", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ utilisateur_nom: nomLivreur })
+        });
+        
+        let result = await response.json();
+        
+        if (!response.ok) {
+          alert(result.erreur);
+          chargerLivraisons();
+          return;
+        }
+        
+        alert("✅ " + result.message);
+        socket.emit("changement_statut");
+        chargerLivraisons();
+        
+      } catch (err) {
+        alert("Erreur : " + err.message);
+      }
+    }
+
+    async function marquerLivre(id) {
+      let codeSaisi = prompt("🔒 Entrez le code de confirmation à 6 chiffres donné par le client :");
+      
+      if (codeSaisi === null) return;
+      if (codeSaisi.length !== 6 || isNaN(codeSaisi)) {
+        alert("❌ Le code doit contenir exactement 6 chiffres.");
+        return;
+      }
+      
+      let nomLivreur = user ? user.nom : "Inconnu";
+      
+      try {
+        let response = await fetch(API + "/commandes/" + id + "/statut", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            statut: "Livrée",
+            code_confirmation: codeSaisi,
+            utilisateur_nom: nomLivreur
+          })
+        });
+        
+        let result = await response.json();
+        
+        if (!response.ok) {
+          alert(result.erreur);
+          return;
+        }
+        
+        alert("✅ " + result.message);
+        socket.emit("changement_statut");
+        chargerLivraisons();
+        
+      } catch (err) {
+        alert("Erreur : " + err.message);
+      }
+    }
+
+    function seDeconnecter() {
+      sessionStorage.removeItem("user");
+      window.location.href = "../login.html";
+    }
+  </script>
+
+</body>
+</html>

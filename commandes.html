@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petit Délices — Commandes</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ============================================
+       LAYOUT : SIDEBAR À GAUCHE
+       ============================================ */
+    body {
+      display: flex;
+      min-height: 100vh;
+      margin: 0;
+      background: #f9f4f0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* ✅ SIDEBAR (menu à gauche) */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #8B4513 0%, #6d3610 100%);
+      color: white;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 30px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      text-align: center;
+    }
+
+    .sidebar-header .logo-img {
+      max-width: 100px;
+      height: auto;
+      display: block;
+      margin: 0 auto 12px auto;
+      border-radius: 8px;
+    }
+
+    .sidebar-header .logo-text {
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-header .sous-titre {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 24px;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-size: 15px;
+      transition: all 0.2s;
+      border-left: 4px solid transparent;
+    }
+
+    .sidebar-nav a:hover {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border-left-color: #ffd700;
+    }
+
+    .sidebar-nav a.actif {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border-left-color: #ffd700;
+      font-weight: 600;
+    }
+
+    .sidebar-nav a .icone {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .sidebar-footer .user-info {
+      font-size: 13px;
+      opacity: 0.85;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .sidebar-footer .btn-deco {
+      width: 100%;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .sidebar-footer .btn-deco:hover {
+      background: rgba(220,53,69,0.8);
+    }
+
+    /* ✅ CONTENU PRINCIPAL (à droite de la sidebar) */
+    .main-content {
+      margin-left: 260px;
+      flex: 1;
+      padding: 40px;
+      min-height: 100vh;
+    }
+
+    .main-content h1 {
+      color: #8B4513;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    .main-content .sous-titre {
+      color: #888;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    /* ✅ RESPONSIVE */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 220px;
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ SIDEBAR À GAUCHE -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="images/logo.png" alt="Logo Petit Délices" class="logo-img">
+      <div class="logo-text">Petit Délices</div>
+      <div class="sous-titre">Espace de Gestion</div>
+    </div>
+    
+    <nav class="sidebar-nav">
+  <a href="index.html">
+    <img src="images/accueil.png" alt="Accueil" class="icone-img">
+    Accueil
+  </a>
+  <a href="pages/stock.html">
+    <img src="images/stock.png" alt="Stock" class="icone-img">
+    Stock
+  </a>
+  <a href="pages/produits.html">
+    <img src="images/produits.png" alt="Produits" class="icone-img">
+    Produits
+  </a>
+  <a href="commandes.html">
+    <img src="images/commandes.png" alt="Commandes" class="icone-img">
+    Commandes
+  </a>
+  <a href="pages/dashboard.html">
+    <img src="images/dashboard.png" alt="Dashboard" class="icone-img">
+    Dashboard
+  </a>
+  <a href="pages/utilisateurs.html">
+    <img src="images/utilisateurs.png" alt="Utilisateurs" class="icone-img">
+    Utilisateurs
+  </a>
+</nav>
+    
+    <div class="sidebar-footer">
+      <div class="user-info" id="header-user">Chargement...</div>
+      <button class="btn-deco" onclick="seDeconnecter()">🚪 Déconnexion</button>
+    </div>
+  </aside>
+
+  <!-- ✅ CONTENU PRINCIPAL À DROITE -->
+  <main class="main-content">
+    <h1>📋 Gestion des Commandes</h1>
+    <p class="sous-titre">Suivez toutes les commandes de vos clients</p>
+
+    <!-- FILTRES STATUT -->
+    <div class="filtres">
+      <button class="btn-filtre actif-filtre" onclick="filtrerStatut('tous')">Toutes</button>
+      <button class="btn-filtre" onclick="filtrerStatut('En attente')">⏳ En attente</button>
+      <button class="btn-filtre" onclick="filtrerStatut('En préparation')">👨‍🍳 En préparation</button>
+      <button class="btn-filtre" onclick="filtrerStatut('Prêt')">✅ Prêt</button>
+      <button class="btn-filtre" onclick="filtrerStatut('Livré')">🚚 Livré</button>
+    </div>
+
+    <!-- BOUTON AJOUTER -->
+    <div class="barre-actions">
+      <button class="btn-principal" onclick="toggleFormulaire()">➕ Nouvelle commande</button>
+    </div>
+
+    <!-- FORMULAIRE -->
+    <div id="formulaire" class="formulaire" style="display:none">
+      <h3>Nouvelle commande</h3>
+
+      <div class="form-groupe">
+        <label for="input-client">Nom du client</label>
+        <input type="text" id="input-client" placeholder="Ex: Mohamed Alami" title="Nom du client">
+      </div>
+
+      <div class="form-groupe">
+        <label for="input-telephone">Téléphone</label>
+        <input type="text" id="input-telephone" placeholder="Ex: 06 12 34 56 78" title="Téléphone">
+      </div>
+
+      <div class="form-groupe">
+        <label for="liste-produits-commande">Produits commandés</label>
+        <div id="liste-produits-commande">
+          <!-- La première ligne sera générée par JS -->
+        </div>
+        <button type="button" class="btn-ajouter-ligne" onclick="ajouterLigneProduit()">+ Ajouter un produit</button>
+      </div>
+
+      <div class="form-groupe">
+        <label for="input-date">Date de livraison souhaitée</label>
+        <input type="date" id="input-date" title="Date de livraison souhaitée">
+      </div>
+
+      <div class="form-groupe">
+        <label>Mode de récupération</label>
+        <div class="mode-options">
+          <div id="form-opt-retrait" class="mode-option selected" onclick="choisirLivraisonForm('retrait')">
+            <div class="mode-icone">🏪</div>
+            <div class="mode-label">Retrait en magasin</div>
+          </div>
+          <div id="form-opt-domicile" class="mode-option" onclick="choisirLivraisonForm('domicile')">
+            <div class="mode-icone">🚚</div>
+            <div class="mode-label">Livraison à domicile</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="form-bloc-adresse" class="hidden">
+        <div class="form-groupe">
+          <label>Adresse de livraison</label>
+          <input type="text" id="input-adresse" placeholder="Ex: 12 Rue Hassan II, Tanger">
+        </div>
+      </div>
+
+      <div class="form-groupe">
+        <label>Notes</label>
+        <input type="text" id="input-notes" placeholder="Ex: Sans gluten, livraison matin...">
+      </div>
+
+      <div class="form-boutons">
+        <button class="btn-principal" onclick="ajouterCommande()">✅ Enregistrer</button>
+        <button class="btn-annuler" onclick="toggleFormulaire()">❌ Annuler</button>
+      </div>
+    </div>
+
+    <!-- LISTE COMMANDES -->
+    <div id="liste-commandes"></div>
+
+  </main>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="config.js"></script>
+
+  <script src="auth.js"></script>
+  <script src="commandes.js"></script>
+  <script>
+    // Afficher le nom de l'utilisateur connecté
+    let user = JSON.parse(sessionStorage.getItem("user"));
+    if (user) {
+      document.getElementById("header-user").textContent = `👋 ${user.nom}`;
+    }
+
+    function seDeconnecter() {
+      sessionStorage.removeItem("user");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

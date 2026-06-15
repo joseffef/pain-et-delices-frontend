@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chef — Petit Délices</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <header>
+    <div class="logo">🥐 Petit Délices</div>
+    <img src="../images/logo.png" alt="Logo" class="logo-img" style="margin: 0; max-width: 100px;">
+      <span id="header-user" style="font-size:13px; opacity:0.85"></span>
+      <button onclick="seDeconnecter()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:6px; cursor:pointer;">🚪 Déconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <h1>👨‍🍳 Espace Chef</h1>
+    <p>Gérez le stock et suivez les commandes</p>
+
+    <div class="filtres" style="margin-bottom:24px">
+      <button class="btn-filtre actif-filtre" id="onglet-ingredients" onclick="afficherOnglet('ingredients')">🥚 Ingrédients</button>
+      <button class="btn-filtre" id="onglet-produits" onclick="afficherOnglet('produits')">🧁 Produits</button>
+      <button class="btn-filtre" id="onglet-commandes" onclick="afficherOnglet('commandes')">📋 Commandes</button>
+    </div>
+
+    <div id="section-ingredients">
+      <h2 style="color:#8B4513; margin-bottom:16px">🥚 Stock des ingrédients</h2>
+      <div id="alertes-ingredients"></div>
+      <table class="tableau">
+        <thead>
+          <tr><th>Ingrédient</th><th>Quantité actuelle</th><th>Unité</th><th>Statut</th><th>Action</th></tr>
+        </thead>
+        <tbody id="tableau-ingredients"></tbody>
+      </table>
+    </div>
+
+    <div id="section-produits" style="display:none">
+      <h2 style="color:#8B4513; margin-bottom:16px">🧁 Stock des produits</h2>
+      <div id="alertes-produits"></div>
+      <table class="tableau">
+        <thead>
+          <tr><th>Produit</th><th>Catégorie</th><th>Quantité</th><th>Prix</th><th>Statut</th><th>Action</th></tr>
+        </thead>
+        <tbody id="tableau-produits"></tbody>
+      </table>
+    </div>
+
+    <div id="section-commandes" style="display:none">
+      <h2 style="color:#8B4513; margin-bottom:16px">📋 Commandes à préparer</h2>
+      <div class="filtres" style="margin-bottom:16px">
+        <button class="btn-filtre actif-filtre" onclick="filtrerStatut('tous', this)">Toutes</button>
+        <button class="btn-filtre" onclick="filtrerStatut('En attente', this)">⏳ En attente</button>
+        <button class="btn-filtre" onclick="filtrerStatut('En préparation', this)">👨‍🍳 En préparation</button>
+        <button class="btn-filtre" onclick="filtrerStatut('Prêt', this)">✅ Prêt</button>
+        <button class="btn-filtre" onclick="filtrerStatut('Livré', this)">🚚 Livré</button>
+      </div>
+      <div id="liste-commandes-chef"></div>
+    </div>
+  </main>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="../config.js"></script>
+
+  <script src="../auth.js"></script>
+  
+  <!-- ✅ 2. Tout le script du chef dans un seul bloc pour éviter les conflits -->
+  <script>
+    // Utiliser les variables globales de config.js
+    const API    = window.API;
+const socket = window.socket;
+
+    // ✅ Écouteurs Socket.io pour le temps réel (sans son ni alertes)
+    socket.on("rafraichir_commandes", () => {
+      if (typeof chargerCommandes === "function") chargerCommandes();
+    });
+
+    socket.on("rafraichir_stock_produits", () => {
+      console.log("🔄 Stock des produits mis à jour, rafraîchissement...");
+      chargerProduits();
+    });
+
+    socket.on("rafraichir_stock_ingredients", () => {
+      console.log("🔄 Stock des ingrédients mis à jour, rafraîchissement...");
+      chargerIngredients();
+    });
+
+    let user = null;
+    let statutActifChef = "tous";
+    let toutesCommandes = [];
+
+    document.addEventListener("DOMContentLoaded", function() {
+      user = verifierConnexion(["chef", "admin"]);
+      if (user) {
+        document.getElementById("header-user").textContent = `👋 ${user.nom}`;
+        chargerIngredients();
+        chargerProduits();
+        chargerCommandes();
+      }
+    });
+
+    function afficherOnglet(onglet) {
+      document.getElementById("section-ingredients").style.display = onglet === "ingredients" ? "block" : "none";
+      document.getElementById("section-produits").style.display    = onglet === "produits"    ? "block" : "none";
+      document.getElementById("section-commandes").style.display   = onglet === "commandes"   ? "block" : "none";
+      
+      document.getElementById("onglet-ingredients").classList.toggle("actif-filtre", onglet === "ingredients");
+      document.getElementById("onglet-produits").classList.toggle("actif-filtre",    onglet === "produits");
+      document.getElementById("onglet-commandes").classList.toggle("actif-filtre",   onglet === "commandes");
+    }
+
+    async function chargerIngredients() {
+      try {
+        let ingredients = await fetch(API + "/ingredients").then(r => r.json());
+        let tbody = document.getElementById("tableau-ingredients");
+        tbody.innerHTML = "";
+
+        let alertesDiv = document.getElementById("alertes-ingredients");
+        let problemes  = ingredients.filter(i => Number(i.quantite_stock) < Number(i.seuil_alerte));
+
+        alertesDiv.innerHTML = problemes.length > 0
+          ? '<div class="alerte-box"><strong>⚠️ Attention !</strong><br>' +
+            problemes.map(i => Number(i.quantite_stock) === 0
+              ? `🔴 <strong>${i.nom}</strong> est en rupture !`
+              : `🟠 <strong>${i.nom}</strong> : ${i.quantite_stock} ${i.unite} restants`
+            ).join("<br>") + '</div>'
+          : '<p class="ok-message">✅ Tout le stock est suffisant !</p>';
+
+        ingredients.forEach(function(ing) {
+          let statut = Number(ing.quantite_stock) === 0
+            ? '<span class="badge rouge">🔴 Rupture</span>'
+            : Number(ing.quantite_stock) < Number(ing.seuil_alerte)
+            ? '<span class="badge orange">🟠 Stock bas</span>'
+            : '<span class="badge vert">🟢 OK</span>';
+
+          tbody.innerHTML += `
+            <tr>
+              <td><strong>${ing.nom}</strong></td>
+              <td>${ing.quantite_stock}</td>
+              <td>${ing.unite}</td>
+              <td>${statut}</td>
+              <td>
+                <button class="btn-ajouter-qte" onclick="ajouterQuantiteIngredient(${ing.id}, '${ing.nom}', ${ing.quantite_stock}, '${ing.unite}', ${ing.seuil_alerte})">➕ Ajouter</button>
+              </td>
+            </tr>`;
+        });
+      } catch(err) {
+        console.error("Erreur ingredients:", err);
+      }
+    }
+
+    async function ajouterQuantiteIngredient(id, nom, quantiteActuelle, unite, seuil_alerte) {
+      let qte = prompt("Combien voulez-vous ajouter au stock de " + nom + " ?");
+      if (qte === null || qte === "" || isNaN(qte) || Number(qte) <= 0) return;
+      
+      await fetch(API + "/ingredients/" + id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quantite_stock: Number(quantiteActuelle) + Number(qte),
+          nom: nom, unite: unite, seuil_alerte: seuil_alerte
+        })
+      });
+      chargerIngredients();
+    }
+
+    async function chargerProduits() {
+      try {
+        let produits = await fetch(API + "/produits").then(r => r.json());
+        let tbody = document.getElementById("tableau-produits");
+        tbody.innerHTML = "";
+
+        let alertesDiv = document.getElementById("alertes-produits");
+        let problemes = produits.filter(p => Number(p.quantite) < 5);
+
+        alertesDiv.innerHTML = problemes.length > 0
+          ? '<div class="alerte-box"><strong>⚠️ Stocks bas !</strong><br>' +
+            problemes.map(p => Number(p.quantite) === 0
+              ? `🔴 <strong>${p.nom}</strong> est en rupture !`
+              : `🟠 <strong>${p.nom}</strong> : seulement ${p.quantite} restants`
+            ).join("<br>") + '</div>'
+          : '<p class="ok-message">✅ Tous les produits sont disponibles !</p>';
+
+        produits.forEach(function(p) {
+          let icone = { "Pain": "🍞", "Pâtisserie": "🧁", "Gâteau": "🎂" }[p.categorie] || "🍰";
+          let statut = Number(p.quantite) === 0
+            ? '<span class="badge rouge">🔴 Rupture</span>'
+            : Number(p.quantite) < 5
+            ? '<span class="badge orange">🟠 Stock bas</span>'
+            : '<span class="badge vert">🟢 OK</span>';
+
+          tbody.innerHTML += `
+            <tr>
+              <td><strong>${icone} ${p.nom}</strong></td>
+              <td>${p.categorie}</td>
+              <td>${p.quantite}</td>
+              <td>${p.prix} DH</td>
+              <td>${statut}</td>
+              <td>
+                <button class="btn-ajouter-qte" onclick="ajouterQuantiteProduit(${p.id}, '${p.nom}', ${p.quantite}, '${p.categorie}', ${p.prix}, '${p.description || ""}')">➕ Ajouter</button>
+              </td>
+            </tr>`;
+        });
+      } catch(err) {
+        console.error("Erreur produits:", err);
+      }
+    }
+
+    async function ajouterQuantiteProduit(id, nom, quantiteActuelle, categorie, prix, description) {
+      let qte = prompt("Combien voulez-vous ajouter au stock de " + nom + " ?");
+      if (qte === null || qte === "" || isNaN(qte) || Number(qte) <= 0) return;
+      
+      await fetch(API + "/produits/" + id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quantite: Number(quantiteActuelle) + Number(qte),
+          nom, categorie, prix, description
+        })
+      });
+      chargerProduits();
+    }
+
+    async function chargerCommandes() {
+      try {
+        let toutes = await fetch(API + "/commandes/chef").then(r => r.json());
+
+        // Le chef ne reçoit que les commandes créées par l'admin (filtrage effectué côté API)
+        toutesCommandes = toutes.filter(c => c.statut !== "Annulée" && !c.statut.toLowerCase().startsWith("livr"));
+
+        console.log("👨‍🍳 Chef voit", toutesCommandes.length, "commandes à préparer");
+        afficherCommandes();
+      } catch(err) {
+        console.error("Erreur commandes:", err);
+      }
+    }
+
+    function filtrerStatut(statut, btn) {
+      statutActifChef = statut;
+      document.querySelectorAll("#section-commandes .btn-filtre").forEach(b => b.classList.remove("actif-filtre"));
+      btn.classList.add("actif-filtre");
+      afficherCommandes();
+    }
+
+    function afficherCommandes() {
+      let div = document.getElementById("liste-commandes-chef");
+      div.innerHTML = "";
+
+      let filtrees = statutActifChef === "tous"
+        ? toutesCommandes
+        : toutesCommandes.filter(c => c.statut === statutActifChef);
+
+      if (filtrees.length === 0) {
+        div.innerHTML = '<p style="color:#999; margin-top:20px">Aucune commande pour ce statut.</p>';
+        return;
+      }
+
+      filtrees.forEach(function(cmd) {
+        let total = cmd.produits ? cmd.produits.reduce((s, p) => s + p.prix * p.quantite, 0) : 0;
+
+        let couleurStatut = {
+          "En attente": "badge orange",
+          "En préparation": "badge bleu",
+          "Prêt": "badge vert",
+          "Livré": "badge gris",
+          "Livrée": "badge gris",
+          "Annulée": "badge rouge"
+        }[cmd.statut] || "badge";
+
+        let produitsList = cmd.produits
+          ? cmd.produits.map(p => `<li>${p.nom} × ${p.quantite} = <strong>${p.prix * p.quantite} DH</strong></li>`).join("")
+          : "<li>Aucun produit</li>";
+
+        let prochainStatut = {
+          "En attente": "En préparation",
+          "En préparation": "Prêt"
+        }[cmd.statut];
+
+        let boutonAvancer = prochainStatut
+          ? `<button class="btn-avancer" onclick="avancerStatut(${cmd.id}, '${prochainStatut}')">➡️ Passer à "${prochainStatut}"</button>`
+          : cmd.statut === "Prêt"
+          ? `<span style="color:#28a745; font-size:13px">✅ Prêt — en attente du livreur/caissier</span>`
+          : `<span style="color:#999; font-size:13px">✅ Commande terminée/annulée</span>`;
+
+        let badgeLivraison = cmd.livraison === "domicile"
+          ? '<span class="badge bleu" style="font-size:11px">🚚 Domicile</span>'
+          : '<span class="badge gris" style="font-size:11px">🏪 Retrait</span>';
+
+        let infoTraçabilité = "";
+        if (cmd.pris_par_chef) {
+          infoTraçabilité += `<div style="font-size:12px; color:#17a2b8; margin-top:8px; font-style:italic;">👨‍🍳 Prise en charge par : <strong>${cmd.pris_par_chef}</strong></div>`;
+        }
+        if (cmd.livre_par) {
+          infoTraçabilité += `<div style="font-size:12px; color:#28a745; margin-top:4px; font-style:italic;">✅ Livrée par : <strong>${cmd.livre_par}</strong></div>`;
+        }
+
+        div.innerHTML += `
+          <div class="carte-commande">
+            <div class="commande-header">
+              <div>
+                <h3>👤 ${cmd.client} ${badgeLivraison}</h3>
+                <span class="commande-tel">📞 ${cmd.telephone || ""}</span>
+              </div>
+              <span class="${couleurStatut}">${cmd.statut}</span>
+            </div>
+            <ul class="commande-produits">${produitsList}</ul>
+            ${infoTraçabilité}
+            <div class="commande-footer">
+              <div>
+                <span class="commande-total">Total : ${total} DH</span>
+                ${cmd.date ? `<span class="commande-date">📅 ${cmd.date}</span>` : ""}
+                ${cmd.notes ? `<span class="commande-notes">📝 ${cmd.notes}</span>` : ""}
+              </div>
+              <div class="commande-actions">
+                ${boutonAvancer}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    async function avancerStatut(id, nouveauStatut) {
+      let userChef = JSON.parse(sessionStorage.getItem("user"));
+      let nomChef = userChef ? userChef.nom : "Inconnu";
+      
+      await fetch(API + "/commandes/" + id + "/statut", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          statut: nouveauStatut,
+          utilisateur_nom: nomChef
+        })
+      });
+      
+      socket.emit("changement_statut");
+      chargerCommandes();
+    }
+
+    function seDeconnecter() {
+      sessionStorage.removeItem("user");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

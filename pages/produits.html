@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petit Délices — Produits</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    /* ============================================
+       LAYOUT : SIDEBAR À GAUCHE
+       ============================================ */
+    body {
+      display: flex;
+      min-height: 100vh;
+      margin: 0;
+      background: #f9f4f0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* ✅ SIDEBAR (menu à gauche) */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #8B4513 0%, #6d3610 100%);
+      color: white;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 30px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      text-align: center;
+    }
+
+    .sidebar-header .logo-img {
+      max-width: 100px;
+      height: auto;
+      display: block;
+      margin: 0 auto 12px auto;
+      border-radius: 8px;
+    }
+
+    .sidebar-header .logo-text {
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-header .sous-titre {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 24px;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-size: 15px;
+      transition: all 0.2s;
+      border-left: 4px solid transparent;
+    }
+
+    .sidebar-nav a:hover {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border-left-color: #ffd700;
+    }
+
+    .sidebar-nav a.actif {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border-left-color: #ffd700;
+      font-weight: 600;
+    }
+
+    .sidebar-nav a .icone {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .sidebar-footer .user-info {
+      font-size: 13px;
+      opacity: 0.85;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .sidebar-footer .btn-deco {
+      width: 100%;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .sidebar-footer .btn-deco:hover {
+      background: rgba(220,53,69,0.8);
+    }
+
+    /* ✅ CONTENU PRINCIPAL (à droite de la sidebar) */
+    .main-content {
+      margin-left: 260px;
+      flex: 1;
+      padding: 40px;
+      min-height: 100vh;
+    }
+
+    .main-content h1 {
+      color: #8B4513;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    .main-content .sous-titre {
+      color: #888;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    /* ✅ RESPONSIVE */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 220px;
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ SIDEBAR À GAUCHE -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="../images/logo.png" alt="Logo Petit Délices" class="logo-img">
+      <div class="logo-text">Petit Délices</div>
+      <div class="sous-titre">Espace de Gestion</div>
+    </div>
+    
+    <nav class="sidebar-nav">
+  <a href="../index.html">
+    <img src="../images/accueil.png" alt="Accueil" class="icone-img">
+    Accueil
+  </a>
+  <a href="stock.html">
+    <img src="../images/stock.png" alt="Stock" class="icone-img">
+    Stock
+  </a>
+  <a href="produits.html">
+    <img src="../images/produits.png" alt="Produits" class="icone-img">
+    Produits
+  </a>
+  <a href="../commandes.html">
+    <img src="../images/commandes.png" alt="Commandes" class="icone-img">
+    Commandes
+  </a>
+  <a href="dashboard.html">
+    <img src="../images/dashboard.png" alt="Dashboard" class="icone-img">
+    Dashboard
+  </a>
+  <a href="utilisateurs.html">
+    <img src="../images/utilisateurs.png" alt="Utilisateurs" class="icone-img">
+    Utilisateurs
+  </a>
+</nav>
+    
+    <div class="sidebar-footer">
+      <div class="user-info" id="header-user">Chargement...</div>
+      <button class="btn-deco" onclick="seDeconnecter()">🚪 Déconnexion</button>
+    </div>
+  </aside>
+
+  <!-- ✅ CONTENU PRINCIPAL À DROITE -->
+  <main class="main-content">
+    <h1>🧁 Gestion des Produits</h1>
+    <p class="sous-titre">Gérez vos croissants, pains, gâteaux et pâtisseries</p>
+
+    <!-- FILTRES PAR CATEGORIE -->
+    <div class="filtres">
+      <button class="btn-filtre actif-filtre" onclick="filtrerCategorie('tous')">Tous</button>
+      <button class="btn-filtre" onclick="filtrerCategorie('Pain')">🍞 Pain</button>
+      <button class="btn-filtre" onclick="filtrerCategorie('Pâtisserie')">🧁 Pâtisserie</button>
+      <button class="btn-filtre" onclick="filtrerCategorie('Gâteau')">🎂 Gâteau</button>
+    </div>
+
+    <!-- BOUTON AJOUTER -->
+    <div class="barre-actions">
+      <button class="btn-principal" onclick="toggleFormulaire()">➕ Ajouter un produit</button>
+    </div>
+
+    <!-- FORMULAIRE -->
+    <div id="formulaire" class="formulaire" style="display:none">
+      <h3 id="formulaire-titre">Nouveau produit</h3>
+      <div class="form-groupe">
+        <label>Nom du produit</label>
+        <input type="text" id="input-nom" placeholder="Ex: Croissant au beurre">
+      </div>
+      <div class="form-groupe">
+        <label>Catégorie</label>
+        <select id="input-categorie">
+          <option value="Pain">🍞 Pain</option>
+          <option value="Pâtisserie">🧁 Pâtisserie</option>
+          <option value="Gâteau">🎂 Gâteau</option>
+        </select>
+      </div>
+      <div class="form-groupe">
+        <label>Prix de vente (DH)</label>
+        <input type="number" id="input-prix" placeholder="Ex: 5">
+      </div>
+      <div class="form-groupe">
+        <label>Quantité disponible</label>
+        <input type="number" id="input-quantite" placeholder="Ex: 20">
+      </div>
+      <div class="form-groupe">
+        <label>Description</label>
+        <input type="text" id="input-description" placeholder="Ex: Fait avec du beurre frais">
+      </div>
+      <div class="form-boutons">
+        <button class="btn-principal" id="btn-enregistrer" onclick="enregistrerProduit()">✅ Enregistrer</button>
+        <button class="btn-annuler" onclick="toggleFormulaire()">❌ Annuler</button>
+      </div>
+    </div>
+
+    <!-- GRILLE PRODUITS -->
+    <div id="grille-produits" class="grille-produits"></div>
+
+  </main>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="../config.js"></script>
+  <script src="../auth.js"></script>
+  <script src="produits.js"></script>
+  <script>
+    // Afficher le nom de l'utilisateur connecté
+
+  (function() {
+    var u = JSON.parse(sessionStorage.getItem("user"));
+    if (u) document.getElementById("header-user").textContent = "👋 " + u.nom;
+    })();
+
+
+    function seDeconnecter() {
+      sessionStorage.removeItem("user");
+      window.location.href = "../login.html";
+    }
+  </script>
+</body>
+</html>

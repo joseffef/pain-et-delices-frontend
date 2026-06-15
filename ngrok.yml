@@ -1,0 +1,5 @@
+tunnels:
+  web:
+    proto: http
+    addr: 4000
+    host_header: rewrite

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Achat — Petit Délices</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <header>
+    <div class="logo">🥐 Petit Délices</div>
+<img src="../images/logo.png" alt="Logo" class="logo-img" style="margin: 0; max-width: 100px;">
+    <div style="display:flex; align-items:center; gap:16px">
+      <span id="header-user" style="font-size:13px; opacity:0.85"></span>
+      <button onclick="seDeconnecter()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:6px; cursor:pointer;">🚪 Déconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <h1>🛒 Responsable Achat</h1>
+    <p>Gérez les ingrédients et le stock</p>
+
+    <div class="barre-actions">
+      <button class="btn-principal" onclick="toggleFormulaire()">➕ Ajouter un ingrédient</button>
+    </div>
+
+    <div id="formulaire" class="formulaire" style="display:none">
+      <h3>Nouvel ingrédient</h3>
+      <div class="form-groupe">
+        <label>Nom</label>
+        <input type="text" id="input-nom" placeholder="Ex: Farine">
+      </div>
+      <div class="form-groupe">
+        <label>Quantité</label>
+        <input type="number" id="input-quantite" placeholder="Ex: 50">
+      </div>
+      <div class="form-groupe">
+        <label>Unité</label>
+        <select id="input-unite">
+          <option value="kg">kg</option>
+          <option value="L">L</option>
+          <option value="sachets">sachets</option>
+          <option value="unités">unités</option>
+          <option value="boîtes">boîtes</option>
+        </select>
+      </div>
+      <div class="form-groupe">
+        <label>Quantité minimum d'alerte</label>
+        <input type="number" id="input-minimum" placeholder="Ex: 10">
+      </div>
+      <div class="form-boutons">
+        <button class="btn-principal" onclick="ajouterIngredient()">✅ Enregistrer</button>
+        <button class="btn-annuler" onclick="toggleFormulaire()">❌ Annuler</button>
+      </div>
+    </div>
+
+    <div id="alertes"></div>
+
+    <table class="tableau">
+      <thead>
+        <tr>
+          <th>Ingrédient</th>
+          <th>Quantité</th>
+          <th>Unité</th>
+          <th>Minimum</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tableau-stock"></tbody>
+    </table>
+  </main>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="../config.js"></script>
+
+  <script src="../auth.js"></script>
+  <script>
+    const API    = window.API;
+const socket = window.socket;
+    let user = null
+    // ✅ INITIALISER SOCKET
+
+  // ✅ ÉCOUTER LES MISES À JOUR
+  // ✅ Écouter la mise à jour des produits
+socket.on("rafraichir_stock_produits", () => {
+  console.log("🔄 Le stock des produits a été modifié, mise à jour automatique...")
+  if (typeof chargerProduits === "function") chargerProduits()
+})
+
+// ✅ Écouter la mise à jour des ingrédients
+socket.on("rafraichir_stock_ingredients", () => {
+  console.log("🔄 Le stock des ingrédients a été modifié, mise à jour automatique...")
+  if (typeof chargerIngredients === "function") chargerIngredients()
+})
+    document.addEventListener("DOMContentLoaded", function() {
+      user = verifierConnexion(["achat", "admin"])
+      if (user) chargerStock()
+    })
+
+    async function chargerStock() {
+      try {
+        let ingredients = await fetch(API + "/ingredients").then(r => r.json())
+        let tbody = document.getElementById("tableau-stock")
+        tbody.innerHTML = ""
+
+        let alertesDiv = document.getElementById("alertes")
+        let problemes = ingredients.filter(i => Number(i.quantite_stock) < Number(i.seuil_alerte))
+
+        if (problemes.length > 0) {
+          alertesDiv.innerHTML = '<div class="alerte-box"><strong>⚠️ Attention !</strong><br>' +
+            problemes.map(i => Number(i.quantite_stock) === 0
+              ? `🔴 <strong>${i.nom}</strong> est en rupture !`
+              : `🟠 <strong>${i.nom}</strong> : ${i.quantite_stock} ${i.unite} restants`
+            ).join("<br>") + '</div>'
+        } else {
+          alertesDiv.innerHTML = ""
+        }
+
+        ingredients.forEach(function(ing) {
+          let statut = Number(ing.quantite_stock) === 0
+            ? '<span class="badge rouge">🔴 Rupture</span>'
+            : Number(ing.quantite_stock) < Number(ing.seuil_alerte)
+            ? '<span class="badge orange">🟠 Stock bas</span>'
+            : '<span class="badge vert">🟢 OK</span>'
+
+          tbody.innerHTML += `
+            <tr>
+              <td>${ing.nom}</td>
+              <td>
+                <input type="number" value="${ing.quantite_stock}" class="input-quantite"
+                  onchange="modifierQuantite(${ing.id}, this.value, '${ing.nom}', '${ing.unite}', ${ing.seuil_alerte})">
+              </td>
+              <td>${ing.unite}</td>
+              <td>${ing.seuil_alerte}</td>
+              <td>${statut}</td>
+              <td>
+                <button class="btn-ajouter-qte" onclick="ajouterQuantite(${ing.id}, '${ing.nom}', ${ing.quantite_stock}, '${ing.unite}', ${ing.seuil_alerte})">➕ Ajouter</button>
+              </td>
+            </tr>
+          `
+        })
+      } catch(err) {
+        console.error("Erreur:", err)
+      }
+    }
+
+    async function ajouterQuantite(id, nom, quantiteActuelle, unite, seuil_alerte) {
+      let qte = prompt("Combien ajouter au stock de " + nom + " ?")
+      if (qte === null || qte === "" || isNaN(qte) || Number(qte) <= 0) return
+      await fetch(API + "/ingredients/" + id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          quantite_stock: Number(quantiteActuelle) + Number(qte),
+          nom, 
+          unite, 
+          seuil_alerte
+        })
+      })
+      chargerStock()
+    }
+
+    async function modifierQuantite(id, val, nom, unite, seuil_alerte) {
+      await fetch(API + "/ingredients/" + id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          quantite_stock: Number(val),
+          nom, 
+          unite, 
+          seuil_alerte
+        })
+      })
+      chargerStock()
+    }
+
+    async function ajouterIngredient() {
+      let nom            = document.getElementById("input-nom").value.trim()
+      let quantite_stock = Number(document.getElementById("input-quantite").value)
+      let unite          = document.getElementById("input-unite").value
+      let seuil_alerte   = Number(document.getElementById("input-minimum").value)
+      
+      if (!nom) { alert("Entrez un nom !"); return }
+      
+      await fetch(API + "/ingredients", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          nom, 
+          quantite_stock,
+          unite, 
+          seuil_alerte
+        })
+      })
+      toggleFormulaire()
+      chargerStock()
+    }
+
+    function toggleFormulaire() {
+      let form = document.getElementById("formulaire")
+      form.style.display = form.style.display === "none" ? "block" : "none"
+    }
+  </script>
+
+</body>
+</html>

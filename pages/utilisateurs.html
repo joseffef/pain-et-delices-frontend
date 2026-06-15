@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Utilisateurs — Petit Délices</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    /* ============================================
+       LAYOUT : SIDEBAR À GAUCHE
+       ============================================ */
+    body {
+      display: flex;
+      min-height: 100vh;
+      margin: 0;
+      background: #f9f4f0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* ✅ SIDEBAR (menu à gauche) */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #8B4513 0%, #6d3610 100%);
+      color: white;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 30px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      text-align: center;
+    }
+
+    .sidebar-header .logo-img {
+      max-width: 100px;
+      height: auto;
+      display: block;
+      margin: 0 auto 12px auto;
+      border-radius: 8px;
+    }
+
+    .sidebar-header .logo-text {
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-header .sous-titre {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 24px;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-size: 15px;
+      transition: all 0.2s;
+      border-left: 4px solid transparent;
+    }
+
+    .sidebar-nav a:hover {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border-left-color: #ffd700;
+    }
+
+    .sidebar-nav a.actif {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border-left-color: #ffd700;
+      font-weight: 600;
+    }
+
+    .sidebar-nav a .icone {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .sidebar-footer .user-info {
+      font-size: 13px;
+      opacity: 0.85;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .sidebar-footer .btn-deco {
+      width: 100%;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .sidebar-footer .btn-deco:hover {
+      background: rgba(220,53,69,0.8);
+    }
+
+    /* ✅ CONTENU PRINCIPAL (à droite de la sidebar) */
+    .main-content {
+      margin-left: 260px;
+      flex: 1;
+      padding: 40px;
+      min-height: 100vh;
+    }
+
+    .main-content h1 {
+      color: #8B4513;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    .main-content .sous-titre {
+      color: #888;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    /* ✅ STYLES SPÉCIFIQUES UTILISATEURS */
+    .grille-utilisateurs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .carte-user {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      border-left: 5px solid #8B4513;
+      position: relative;
+    }
+
+    .carte-user.inactif {
+      opacity: 0.6;
+      border-left-color: #ccc;
+    }
+
+    .user-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .avatar-admin   { background: #cce5ff; }
+    .avatar-chef    { background: #d4edda; }
+    .avatar-achat   { background: #fff3cd; }
+    .avatar-livreur { background: #f8d7da; }
+    .avatar-caissier { background: #d1ecf1; }
+    .avatar-client  { background: #e2e3e5; }
+
+    .user-info h3 { font-size: 15px; color: #333; margin-bottom: 2px; }
+    .user-info .user-email { font-size: 12px; color: #888; }
+
+    .user-role {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .role-admin   { background: #cce5ff; color: #004085; }
+    .role-chef    { background: #d4edda; color: #155724; }
+    .role-achat   { background: #fff3cd; color: #856404; }
+    .role-livreur { background: #f8d7da; color: #721c24; }
+    .role-caissier { background: #d1ecf1; color: #0c5460; }
+    .role-client  { background: #e2e3e5; color: #383d41; }
+
+    .user-statut {
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+
+    .user-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-toggle-actif {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .btn-activer    { background: #d4edda; color: #155724; }
+    .btn-desactiver { background: #fff3cd; color: #856404; }
+    .btn-modifier-user  { background: #cce5ff; color: #004085; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; }
+    .btn-supprimer-user { background: #f8d7da; color: #721c24; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.visible { display: flex; }
+
+    .modal {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .modal h3 { color: #8B4513; margin-bottom: 20px; font-size: 18px; }
+    .modal .form-groupe { margin-bottom: 14px; }
+    .modal label { display: block; margin-bottom: 5px; font-size: 13px; color: #666; }
+    .modal input, .modal select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    .modal input:focus, .modal select:focus {
+      outline: none;
+      border-color: #8B4513;
+    }
+    .modal-boutons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .stats-users {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .stat-user-carte {
+      background: white;
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .stat-user-carte .nb { font-size: 28px; font-weight: bold; color: #8B4513; }
+    .stat-user-carte .lb { font-size: 12px; color: #888; margin-top: 4px; }
+
+    .section-titre {
+      font-size: 16px;
+      font-weight: 600;
+      color: #8B4513;
+      margin: 24px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #f0e0d0;
+    }
+
+    /* ✅ RESPONSIVE */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 220px;
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 20px;
+      }
+      .grille-utilisateurs {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ SIDEBAR À GAUCHE -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="../images/logo.png" alt="Logo Petit Délices" class="logo-img">
+      <div class="logo-text">Petit Délices</div>
+      <div class="sous-titre">Espace de Gestion</div>
+    </div>
+    
+    <nav class="sidebar-nav">
+  <a href="../index.html">
+    <img src="../images/accueil.png" alt="Accueil" class="icone-img">
+    Accueil
+  </a>
+  <a href="stock.html">
+    <img src="../images/stock.png" alt="Stock" class="icone-img">
+    Stock
+  </a>
+  <a href="produits.html">
+    <img src="../images/produits.png" alt="Produits" class="icone-img">
+    Produits
+  </a>
+  <a href="../commandes.html">
+    <img src="../images/commandes.png" alt="Commandes" class="icone-img">
+    Commandes
+  </a>
+  <a href="dashboard.html">
+    <img src="../images/dashboard.png" alt="Dashboard" class="icone-img">
+    Dashboard
+  </a>
+  <a href="utilisateurs.html">
+    <img src="../images/utilisateurs.png" alt="Utilisateurs" class="icone-img">
+    Utilisateurs
+  </a>
+</nav>
+    
+    <div class="sidebar-footer">
+      <div class="user-info" id="header-user">Chargement...</div>
+      <button class="btn-deco" onclick="seDeconnecter()">🚪 Déconnexion</button>
+    </div>
+  </aside>
+
+  <!-- ✅ CONTENU PRINCIPAL À DROITE -->
+  <main class="main-content">
+    <h1>👥 Gestion des Utilisateurs</h1>
+    <p class="sous-titre">Créez et gérez les comptes de vos employés</p>
+
+    <div class="stats-users" id="stats-users"></div>
+
+    <div class="barre-actions">
+      <button class="btn-principal" onclick="ouvrirModal()">➕ Ajouter un employé</button>
+    </div>
+
+    <div class="section-titre">👨‍💼 Employés</div>
+    <div class="grille-utilisateurs" id="grille-employes"></div>
+
+    <div class="section-titre">👤 Clients inscrits</div>
+    <div class="grille-utilisateurs" id="grille-clients"></div>
+  </main>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <h3 id="modal-titre">➕ Nouvel employé</h3>
+
+      <div class="form-groupe">
+        <label>Nom complet *</label>
+        <input type="text" id="modal-nom" placeholder="Ex: Ahmed Benali">
+      </div>
+      <div class="form-groupe">
+        <label>Email *</label>
+        <input type="email" id="modal-email" placeholder="Ex: ahmed@petitdelices.ma">
+      </div>
+      <div class="form-groupe">
+        <label id="label-mdp">Mot de passe *</label>
+        <input type="password" id="modal-mdp" placeholder="Minimum 6 caractères">
+      </div>
+      <div class="form-groupe">
+        <label>Rôle *</label>
+        <select id="modal-role">
+          <option value="admin">👑 Administrateur</option>
+          <option value="chef">👨‍🍳 Chef</option>
+          <option value="caissier">🧾 Caissier</option>
+          <option value="achat">🛒 Responsable Achat</option>
+          <option value="livreur">🚚 Livreur</option>
+        </select>
+      </div>
+
+      <div class="modal-boutons">
+        <button class="btn-principal" id="modal-btn-enregistrer" onclick="enregistrerUtilisateur()">✅ Enregistrer</button>
+        <button class="btn-annuler" onclick="fermerModal()">❌ Annuler</button>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="../config.js"></script>
+
+  <script src="../auth.js"></script>
+  <script>
+    // Afficher le nom de l'utilisateur connecté
+    let user = JSON.parse(sessionStorage.getItem("user"));
+    if (user) {
+      document.getElementById("header-user").textContent = `👋 ${user.nom}`;
+    }
+
+    function seDeconnecter() {
+      sessionStorage.removeItem("user");
+      window.location.href = "../login.html";
+    }
+  </script>
+  <script>
+    // Utiliser les variables globales de config.js
+const API    = window.API;
+const socket = window.socket;
+    let userEnModification = null
+
+    document.addEventListener("DOMContentLoaded", function() {
+      user = verifierConnexion(["admin"])
+      if (user) chargerUtilisateurs()
+
+      // Fermer le modal en cliquant dehors
+      document.getElementById("modal-overlay").addEventListener("click", function(e) {
+        if (e.target === this) fermerModal()
+      })
+    })
+
+    // ==============================
+    // CHARGER
+    // ==============================
+    async function chargerUtilisateurs() {
+      try {
+        let utilisateurs = await fetch(API + "/utilisateurs").then(r => r.json())
+        afficherStats(utilisateurs)
+        afficherEmployes(utilisateurs.filter(u => u.role !== "client"))
+        afficherClients(utilisateurs.filter(u => u.role === "client"))
+      } catch(err) {
+        console.error("Erreur:", err)
+      }
+    }
+
+    // ==============================
+    // STATS
+    // ==============================
+    function afficherStats(utilisateurs) {
+      let stats = document.getElementById("stats-users")
+
+      let employes  = utilisateurs.filter(u => u.role !== "client")
+      let clients   = utilisateurs.filter(u => u.role === "client")
+      let actifs    = employes.filter(u => u.actif == 1).length
+      let desactives = employes.length - actifs
+
+      let rolesEmployes = ["admin", "chef", "achat", "livreur"]
+      let labelsRoles = { admin: "👑 Admins", chef: "👨‍🍳 Chefs", achat: "🛒 Achats", livreur: "🚚 Livreurs" }
+
+      stats.innerHTML = `
+        <div class="stat-user-carte">
+          <div class="nb">${employes.length}</div>
+          <div class="lb">Employés</div>
+        </div>
+        <div class="stat-user-carte">
+          <div class="nb" style="color:#28a745">${actifs}</div>
+          <div class="lb">Actifs</div>
+        </div>
+        <div class="stat-user-carte">
+          <div class="nb" style="color:#dc3545">${desactives}</div>
+          <div class="lb">Désactivés</div>
+        </div>
+        <div class="stat-user-carte" style="border: 2px solid #f0e0d0">
+          <div class="nb" style="color:#8B4513">${clients.length}</div>
+          <div class="lb">👤 Clients</div>
+        </div>
+      ` + rolesEmployes.map(role => `
+        <div class="stat-user-carte">
+          <div class="nb">${employes.filter(u => u.role === role).length}</div>
+          <div class="lb">${labelsRoles[role]}</div>
+        </div>
+      `).join("")
+    }
+
+    // ==============================
+    // AFFICHER EMPLOYES
+    // ==============================
+    function afficherEmployes(employes) {
+      let grille = document.getElementById("grille-employes")
+      grille.innerHTML = ""
+
+      if (employes.length === 0) {
+        grille.innerHTML = '<p style="color:#999">Aucun employé.</p>'
+        return
+      }
+
+      employes.forEach(function(u) {
+        grille.innerHTML += carteUtilisateur(u, true)
+      })
+    }
+
+    // ==============================
+    // AFFICHER CLIENTS
+    // ==============================
+    function afficherClients(clients) {
+      let grille = document.getElementById("grille-clients")
+      grille.innerHTML = ""
+
+      if (clients.length === 0) {
+        grille.innerHTML = '<p style="color:#999">Aucun client inscrit.</p>'
+        return
+      }
+
+      clients.forEach(function(u) {
+        grille.innerHTML += carteUtilisateur(u, false)
+      })
+    }
+
+    // ==============================
+    // CARTE UTILISATEUR (réutilisable)
+    // ==============================
+    function carteUtilisateur(u, peutModifier) {
+      let avatarIcone = { admin: "👑", chef: "👨‍🍳", achat: "🛒", livreur: "🚚", client: "👤" }[u.role] || "👤"
+      let avatarClass = "avatar-" + u.role
+      let roleLabel   = { admin: "Administrateur", chef: "Chef", achat: "Responsable Achat", livreur: "Livreur", client: "Client" }[u.role] || u.role
+      let roleClass   = "role-" + u.role
+      let estActif    = u.actif == 1 || u.actif === true
+      let estMoi      = user && u.id === user.id
+
+      let date = u.created_at
+        ? new Date(u.created_at).toLocaleDateString("fr-FR")
+        : ""
+
+      let boutonModifier = peutModifier
+        ? `<button class="btn-modifier-user" onclick="ouvrirModification(${u.id}, '${u.nom.replace(/'/g, "\\'")}', '${u.email}', '${u.role}')">✏️ Modifier</button>`
+        : ""
+
+      let boutonToggle = `
+        <button class="btn-toggle-actif ${estActif ? "btn-desactiver" : "btn-activer"}"
+          onclick="toggleActif(${u.id}, ${estActif})">
+          ${estActif ? "⏸️ Désactiver" : "▶️ Activer"}
+        </button>
+      `
+
+      let boutonSupprimer = estMoi
+        ? `<span style="font-size:11px; color:#888">👈 Vous</span>`
+        : `<button class="btn-supprimer-user" onclick="supprimerUtilisateur(${u.id}, '${u.nom.replace(/'/g, "\\'")}')">🗑️ Supprimer</button>`
+
+      return `
+        <div class="carte-user ${estActif ? "" : "inactif"}" id="user-carte-${u.id}">
+          <div class="user-header">
+            <div class="user-avatar ${avatarClass}">${avatarIcone}</div>
+            <div class="user-info">
+              <h3>${u.nom}</h3>
+              <div class="user-email">✉️ ${u.email}</div>
+            </div>
+          </div>
+
+          <span class="user-role ${roleClass}">${roleLabel}</span>
+
+          <div class="user-statut">
+            ${estActif
+              ? '<span style="color:#28a745">🟢 Compte actif</span>'
+              : '<span style="color:#dc3545">🔴 Compte désactivé</span>'
+            }
+            ${date ? `<span style="color:#bbb; margin-left:10px; font-size:11px">Créé le ${date}</span>` : ""}
+          </div>
+
+          <div class="user-actions">
+            ${boutonModifier}
+            ${boutonToggle}
+            ${boutonSupprimer}
+          </div>
+        </div>
+      `
+    }
+
+    // ==============================
+    // MODAL
+    // ==============================
+    function ouvrirModal() {
+      userEnModification = null
+      document.getElementById("modal-titre").textContent          = "➕ Nouvel employé"
+      document.getElementById("modal-btn-enregistrer").textContent = "✅ Créer le compte"
+      document.getElementById("label-mdp").textContent            = "Mot de passe *"
+      document.getElementById("modal-nom").value   = ""
+      document.getElementById("modal-email").value = ""
+      document.getElementById("modal-mdp").value   = ""
+      document.getElementById("modal-role").value  = "chef"
+      document.getElementById("modal-overlay").classList.add("visible")
+    }
+
+    function ouvrirModification(id, nom, email, role) {
+      userEnModification = id
+      document.getElementById("modal-titre").textContent          = "✏️ Modifier l'employé"
+      document.getElementById("modal-btn-enregistrer").textContent = "✅ Enregistrer"
+      document.getElementById("label-mdp").textContent            = "Nouveau mot de passe (laisser vide pour ne pas changer)"
+      document.getElementById("modal-nom").value   = nom
+      document.getElementById("modal-email").value = email
+      document.getElementById("modal-mdp").value   = ""
+      document.getElementById("modal-role").value  = role
+      document.getElementById("modal-overlay").classList.add("visible")
+    }
+
+    function fermerModal() {
+      document.getElementById("modal-overlay").classList.remove("visible")
+      userEnModification = null
+    }
+
+    // ==============================
+    // ENREGISTRER
+    // ==============================
+    async function enregistrerUtilisateur() {
+      let nom   = document.getElementById("modal-nom").value.trim()
+      let email = document.getElementById("modal-email").value.trim()
+      let mdp   = document.getElementById("modal-mdp").value.trim()
+      let role  = document.getElementById("modal-role").value
+
+      if (!nom || !email || !role) {
+        alert("Veuillez remplir tous les champs obligatoires !")
+        return
+      }
+      if (!userEnModification && !mdp) {
+        alert("Le mot de passe est obligatoire pour un nouveau compte !")
+        return
+      }
+      if (mdp && mdp.length < 6) {
+        alert("Le mot de passe doit contenir au moins 6 caractères !")
+        return
+      }
+
+      try {
+        let res, data
+        if (userEnModification) {
+          let body = { nom, email, role }
+          if (mdp) body.mot_de_passe = mdp
+          res  = await fetch(API + "/utilisateurs/" + userEnModification, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+          })
+          data = await res.json()
+        } else {
+          res  = await fetch(API + "/utilisateurs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nom, email, mot_de_passe: mdp, role })
+          })
+          data = await res.json()
+        }
+
+        if (!res.ok) { alert(data.erreur || "Erreur !"); return }
+
+        fermerModal()
+        chargerUtilisateurs()
+      } catch(err) {
+        console.error("Erreur:", err)
+        alert("Erreur de connexion au serveur")
+      }
+    }
+
+    // ==============================
+    // ACTIVER / DÉSACTIVER
+    // ==============================
+    async function toggleActif(id, estActif) {
+      if (!confirm("Voulez-vous " + (estActif ? "désactiver" : "activer") + " ce compte ?")) return
+      await fetch(API + "/utilisateurs/" + id + "/statut", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ actif: !estActif })
+      })
+      chargerUtilisateurs()
+    }
+
+    // ==============================
+    // SUPPRIMER
+    // ==============================
+    async function supprimerUtilisateur(id, nom) {
+      if (!confirm("Supprimer définitivement le compte de " + nom + " ?")) return
+      await fetch(API + "/utilisateurs/" + id, { method: "DELETE" })
+      chargerUtilisateurs()
+    }
+  </script>
+
+</body>
+</html>

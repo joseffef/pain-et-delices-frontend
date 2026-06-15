@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧾 Espace Caissier — Petit Délices</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f9f4f0; }
+    header {
+      background: #8B4513;
+      color: white;
+      padding: 16px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .logo { font-size: 20px; font-weight: bold; }
+    .user-info { display: flex; align-items: center; gap: 15px; }
+    .user-info span { font-size: 14px; }
+    .btn-deco {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    main { max-width: 1400px; margin: 0 auto; padding: 30px 20px; }
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      text-align: center;
+    }
+    .stat-card .nombre { font-size: 32px; font-weight: bold; color: #8B4513; }
+    .stat-card .label { font-size: 13px; color: #888; margin-top: 4px; }
+    .search-bar {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .search-bar input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .filtres { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-filtre {
+      background: white;
+      border: 1.5px solid #ddd;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .btn-filtre.actif-filtre {
+      background: #8B4513;
+      color: white;
+      border-color: #8B4513;
+    }
+    .grille-commandes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .carte-commande {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      border-left: 5px solid #ddd;
+    }
+    .carte-commande.urgence { border-left-color: #dc3545; }
+    .carte-commande.prete { border-left-color: #28a745; }
+    .commande-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .commande-header h3 { font-size: 16px; color: #333; margin-bottom: 4px; }
+    .commande-tel { font-size: 13px; color: #666; }
+    .commande-id { font-size: 12px; color: #888; }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge.orange { background: #fff3cd; color: #856404; }
+    .badge.bleu { background: #cce5ff; color: #004085; }
+    .badge.vert { background: #d4edda; color: #155724; }
+    .badge.gris { background: #e2e3e5; color: #383d41; }
+    .commande-produits {
+      list-style: none;
+      margin: 12px 0;
+      padding: 12px;
+      background: #fdf6f0;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    .commande-produits li {
+      padding: 4px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+    .commande-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #f0e0d0;
+    }
+    .commande-total { font-size: 18px; font-weight: bold; color: #8B4513; }
+    .commande-date { font-size: 12px; color: #888; }
+    .commande-notes {
+      display: block;
+      font-size: 12px;
+      color: #856404;
+      background: #fff3cd;
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin-top: 8px;
+    }
+    .commande-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .btn-action {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .btn-remettre { background: #28a745; color: white; }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">🥐 Petit Délices</div>
+<img src="./images/logo.png" alt="Logo" class="logo-img" style="margin: 0; max-width: 100px;">
+    <div class="user-info">
+      <span id="caissier-nom">Chargement...</span>
+      <button class="btn-deco" onclick="seDeconnecter()">🚪 Déconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <h1>🧾 Espace Caissier</h1>
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="nombre" id="stat-en-attente">0</div>
+        <div class="label">⏳ En attente</div>
+      </div>
+      <div class="stat-card">
+        <div class="nombre" id="stat-preparation">0</div>
+        <div class="label">👨‍🍳 En préparation</div>
+      </div>
+      <div class="stat-card">
+        <div class="nombre" id="stat-prete">0</div>
+        <div class="label">✅ Prêtes à retirer</div>
+      </div>
+      <div class="stat-card">
+        <div class="nombre" id="stat-ca">0</div>
+        <div class="label">💰 CA du jour (DH)</div>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="🔍 Rechercher..." onkeyup="filtrerCommandes()">
+      <div class="filtres">
+        <button class="btn-filtre actif-filtre" onclick="filtrerStatut('tous', this)">Toutes</button>
+        <button class="btn-filtre" onclick="filtrerStatut('En attente', this)">⏳ En attente</button>
+        <button class="btn-filtre" onclick="filtrerStatut('En préparation', this)">👨‍🍳 Préparation</button>
+        <button class="btn-filtre" onclick="filtrerStatut('Prêt', this)">✅ Prêtes</button>
+      </div>
+    </div>
+
+    <div id="liste-commandes" class="grille-commandes"></div>
+  </main>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="config.js"></script>
+
+  <script>
+    // Utiliser les variables globales de config.js
+const API = window.API;
+const socket = window.socket;
+    let userCaissier = JSON.parse(sessionStorage.getItem("user"))
+    
+    if (!userCaissier || !["caissier", "admin"].includes(userCaissier.role)) {
+      window.location.href = "login.html"
+    }
+
+    let toutesLesCommandes = []
+    let statutFiltre = "tous"
+
+
+    socket.on("rafraichir_commandes", () => {
+      chargerCommandes()
+    })
+
+    document.getElementById("caissier-nom").textContent = `👋 ${userCaissier.nom}`
+    chargerCommandes()
+
+    async function chargerCommandes() {
+      try {
+        const res = await fetch(API + "/commandes")
+        let data = await res.json()
+        
+        if (!Array.isArray(data)) return
+        
+        toutesLesCommandes = data
+        afficherCommandes()
+        mettreAJourStats()
+      } catch (err) {
+        console.error("Erreur:", err)
+      }
+    }
+
+    function afficherCommandes() {
+      const liste = document.getElementById("liste-commandes")
+      const terme = document.getElementById("search-input").value.toLowerCase()
+
+      let commandesFiltrees = toutesLesCommandes.filter(cmd => {
+        const matchStatut = statutFiltre === "tous" || cmd.statut === statutFiltre
+        const clientNom = (cmd.client || "").toLowerCase()
+        const tel = cmd.telephone || ""
+        const matchRecherche = !terme || clientNom.includes(terme) || tel.includes(terme) || String(cmd.id).includes(terme)
+        return matchStatut && matchRecherche
+      })
+
+      if (commandesFiltrees.length === 0) {
+        liste.innerHTML = `<div class="empty-state" style="grid-column: 1/-1"><h3>Aucune commande</h3></div>`
+        return
+      }
+
+      liste.innerHTML = commandesFiltrees.map(cmd => {
+        const total = cmd.produits ? cmd.produits.reduce((s, p) => s + Number(p.prix) * Number(p.quantite), 0) : 0
+
+        const couleurs = {
+          "En attente": "orange",
+          "En préparation": "bleu",
+          "Prêt": "vert",
+          "Livrée": "gris",
+          "Livré": "gris",
+          "Annulée": "rouge"
+        }
+        
+        let statutAffiche = cmd.statut
+        if (statutAffiche.toLowerCase().startsWith("livr")) statutAffiche = "Livrée"
+        
+        const couleur = couleurs[statutAffiche] || "orange"
+        const produitsList = cmd.produits ? cmd.produits.map(p => `<li><span>${p.nom} × ${p.quantite}</span><strong>${Number(p.prix) * Number(p.quantite)} DH</strong></li>`).join("") : "<li>Aucun produit</li>"
+
+        let classeCarte = ""
+        if (cmd.statut === "En attente") classeCarte = "urgence"
+        else if (cmd.statut === "Prêt") classeCarte = "prete"
+
+        let labelOrigine = cmd.origine === "admin"
+          ? `<span class="badge bleu" style="font-size:11px; margin-bottom:8px; display:inline-block;">👨‍🍳 Créée pour le Chef</span>`
+          : `<span class="badge orange" style="font-size:11px; margin-bottom:8px; display:inline-block;">🧾 Créée pour le Caissier</span>`
+
+        // ✅ DEBUG : Affichage FORCÉ des champs pour vérification
+        let infoTraçabilité = `
+          <div style="font-size:12px; color:#17a2b8; margin-top:8px; border:1px dashed #17a2b8; padding:5px; border-radius:4px;">
+            👨‍🍳 Chef : <strong>${cmd.pris_par_chef || '⚠️ Non enregistré (vide)'}</strong>
+          </div>
+          <div style="font-size:12px; color:#28a745; margin-top:4px; border:1px dashed #28a745; padding:5px; border-radius:4px;">
+            ✅ Livreur/Caissier : <strong>${cmd.livre_par || '⚠️ Non enregistré (vide)'}</strong>
+          </div>
+        `;
+
+        let boutons = ""
+        const estLivree = (cmd.statut || "").toLowerCase().startsWith("livr")
+
+        if (cmd.origine === "client") {
+          if (cmd.statut === "En attente") {
+            boutons = `<button class="btn-action" style="background:#28a745; color:white;" onclick="changerStatutCaissier(${cmd.id}, 'En préparation')">✅ Valider et envoyer en cuisine</button>`
+          } else if (cmd.statut === "En préparation") {
+            boutons = `<button class="btn-action" style="background:#17a2b8; color:white;" onclick="changerStatutCaissier(${cmd.id}, 'Prêt')">➡️ Marquer comme Prêt</button>`
+          } else if (cmd.statut === "Prêt") {
+            if (cmd.livraison === "domicile") {
+              boutons = `<span style="color:#17a2b8; font-size:13px; text-align:center; flex:1;">🚚 En attente du livreur</span>`
+            } else {
+              boutons = `<button class="btn-action btn-remettre" onclick="marquerRemise(${cmd.id})">🔑 Remise au client (Code)</button>`
+            }
+          } else if (estLivree) {
+            boutons = `<span style="color:#28a745; font-size:13px; text-align:center; flex:1;">✅ Commande finalisée</span>`
+          } else if (cmd.statut === "Annulée") {
+            boutons = `<span style="color:#dc3545; font-size:13px; text-align:center; flex:1;">❌ Annulée</span>`
+          }
+        } else if (cmd.origine === "admin") {
+          if (cmd.statut === "En préparation") {
+            boutons = `<span style="color:#17a2b8; font-size:13px; text-align:center; flex:1;">👨‍🍳 En préparation par le chef...</span>`
+          } else if (cmd.statut === "Prêt") {
+            if (cmd.livraison === "domicile") {
+              boutons = `<span style="color:#17a2b8; font-size:13px; text-align:center; flex:1;">🚚 En attente du livreur</span>`
+            } else {
+              boutons = `<button class="btn-action btn-remettre" onclick="marquerRemise(${cmd.id})">🔑 Remise au client (Code)</button>`
+            }
+          } else if (estLivree) {
+            boutons = `<span style="color:#28a745; font-size:13px; text-align:center; flex:1;">✅ Commande finalisée</span>`
+          } else if (cmd.statut === "Annulée") {
+            boutons = `<span style="color:#dc3545; font-size:13px; text-align:center; flex:1;">❌ Annulée</span>`
+          }
+        }
+
+        let dateAffichee = cmd.date ? new Date(cmd.date).toLocaleDateString('fr-FR') : new Date(cmd.created_at).toLocaleDateString('fr-FR')
+
+        return `
+          <div class="carte-commande ${classeCarte}">
+            <div class="commande-header">
+              <div>
+                <div class="commande-id">#${cmd.id}</div>
+                ${labelOrigine}
+                <h3>👤 ${cmd.client}</h3>
+                <div class="commande-tel">📞 ${cmd.telephone || "Non renseigné"}</div>
+              </div>
+              <span class="badge ${couleur}">${statutAffiche}</span>
+            </div>
+            <ul class="commande-produits">${produitsList}</ul>
+            ${cmd.notes ? `<span class="commande-notes">📝 ${cmd.notes}</span>` : ""}
+            
+            ${infoTraçabilité}
+            
+            <div class="commande-footer">
+              <span class="commande-date">📅 ${dateAffichee}</span>
+              <span class="commande-total">${total} DH</span>
+            </div>
+            <div class="commande-actions">${boutons}</div>
+          </div>
+        `
+      }).join("")
+    }
+
+    function mettreAJourStats() {
+      const enAttente = toutesLesCommandes.filter(c => c.statut === "En attente").length
+      const enPrep = toutesLesCommandes.filter(c => c.statut === "En préparation").length
+      const pretes = toutesLesCommandes.filter(c => c.statut === "Prêt").length
+      
+      const aujourdhui = new Date().toISOString().split('T')[0]
+      const caJour = toutesLesCommandes
+        .filter(c => new Date(c.created_at).toISOString().split('T')[0] === aujourdhui && c.statut !== "Annulée")
+        .reduce((sum, c) => {
+          const total = c.produits ? c.produits.reduce((s, p) => s + Number(p.prix) * Number(p.quantite), 0) : 0
+          return sum + total
+        }, 0)
+
+      document.getElementById("stat-en-attente").textContent = enAttente
+      document.getElementById("stat-preparation").textContent = enPrep
+      document.getElementById("stat-prete").textContent = pretes
+      document.getElementById("stat-ca").textContent = caJour.toFixed(0)
+    }
+
+    function filtrerStatut(statut, btn) {
+      statutFiltre = statut
+      document.querySelectorAll(".btn-filtre").forEach(b => b.classList.remove("actif-filtre"))
+      btn.classList.add("actif-filtre")
+      afficherCommandes()
+    }
+
+    function filtrerCommandes() {
+      afficherCommandes()
+    }
+
+    async function changerStatutCaissier(id, nouveauStatut) {
+      if (!confirm(`Passer au statut "${nouveauStatut}" ?`)) return
+      
+      let nomCaissier = userCaissier ? userCaissier.nom : "Inconnu"
+      
+      try {
+        let response = await fetch(API + "/commandes/" + id + "/statut", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ statut: nouveauStatut, utilisateur_nom: nomCaissier })
+        })
+        
+        let result = await response.json()
+        if (!response.ok) {
+          alert("❌ " + result.erreur)
+        } else {
+          alert("✅ Statut mis à jour !")
+          socket.emit("changement_statut")
+          chargerCommandes()
+        }
+      } catch (err) {
+        alert("Erreur : " + err.message)
+      }
+    }
+
+    async function marquerRemise(id) {
+      let codeSaisi = prompt("🔒 Entrez le code de confirmation à 6 chiffres :");
+      
+      if (codeSaisi === null) return;
+      if (codeSaisi.length !== 6 || isNaN(codeSaisi)) {
+        alert("❌ Le code doit contenir exactement 6 chiffres.");
+        return;
+      }
+      
+      let nomCaissier = userCaissier ? userCaissier.nom : "Inconnu"
+      
+      try {
+        let response = await fetch(API + "/commandes/" + id + "/statut", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            statut: "Livrée",
+            code_confirmation: codeSaisi,
+            utilisateur_nom: nomCaissier
+          })
+        })
+        
+        let result = await response.json();
+        
+        if (!response.ok) {
+          alert(result.erreur);
+          return;
+        }
+        
+        alert("✅ " + result.message);
+        socket.emit("changement_statut")
+        chargerCommandes()
+      } catch (err) {
+        alert("Erreur : " + err.message)
+      }
+    }
+
+    function seDeconnecter() {
+      sessionStorage.removeItem("user")
+      window.location.href = "login.html"
+    }
+  </script>
+
+</body>
+</html>

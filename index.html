@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petit Délices — Gestion</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ============================================
+       LAYOUT : SIDEBAR À GAUCHE
+       ============================================ */
+    body {
+      display: flex;
+      min-height: 100vh;
+      margin: 0;
+      background: #f9f4f0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* ✅ SIDEBAR (menu à gauche) */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, #8B4513 0%, #6d3610 100%);
+      color: white;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 30px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      text-align: center;
+    }
+
+    .sidebar-header .logo-img {
+      max-width: 100px;
+      height: auto;
+      display: block;
+      margin: 0 auto 12px auto;
+      border-radius: 8px;
+    }
+
+    .sidebar-header .logo-text {
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-header .sous-titre {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 20px 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 24px;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-size: 15px;
+      transition: all 0.2s;
+      border-left: 4px solid transparent;
+    }
+
+    .sidebar-nav a:hover {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border-left-color: #ffd700;
+    }
+
+    .sidebar-nav a.actif {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border-left-color: #ffd700;
+      font-weight: 600;
+    }
+
+    .sidebar-nav a .icone {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .sidebar-footer .btn-deco {
+      width: 100%;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .sidebar-footer .btn-deco:hover {
+      background: rgba(220,53,69,0.8);
+    }
+
+    /* ✅ CONTENU PRINCIPAL (à droite de la sidebar) */
+    .main-content {
+      margin-left: 260px;
+      flex: 1;
+      padding: 40px;
+      min-height: 100vh;
+    }
+
+    .main-content h1 {
+      color: #8B4513;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    .main-content .sous-titre {
+      color: #888;
+      margin-bottom: 40px;
+      font-size: 16px;
+    }
+
+    /* ✅ CARTES RACCOURCIS */
+    .cartes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 24px;
+      margin-top: 30px;
+    }
+
+    .carte {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+
+    .carte:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(139,69,19,0.2);
+      border-color: #8B4513;
+    }
+
+    .carte-icone {
+      font-size: 50px;
+      margin-bottom: 15px;
+    }
+
+    .carte h2 {
+      color: #8B4513;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .carte p {
+      color: #888;
+      font-size: 14px;
+    }
+
+    /* ✅ RESPONSIVE */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 220px;
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ SIDEBAR À GAUCHE -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="./images/logo.png" alt="Logo Petit Délices" class="logo-img">
+      <div class="logo-text">Petit Délices</div>
+      <div class="sous-titre">Espace de Gestion</div>
+    </div>
+    
+    <nav class="sidebar-nav">
+  <a href="index.html">
+    <img src="images/accueil.png" alt="Accueil" class="icone-img">
+    Accueil
+  </a>
+  <a href="pages/stock.html">
+    <img src="images/stock.png" alt="Stock" class="icone-img">
+    Stock
+  </a>
+  <a href="pages/produits.html">
+    <img src="images/produits.png" alt="Produits" class="icone-img">
+    Produits
+  </a>
+  <a href="commandes.html">
+    <img src="images/commandes.png" alt="Commandes" class="icone-img">
+    Commandes
+  </a>
+  <a href="pages/dashboard.html">
+    <img src="images/dashboard.png" alt="Dashboard" class="icone-img">
+    Dashboard
+  </a>
+  <a href="pages/utilisateurs.html">
+    <img src="images/utilisateurs.png" alt="Utilisateurs" class="icone-img">
+    Utilisateurs
+  </a>
+</nav>
+    
+    <div class="sidebar-footer">
+      <button class="btn-deco" onclick="seDeconnecter()">🚪 Déconnexion</button>
+    </div>
+  </aside>
+
+  <!-- ✅ CONTENU PRINCIPAL À DROITE -->
+  <main class="main-content">
+    <h1>Bienvenue sur Petit Délices 👋</h1>
+    <p class="sous-titre">Gérez votre stock, vos produits et vos commandes facilement.</p>
+
+    <!-- CARTES RACCOURCIS -->
+    <div class="cartes">
+      <div class="carte" onclick="window.location='pages/stock.html'">
+        <div class="carte-icone">
+          <img src="images/stock.png" alt="Stock" class="icone-img" style="width: 50px; height: 50px;">
+        </div>
+        <h2>Stock</h2>
+        <p>Gérer les ingrédients</p>
+      </div>
+
+      <div class="carte" onclick="window.location='pages/produits.html'">
+        <div class="carte-icone">
+          <img src="images/produits.png" alt="Produits" class="icone-img" style="width: 50px; height: 50px;">
+        </div>
+        <h2>Produits</h2>
+        <p>Croissants, pains, gâteaux...</p>
+      </div>
+
+      <div class="carte" onclick="window.location='commandes.html'">
+        <div class="carte-icone">
+          <img src="images/commandes.png" alt="Commandes" class="icone-img" style="width: 50px; height: 50px;">
+        </div>
+        <h2>Commandes</h2>
+        <p>Suivre les commandes clients</p>
+      </div>
+
+      <div class="carte" onclick="window.location='pages/dashboard.html'">
+        <div class="carte-icone">
+          <img src="images/dashboard.png" alt="Dashboard" class="icone-img" style="width: 50px; height: 50px;">
+        </div>
+        <h2>Dashboard</h2>
+        <p>Statistiques et résumé</p>
+      </div>
+
+      <div class="carte" onclick="window.location='pages/utilisateurs.html'">
+        <div class="carte-icone">
+          <img src="images/utilisateurs.png" alt="Utilisateurs" class="icone-img" style="width: 50px; height: 50px;">
+        </div>
+        <h2>Utilisateurs</h2>
+        <p>Gérer les comptes</p>
+      </div>
+    </div>
+  </main>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="config.js"></script>
+
+  <script src="app.js"></script>
+  <script>
+    function seDeconnecter() {
+      sessionStorage.removeItem("user");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petit Délices — Commander</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .hero {
+      text-align: center;
+      padding: 40px 20px 20px;
+    }
+    .hero h1 { font-size: 28px; color: #8B4513; }
+    .hero p  { color: #888; margin-top: 8px; }
+
+    .catalogue {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .carte-client {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      border: 2px solid transparent;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .carte-client:hover { border-color: #8B4513; }
+    .carte-client.selectionnee { border-color: #8B4513; background: #fdf6f0; }
+    .carte-client.rupture { opacity: 0.5; cursor: not-allowed; }
+    .carte-client .produit-icone { font-size: 36px; margin-bottom: 10px; display: block; }
+    .carte-client h3 { color: #333; margin-bottom: 4px; font-size: 16px; }
+    .carte-client .prix { color: #8B4513; font-weight: bold; font-size: 18px; display: block; margin-top: 8px; }
+    .carte-client .dispo { font-size: 12px; margin-top: 6px; }
+    .description-produit { font-size: 13px; color: #888; margin: 4px 0; }
+
+    .qte-controle {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .carte-client.selectionnee .qte-controle { display: flex; }
+
+    .btn-qte {
+      background: #8B4513;
+      color: white;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-qte:hover { background: #7a3a10; }
+    .qte-valeur { font-weight: bold; font-size: 16px; min-width: 24px; text-align: center; }
+
+    .badge-selection {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #8B4513;
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+    .carte-client.selectionnee .badge-selection { display: flex; }
+
+    .panier-fixe {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #8B4513;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 14px 24px;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(139,69,19,0.4);
+      display: none;
+      z-index: 100;
+    }
+    .panier-fixe:hover { background: #7a3a10; }
+
+    .section-panier {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      display: none;
+    }
+    .section-panier h2 { color: #8B4513; margin-bottom: 16px; }
+
+    .ligne-panier {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0e0d0;
+      font-size: 14px;
+    }
+    .ligne-panier:last-child { border-bottom: none; }
+
+    .total-panier {
+      font-size: 20px;
+      font-weight: bold;
+      color: #8B4513;
+      text-align: right;
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 2px solid #f0e0d0;
+    }
+
+    .form-commande { margin-top: 24px; }
+    .form-commande h3 { color: #555; margin-bottom: 16px; font-size: 16px; }
+    .form-commande .form-groupe { margin-bottom: 14px; }
+    .form-commande label { display: block; margin-bottom: 5px; font-size: 13px; color: #666; }
+    .form-commande input, .form-commande textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    .form-commande input:focus, .form-commande textarea:focus {
+      outline: none;
+      border-color: #8B4513;
+    }
+
+    .choix-livraison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 6px;
+    }
+    .option-livraison {
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 4px;
+    }
+    .option-livraison:hover { border-color: #8B4513; }
+    .option-livraison.selectionnee { border-color: #8B4513; background: #fdf6f0; }
+    .livraison-icone { font-size: 28px; }
+    .livraison-titre { font-weight: 500; font-size: 14px; color: #333; }
+    .livraison-desc  { font-size: 12px; color: #888; }
+
+    .btn-commander {
+      width: 100%;
+      background: #8B4513;
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background 0.2s;
+      font-family: inherit;
+    }
+    .btn-commander:hover { background: #7a3a10; }
+
+    .confirmation {
+      display: none;
+      text-align: center;
+      padding: 50px 20px;
+      background: white;
+      border-radius: 12px;
+      margin-top: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .confirmation .icone { font-size: 64px; }
+    .confirmation h2 { color: #28a745; margin: 16px 0 8px; font-size: 22px; }
+    .confirmation p { color: #888; font-size: 15px; line-height: 1.6; }
+
+    .filtres-client {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .bienvenue-bar {
+      background: #fdf6f0;
+      border: 1px solid #f0e0d0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #8B4513;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    @media (max-width: 500px) {
+      .choix-livraison { grid-template-columns: 1fr; }
+      .catalogue { grid-template-columns: 1fr 1fr; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">🥐 Petit Délices</div>
+    <img src="./images/logo.png" alt="Logo" class="logo-img" style="margin: 0; max-width: 100px;">
+    <nav>
+      <a href="#catalogue">Nos produits</a>
+      <a href="#panier">🛍️Mon panier</a>
+      <a href="commande-client.html">🛍️ Commander</a>
+      <a href="profil-client.html">👤 Mon profil</a>
+    </nav>
+    <button onclick="sessionStorage.removeItem('user'); window.location.href='login.html'"
+      style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px">
+      🚪 Déconnexion
+    </button>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h1>🥐 Espace Client</h1>
+      <p>Gérez vos commandes et découvrez nos délices</p>
+    </div>
+
+    <div class="bienvenue-bar" id="bienvenue-bar">
+      <span id="texte-bienvenue"></span>
+    </div>
+
+    <div class="tabs-client">
+      <button class="tab-btn actif" onclick="changerOnglet('nouvelle')">🛍️ Nouvelle Commande</button>
+      <button class="tab-btn" onclick="changerOnglet('historique'); chargerHistorique()">📜 Mes Commandes</button>
+    </div>
+
+    <div id="onglet-nouvelle">
+      <div class="filtres-client" id="filtres-client">
+        <button class="btn-filtre actif-filtre" onclick="filtrer('tous', this)">Tous</button>
+      </div>
+
+      <div id="catalogue" class="catalogue"></div>
+
+      <button class="panier-fixe" id="btn-panier-fixe" onclick="scrollPanier()">
+        🛒 Voir mon panier (<span id="nb-articles">0</span>)
+      </button>
+
+      <div class="section-panier" id="panier">
+        <h2>🛒 Mon panier</h2>
+        <div id="lignes-panier"></div>
+        <div class="total-panier" id="total-panier">Total : 0 DH</div>
+
+        <div class="form-commande">
+          <h3>Vos informations</h3>
+          <div class="form-groupe">
+            <label>Nom complet *</label>
+            <input type="text" id="client-nom" placeholder="Ex: Mohamed Alami">
+          </div>
+          <div class="form-groupe">
+            <label>Téléphone *</label>
+            <input type="tel" id="client-tel" placeholder="Ex: 06 12 34 56 78">
+          </div>
+          <div class="form-groupe">
+            <label>Date de livraison souhaitée *</label>
+            <input type="date" id="client-date">
+          </div>
+          <div class="form-groupe">
+            <label>Notes (optionnel)</label>
+            <textarea id="client-notes" rows="2" placeholder="Ex: Sans gluten, livraison matin..."></textarea>
+          </div>
+          <div class="form-groupe">
+            <label>Mode de récupération *</label>
+            <div class="choix-livraison">
+              <div class="option-livraison selectionnee" id="opt-retrait" onclick="choisirLivraison('retrait')">
+                <span class="livraison-icone">🏪</span>
+                <span class="livraison-titre">Retrait en magasin</span>
+                <span class="livraison-desc">Je viens chercher ma commande</span>
+              </div>
+              <div class="option-livraison" id="opt-domicile" onclick="choisirLivraison('domicile')">
+                <span class="livraison-icone">🚚</span>
+                <span class="livraison-titre">Livraison à domicile</span>
+                <span class="livraison-desc">Je veux être livré chez moi</span>
+              </div>
+            </div>
+          </div>
+
+          <div id="bloc-adresse" style="display:none">
+            <div class="form-groupe">
+              <label>Adresse de livraison *</label>
+              <input type="text" id="client-adresse" placeholder="Ex: 12 Rue Hassan II, Tanger">
+            </div>
+          </div>
+
+          <button class="btn-commander" onclick="passerCommande()">
+            ✅ Confirmer la commande
+          </button>
+        </div>
+      </div>
+      <div class="confirmation" id="confirmation">
+        <div class="icone">✅</div>
+        <h2>Commande envoyée !</h2>
+        <p>Nous avons bien reçu votre commande.<br>Nous vous contacterons pour confirmer.</p>
+        <p id="confirmation-livraison" style="margin-top:10px; font-weight:500; color:#8B4513"></p>
+        <button class="btn-commander" style="margin-top:20px; width:auto; padding:12px 30px" onclick="nouvelleCommande()">
+          ➕ Passer une autre commande
+        </button>
+      </div>
+    </div>
+
+    <div id="onglet-historique" style="display: none;">
+      <h2 style="color: #8B4513; margin-bottom: 20px;">En attente de préparation 🕒</h2>
+      <div id="historique-en-attente" class="grille-historique"></div>
+
+      <h2 style="color: #8B4513; margin: 30px 0 20px;">Commandes passées ✅</h2>
+      <div id="historique-livre" class="grille-historique"></div>
+    </div>
+  </main>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="config.js"></script>
+
+  <script src="commande-client.js"></script>
+</body>
+</html>

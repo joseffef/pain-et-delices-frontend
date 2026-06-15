@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon Profil — Petit Délices</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f9f4f0; }
+
+    header {
+      background: #8B4513;
+      color: white;
+      padding: 16px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo { font-size: 20px; font-weight: bold; }
+    nav a { color: white; text-decoration: none; margin-left: 20px; font-size: 14px; }
+    nav a:hover { text-decoration: underline; }
+
+    main { max-width: 800px; margin: 0 auto; padding: 30px 20px; }
+
+    .profil-header {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      margin-bottom: 24px;
+    }
+
+    .avatar-grand {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #fdf6f0;
+      border: 3px solid #8B4513;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      flex-shrink: 0;
+    }
+
+    .profil-nom h1 { color: #333; font-size: 22px; margin-bottom: 4px; }
+    .profil-nom p  { color: #888; font-size: 14px; }
+    .profil-nom .badge-client {
+      display: inline-block;
+      background: #fdf6f0;
+      color: #8B4513;
+      border: 1px solid #8B4513;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+
+    .section h2 { color: #8B4513; font-size: 17px; margin-bottom: 18px; }
+
+    .form-groupe { margin-bottom: 14px; }
+    .form-groupe label { display: block; margin-bottom: 6px; font-size: 13px; color: #666; font-weight: 500; }
+    .form-groupe input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    .form-groupe input:focus { outline: none; border-color: #8B4513; }
+
+    .form-ligne { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .btn-sauvegarder {
+      background: #8B4513;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s;
+    }
+    .btn-sauvegarder:hover { background: #7a3a10; }
+
+    .succes {
+      background: #d4edda;
+      color: #155724;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .carte-commande-client {
+      border: 1px solid #f0e0d0;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .commande-client-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .commande-client-header strong { font-size: 15px; color: #333; }
+
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+    .badge.orange { background: #fff3cd; color: #856404; }
+    .badge.bleu   { background: #cce5ff; color: #004085; }
+    .badge.vert   { background: #d4edda; color: #155724; }
+    .badge.gris   { background: #e2e3e5; color: #383d41; }
+
+    .commande-client-produits { font-size: 13px; color: #666; margin-bottom: 8px; }
+    .commande-client-footer { display: flex; justify-content: space-between; font-size: 13px; color: #888; }
+    .commande-client-total { font-weight: bold; color: #8B4513; font-size: 15px; }
+
+    .aucune-commande { text-align: center; padding: 30px; color: #aaa; }
+    .aucune-commande .icone { font-size: 40px; margin-bottom: 10px; }
+
+    @media (max-width: 600px) {
+      .profil-header { flex-direction: column; text-align: center; }
+      .form-ligne { grid-template-columns: 1fr; }
+    }
+    .logo-img { margin: 0; max-width: 100px; }
+    .input-disabled { background:#f5f5f5 }
+    .mt-16 { margin-top:16px }
+    .h3-sub { color:#555; font-size:14px; margin-bottom:10px }
+  </style>
+  </script>
+</head>
+<body>
+
+  <header>
+    <div class="logo">🥐 Petit Délices</div>
+<img src="./images/logo.png" alt="Logo" class="logo-img">
+    <nav>
+      <a href="commande-client.html">🛍️ Commander</a>
+      <a href="profil-client.html">👤 Mon profil</a>
+      <a href="#" onclick="seDeconnecter()">🚪 Déconnexion</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- HEADER PROFIL -->
+    <div class="profil-header">
+      <div class="avatar-grand">👤</div>
+      <div class="profil-nom">
+        <h1 id="profil-nom-affiche">Chargement...</h1>
+        <p id="profil-email-affiche"></p>
+        <span class="badge-client">👤 Client</span>
+      </div>
+    </div>
+
+    <!-- INFORMATIONS PERSONNELLES -->
+    <div class="section">
+  <h2>✏️ Mes informations</h2>
+  <div class="succes" id="succes-profil">✅ Profil mis à jour !</div>
+
+  <div class="form-ligne">
+    <div class="form-groupe">
+      <label>Nom complet</label>
+      <input type="text" id="profil-nom" placeholder="Votre nom">
+    </div>
+    <div class="form-groupe">
+      <label>Email</label>
+      <input type="email" id="profil-email" placeholder="votre@email.com" disabled class="input-disabled">
+    </div>
+  </div>
+
+  <div class="form-ligne">
+    <div class="form-groupe">
+      <label>Téléphone</label>
+      <input type="tel" id="profil-telephone" placeholder="Ex: 06 12 34 56 78">
+    </div>
+    <div class="form-groupe">
+      <label>Ville</label>
+      <input type="text" id="profil-ville" placeholder="Ex: Casablanca">
+    </div>
+  </div>
+
+  <div class="form-groupe">
+    <label>Adresse de livraison par défaut</label>
+    <input type="text" id="profil-adresse" placeholder="Ex: 12 Rue Hassan II, Casablanca">
+  </div>
+
+  <!-- ✅ NOUVEAU : Changement de mot de passe -->
+  <div class="mt-16">
+    <h3 class="h3-sub">🔒 Changer de mot de passe (optionnel)</h3>
+    <div class="form-groupe">
+      <label>Nouveau mot de passe</label>
+      <input type="password" id="profil-nouveau-mdp" placeholder="Laisser vide pour ne pas changer">
+    </div>
+  </div>
+
+  <button class="btn-sauvegarder" onclick="sauvegarderProfil()">💾 Sauvegarder</button>
+</div>
+
+    <!-- HISTORIQUE COMMANDES -->
+    <div class="section">
+      <h2>📋 Mes commandes</h2>
+      <div id="historique-commandes"></div>
+    </div>
+
+  </main>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="config.js"></script>
+
+  <script>
+    // Utiliser les variables globales de config.js
+const API = window.API;
+const socket = window.socket;
+
+// ✅ Écouter les mises à jour en temps réel de l'historique
+socket.on("rafraichir_historique", () => {
+  console.log("🔄 Une commande a été mise à jour, rafraîchissement de l'historique...")
+  chargerHistorique() // Recharge la liste des commandes du client
+})
+
+
+
+    let userClient = JSON.parse(sessionStorage.getItem("user"))
+    if (!userClient || userClient.role !== "client") {
+      window.location.href = "login.html"
+    }
+
+    function seDeconnecter() {
+      sessionStorage.removeItem("user")
+      window.location.href = "login.html"
+    }
+
+    async function chargerProfil() {
+  try {
+    let profil = await fetch(API + "/profil/" + userClient.id).then(r => r.json())
+
+    console.log("📥 Profil reçu:", profil)
+
+    document.getElementById("profil-nom-affiche").textContent   = profil.nom
+    document.getElementById("profil-email-affiche").textContent = profil.email
+    document.getElementById("profil-nom").value                 = profil.nom       || ""
+    document.getElementById("profil-email").value               = profil.email     || ""
+    document.getElementById("profil-telephone").value           = profil.telephone || ""
+    document.getElementById("profil-adresse").value             = profil.adresse   || ""
+    document.getElementById("profil-ville").value               = profil.ville     || ""
+    
+    // ✅ Plus de badge PRO, plus de ICE, plus de type_client
+  } catch(err) {
+    console.error("Erreur chargement profil:", err)
+  }
+}
+async function sauvegarderProfil() {
+  // ✅ Le nom est bien récupéré ici
+  const data = {
+    nom:         document.getElementById("profil-nom").value.trim(),
+    telephone:   document.getElementById("profil-telephone").value.trim(),
+    adresse:     document.getElementById("profil-adresse").value.trim(),
+    ville:       document.getElementById("profil-ville").value.trim(),
+    nouveau_mdp: document.getElementById("profil-nouveau-mdp").value
+  }
+
+  console.log("📤 Données envoyées au serveur:", data)
+
+  try {
+    const res = await fetch(API + "/profil/" + userClient.id, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+
+    const resultat = await res.json()
+    console.log("📥 Réponse du serveur:", resultat)
+
+    if (!res.ok) {
+      alert("❌ Erreur : " + (resultat.erreur || "Erreur serveur"))
+      return
+    }
+
+    // Message de succès
+    const succes = document.getElementById("succes-profil")
+    succes.style.display = "block"
+    setTimeout(() => succes.style.display = "none", 3000)
+
+    document.getElementById("profil-nouveau-mdp").value = ""
+
+    // ✅ Mettre à jour l'affichage immédiatement
+    document.getElementById("profil-nom-affiche").textContent = data.nom
+    
+    // Recharger le profil complet
+    await chargerProfil()
+    
+  } catch (err) {
+    console.error("❌ Erreur fetch:", err)
+    alert("❌ Erreur de connexion : " + err.message)
+  }
+}
+
+async function chargerHistorique() {
+  try {
+    const commandes = await fetch(API + "/commandes/client/" + userClient.id).then(r => r.json())
+    const div = document.getElementById("historique-commandes")
+
+    if (commandes.length === 0) {
+      div.innerHTML = `
+        <div class="aucune-commande">
+          <div class="icone">🛍️</div>
+          <p>Vous n'avez pas encore passé de commande.</p>
+          <a href="commande-client.html" style="color:#8B4513; font-weight:500; text-decoration:none; display:block; margin-top:10px">
+            Commander maintenant →
+          </a>
+        </div>`
+      return
+    }
+
+    div.innerHTML = commandes.map(cmd => {
+      const total = cmd.produits ? cmd.produits.reduce((s, p) => s + Number(p.prix) * Number(p.quantite), 0) : 0
+      const produitsList = cmd.produits ? cmd.produits.map(p => `${p.nom} ×${p.quantite}`).join(", ") : ""
+      
+      let statutPropre = (cmd.statut || "").trim()
+      if (statutPropre.toLowerCase().startsWith("livr")) statutPropre = "Livrée"
+      if (statutPropre.toLowerCase().startsWith("annul")) statutPropre = "Annulée"
+      
+      const livraison = cmd.livraison === "domicile" ? "🚚 Domicile" : "🏪 Retrait"
+      let dateAffichee = cmd.date ? new Date(cmd.date).toLocaleDateString('fr-FR') : new Date(cmd.created_at).toLocaleDateString('fr-FR')
+
+      // ✅ CODE DE CONFIRMATION
+      let affichageCode = ""
+      if (cmd.code_confirmation && !statutPropre.toLowerCase().startsWith("livr") && statutPropre !== "Annulée") {
+        affichageCode = `
+          <div style="background:#fff3cd; border:2px solid #ffeaa7; padding:15px; border-radius:10px; margin-top:12px; text-align:center;">
+            <div style="font-size:13px; color:#856404; margin-bottom:8px;">🔑 Code de confirmation</div>
+            <div style="font-size:32px; font-weight:bold; color:#d63031; letter-spacing:4px; font-family:monospace;">${cmd.code_confirmation}</div>
+          </div>`
+      }
+
+      // ✅ DÉBOGAGE VISUEL + BOUTON D'ANNULATION
+      let zoneAnnulation = ""
+      const dateCreation = new Date(cmd.created_at || cmd.date)
+      const maintenant = new Date()
+      const delaiMs = maintenant - dateCreation
+      const delaiMaxMs = 90 * 1000 // 1 minute 30 secondes
+      const tempsRestantMs = delaiMaxMs - delaiMs
+      
+      const minutes = Math.floor(Math.max(0, tempsRestantMs) / 60000)
+      const secondes = Math.floor((Math.max(0, tempsRestantMs) % 60000) / 1000)
+      const tempsAffiche = `${minutes}:${secondes.toString().padStart(2, '0')}`
+
+      // On affiche toujours cette zone de debug pour comprendre ce qui se passe
+      zoneAnnulation = `
+        <div style="margin-top:12px; padding:10px; background:#f8f9fa; border:1px dashed #ccc; border-radius:8px; font-size:12px; color:#666;">
+          <strong>🔍 Debug Annulation :</strong><br>
+          • Statut actuel : <strong>${cmd.statut}</strong><br>
+          • Temps écoulé : <strong>${Math.floor(delaiMs / 1000)} secondes</strong><br>
+          • Temps restant : <strong>${tempsRestantMs > 0 ? tempsAffiche : '0:00 (Délai dépassé)'}</strong>
+        </div>
+      `
+
+      // Si le statut est "En attente", on affiche le bouton (ou le message de délai dépassé)
+      if (cmd.statut === "En attente") {
+        if (tempsRestantMs > 0) {
+          zoneAnnulation += `
+            <button class="btn-annuler-commande" data-id="${cmd.id}" onclick="annulerCommande(${cmd.id})" 
+                    style="background:#dc3545; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-size:15px; font-weight:bold; margin-top:12px; width:100%;">
+              ❌ Annuler la commande (${tempsAffiche})
+            </button>`
+        } else {
+          zoneAnnulation += `
+            <div style="text-align:center; margin-top:12px; padding:12px; background:#f8d7da; border-radius:8px; color:#721c24; font-weight:bold;">
+              ⏰ Délai d'annulation (1min30) dépassé
+            </div>`
+        }
+      }
+
+      return `
+        <div class="carte-commande-client">
+          <div class="commande-client-header">
+            <strong>Commande #${cmd.id}</strong>
+            <span class="badge ${statutPropre === 'Annulée' ? 'rouge' : 'orange'}">${statutPropre}</span>
+          </div>
+          <div class="commande-client-produits">${produitsList}</div>
+          ${affichageCode}
+          <div class="commande-client-footer">
+            <span>${livraison} · 📅 ${dateAffichee}</span>
+            <span class="commande-client-total">${total} DH</span>
+          </div>
+          ${zoneAnnulation}
+        </div>`
+    }).join("")
+  } catch(err) {
+    console.error("Erreur historique:", err)
+  }
+}
+
+// ✅ Fonction pour annuler une commande
+async function annulerCommande(id) {
+  if (!confirm("⚠️ Êtes-vous sûr de vouloir annuler cette commande ? Cette action est irréversible.")) return
+  
+  try {
+    const res = await fetch(API + "/commandes/" + id + "/annuler", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" }
+    })
+    
+    const result = await res.json()
+    
+    if (!res.ok) {
+      alert(result.erreur || "Erreur lors de l'annulation")
+      return
+    }
+    
+    alert("✅ " + result.message)
+    chargerHistorique() // Recharger la liste
+  } catch (err) {
+    alert("Erreur de connexion : " + err.message)
+  }
+}
+
+// ✅ Mettre à jour le compte à rebours toutes les secondes
+setInterval(() => {
+  const boutons = document.querySelectorAll('.btn-annuler-commande')
+  boutons.forEach(btn => {
+    const texte = btn.textContent
+    const match = texte.match(/\((\d+):(\d+)\)/)
+    if (match) {
+      let minutes = parseInt(match[1])
+      let secondes = parseInt(match[2])
+      
+      if (secondes > 0) {
+        secondes--
+      } else if (minutes > 0) {
+        minutes--
+        secondes = 59
+      } else {
+        chargerHistorique() // Temps écoulé, on recharge pour afficher "Délai dépassé"
+        return
+      }
+      
+      btn.textContent = `❌ Annuler la commande (${minutes}:${secondes.toString().padStart(2, '0')})`
+    }
+  })
+}, 1000)
+// ✅ Fonction pour annuler une commande
+async function annulerCommande(id) {
+  if (!confirm("⚠️ Êtes-vous sûr de vouloir annuler cette commande ? Cette action est irréversible.")) return
+  
+  try {
+    const res = await fetch(API + "/commandes/" + id + "/annuler", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" }
+    })
+    
+    const result = await res.json()
+    
+    if (!res.ok) {
+      alert(result.erreur || "Erreur lors de l'annulation")
+      return
+    }
+    
+    alert("✅ " + result.message)
+    chargerHistorique() // Recharger la liste
+  } catch (err) {
+    alert("Erreur de connexion : " + err.message)
+  }
+}
+
+// ✅ Fonction pour annuler une commande
+async function annulerCommande(id) {
+  if (!confirm("Êtes-vous sûr de vouloir annuler cette commande ?")) return
+  
+  try {
+    const res = await fetch(API + "/commandes/" + id + "/annuler", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" }
+    })
+    
+    const result = await res.json()
+    
+    if (!res.ok) {
+      alert(result.erreur)
+      return
+    }
+    
+    alert(result.message)
+    chargerHistorique() // Recharger la liste
+  } catch (err) {
+    alert("Erreur : " + err.message)
+  }
+}
+    chargerProfil()
+    chargerHistorique()
+
+  // ✅ Mettre à jour le compte à rebours toutes les secondes
+setInterval(() => {
+  const boutons = document.querySelectorAll('.btn-annuler-commande')
+  boutons.forEach(btn => {
+    const texte = btn.textContent
+    const match = texte.match(/\((\d+):(\d+)\)/)
+    if (match) {
+      let minutes = parseInt(match[1])
+      let secondes = parseInt(match[2])
+      
+      if (secondes > 0) {
+        secondes--
+      } else if (minutes > 0) {
+        minutes--
+        secondes = 59
+      } else {
+        // Temps écoulé, recharger la page
+        chargerHistorique()
+        return
+      }
+      
+      btn.textContent = `❌ Annuler la commande (${minutes}:${secondes.toString().padStart(2, '0')})`
+    }
+  })
+}, 1000)
+  </script>
+
+</body>
+</html>
