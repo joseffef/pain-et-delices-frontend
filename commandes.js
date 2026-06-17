@@ -214,7 +214,8 @@ async function chargerCommandes() {
       
       // ✅ AFFICHER LE CODE DE CONFIRMATION
       let affichageCode = ""
-      if (cmd.code_confirmation && !cmd.statut.toLowerCase().includes("livr") && cmd.statut !== "Annulée") {
+      let estExactementLivre = (cmd.statut || "").toLowerCase() === "livrée" || (cmd.statut || "").toLowerCase() === "livré"
+if (cmd.code_confirmation && !estExactementLivre && cmd.statut !== "Annulée") {
         affichageCode = `
           <div style="background:#fff3cd; border:1px solid #ffeaa7; padding:12px; border-radius:8px; margin-top:10px; text-align:center;">
             <strong style="color:#d63031;">🔑 Code de confirmation :</strong>
@@ -223,7 +224,7 @@ async function chargerCommandes() {
           </div>
         `
       }
-      
+    
       return `
         <div class="carte-commande">
           <div class="commande-header">
@@ -456,7 +457,7 @@ async function passerCommande() {
   const produits = Object.entries(panier).map(([id, p]) => ({
     nom: p.nom, quantite: p.quantite, prix: p.prix
   }))
-  
+
   try {
     const res = await fetch(`${API}/commandes`, {
       method: "POST",
