@@ -57,9 +57,10 @@ async function chargerLivraisons() {
     livraisons.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     
     let div = document.getElementById("liste-livraisons")
-    let nomLivreurActuel = user ? user.nom : "Inconnu"
+    // ✅ Nettoyage du nom pour comparaison fiable
+    let nomLivreurActuel = user ? user.nom.trim() : "Inconnu"
     
-    console.log("🔍 Livreur actuel:", nomLivreurActuel)
+    console.log("🔍 Livreur actuel:", `"${nomLivreurActuel}"`)
 
     if (livraisons.length === 0) {
       div.innerHTML = '<p style="color:#999; margin-top:20px; text-align:center;">✅ Aucune livraison.</p>'
@@ -67,7 +68,11 @@ async function chargerLivraisons() {
     }
 
     div.innerHTML = livraisons.map(function(cmd) {
-      console.log(`Commande #${cmd.id}: statut="${cmd.statut}", livreur_assigne="${cmd.livreur_assigne}"`)
+      // ✅ Nettoyage du nom du livreur assigné pour comparaison fiable
+      let livreurAssigneNettoye = (cmd.livreur_assigne || "").trim()
+      let estMonAssignation = livreurAssigneNettoye === nomLivreurActuel
+      
+      console.log(`📦 Commande #${cmd.id}: statut="${cmd.statut}", livreur_assigne="${livreurAssigneNettoye}", estMonAssignation=${estMonAssignation}`)
       
       let total = cmd.produits
         ? cmd.produits.reduce((s, p) => s + Number(p.prix) * Number(p.quantite), 0)
@@ -88,34 +93,34 @@ async function chargerLivraisons() {
 
       let estLivree = (cmd.statut || "").toLowerCase().includes("livr")
 
+      // ✅ LOGIQUE SIMPLIFIÉE ET ROBUSTE
       let actionButton = ""
       
       if (estLivree) {
+        // Déjà livrée → on affiche juste le statut
         actionButton = `<span style="color:#28a745; font-size:13px; font-weight:bold;">✅ Commande livrée</span>`
       } 
-      else if (cmd.statut === "Prêt" && !cmd.livreur_assigne) {
-        actionButton = `<button class="btn-avancer" style="background:#17a2b8; color:white; font-weight:bold;" onclick="prendreCommande(${cmd.id})">🚀 Prendre la commande</button>`
-      } 
-      else if (cmd.statut === "En livraison" && cmd.livreur_assigne === nomLivreurActuel) {
-        console.log(`✅ Afficher le bouton pour commande #${cmd.id}`)
+      else if (estMonAssignation) {
+        // ✅ C'EST MA COMMANDE → toujours afficher le bouton confirmer
+        console.log(`✅ AFFICHAGE bouton confirmer pour commande #${cmd.id}`)
         actionButton = `
           <div style="background:#fff3cd; padding:12px; border-radius:8px; text-align:center; border:2px solid #ffc107;">
             <div style="font-size:12px; color:#856404; margin-bottom:8px;">📍 Vous avez pris cette commande</div>
-            <button class="btn-avancer" style="background:#28a745; color:white; font-weight:bold; width:100%;" onclick="marquerLivre(${cmd.id})">✅ Confirmer la livraison</button>
+            <button class="btn-avancer" style="background:#28a745; color:white; font-weight:bold; width:100%; padding:12px; font-size:15px;" onclick="marquerLivre(${cmd.id})">✅ Confirmer la livraison</button>
           </div>
         `
       } 
-      else if (cmd.livreur_assigne === nomLivreurActuel && !estLivree) {
-  console.log(`✅ Afficher le bouton pour commande #${cmd.id}`)
-  actionButton = `
-    <div style="background:#fff3cd; padding:12px; border-radius:8px; text-align:center; border:2px solid #ffc107;">
-      <div style="font-size:12px; color:#856404; margin-bottom:8px;">📍 Vous avez pris cette commande</div>
-      <button class="btn-avancer" style="background:#28a745; color:white; font-weight:bold; width:100%;" onclick="marquerLivre(${cmd.id})">✅ Confirmer la livraison</button>
-    </div>
-  `
-}
-      else {
+      else if (cmd.statut === "Prêt" && !cmd.livreur_assigne) {
+        // Prête et pas encore assignée → bouton prendre
+        actionButton = `<button class="btn-avancer" style="background:#17a2b8; color:white; font-weight:bold; padding:10px 20px;" onclick="prendreCommande(${cmd.id})">🚀 Prendre la commande</button>`
+      } 
+      else if (!cmd.livreur_assigne) {
+        // Pas assignée mais pas encore prête
         actionButton = `<span style="color:#999; font-size:13px;">⏳ En attente de préparation</span>`
+      }
+      else {
+        // Assignée à un autre livreur
+        actionButton = `<span style="color:#999; font-size:13px;">🚚 Assignée à ${cmd.livreur_assigne}</span>`
       }
 
       let infoTraçabilité = ""
@@ -130,11 +135,12 @@ async function chargerLivraisons() {
       }
 
       return `
-        <div class="carte-commande" style="${estLivree ? 'opacity: 0.8; border-left-color: #28a745;' : (cmd.livreur_assigne === nomLivreurActuel ? 'border-left-color: #17a2b8; border-left-width: 8px;' : '')}">
+        <div class="carte-commande" style="${estLivree ? 'opacity: 0.8; border-left-color: #28a745;' : (estMonAssignation ? 'border-left-color: #17a2b8; border-left-width: 8px;' : '')}">
           <div class="commande-header">
             <div>
               <h3>👤 ${cmd.client}</h3>
               <span class="commande-tel">📞 ${cmd.telephone || ""}</span>
+              ${cmd.adresse_livraison ? `<div style="font-size:13px; color:#666; margin-top:4px;">📍 ${cmd.adresse_livraison}</div>` : ""}
             </div>
             <span class="badge" style="background:${couleur === 'orange' ? '#fff3cd' : couleur === 'bleu' ? '#cce5ff' : couleur === 'vert' ? '#d4edda' : couleur === '#17a2b8' ? '#d1ecf1' : '#e2e3e5'}; color:${couleur === 'orange' ? '#856404' : couleur === 'bleu' ? '#004085' : couleur === 'vert' ? '#155724' : couleur === '#17a2b8' ? '#0c5460' : '#383d41'}">
               ${cmd.statut}
@@ -148,7 +154,7 @@ async function chargerLivraisons() {
               ${cmd.date ? `<span class="commande-date">📅 ${cmd.date}</span>` : ""}
               ${cmd.notes ? `<span class="commande-notes">📝 ${cmd.notes}</span>` : ""}
             </div>
-            <div class="commande-actions">
+            <div class="commande-actions" style="min-width:200px;">
               ${actionButton}
             </div>
           </div>
