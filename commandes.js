@@ -27,11 +27,13 @@ function toggleFormulaire() {
     
     const bloc = document.getElementById('form-bloc-adresse')
     if (bloc) {
+      // 👇 On s'assure que la classe hidden est bien présente à l'ouverture
+      bloc.classList.add('hidden'); 
       bloc.style.display = 'none'
       bloc.style.visibility = 'hidden'
     }
     
-    // ensure at least one product line
+    // S'assurer qu'il y a au moins une ligne de produit
     if (!document.querySelectorAll('#liste-produits-commande .ligne-produit').length) {
       ajouterLigneProduit()
     }
@@ -48,28 +50,6 @@ async function ensureProduitsLoaded() {
   } catch (err) {
     console.error('Erreur chargement produits (admin):', err)
     tousLesProduits = []
-  }
-}
-
-function toggleFormulaire() {
-  const f = document.getElementById("formulaire")
-  if (!f) return
-  if (f.style.display === "none" || getComputedStyle(f).display === "none") {
-    f.style.display = "block"
-    formModeLivraison = "retrait"
-    // Réinitialiser le sélecteur de livraison
-    const r = document.getElementById('form-opt-retrait')
-    const d = document.getElementById('form-opt-domicile')
-    if (r) r.style.border = '2px solid #8B4513'
-    if (d) d.style.border = '2px solid #ddd'
-    const bloc = document.getElementById('form-bloc-adresse')
-    if (bloc) bloc.style.display = 'none'
-    // ensure at least one product line
-    if (!document.querySelectorAll('#liste-produits-commande .ligne-produit').length) {
-      ajouterLigneProduit()
-    }
-  } else {
-    f.style.display = "none"
   }
 }
 
@@ -124,8 +104,17 @@ function choisirLivraisonForm(mode) {
   
   const bloc = document.getElementById('form-bloc-adresse')
   if (bloc) {
-    bloc.style.display = mode === 'domicile' ? 'block' : 'none'
-    bloc.style.visibility = mode === 'domicile' ? 'visible' : 'hidden'
+    if (mode === 'domicile') {
+      // 👇 C'est la ligne magique qui corrige le bug
+      bloc.classList.remove('hidden'); 
+      bloc.style.display = 'block'
+      bloc.style.visibility = 'visible'
+    } else {
+      // 👇 On remet la classe quand on cache
+      bloc.classList.add('hidden'); 
+      bloc.style.display = 'none'
+      bloc.style.visibility = 'hidden'
+    }
   }
   
   console.log(`Mode sélectionné: ${mode}, bloc display: ${bloc.style.display}`)
