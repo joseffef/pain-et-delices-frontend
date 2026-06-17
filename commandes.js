@@ -14,8 +14,23 @@ let formModeLivraison = "retrait"
 function toggleFormulaire() {
   const f = document.getElementById("formulaire")
   if (!f) return
+  
   if (f.style.display === "none" || getComputedStyle(f).display === "none") {
     f.style.display = "block"
+    formModeLivraison = "retrait"
+    
+    // Réinitialiser le sélecteur de livraison
+    const r = document.getElementById('form-opt-retrait')
+    const d = document.getElementById('form-opt-domicile')
+    if (r) r.style.border = '2px solid #8B4513'
+    if (d) d.style.border = '2px solid #ddd'
+    
+    const bloc = document.getElementById('form-bloc-adresse')
+    if (bloc) {
+      bloc.style.display = 'none'
+      bloc.style.visibility = 'hidden'
+    }
+    
     // ensure at least one product line
     if (!document.querySelectorAll('#liste-produits-commande .ligne-produit').length) {
       ajouterLigneProduit()
@@ -103,20 +118,17 @@ function choisirLivraisonForm(mode) {
   formModeLivraison = mode
   const r = document.getElementById('form-opt-retrait')
   const d = document.getElementById('form-opt-domicile')
-  if (r && d) {
-    r.style.border = mode === 'retrait' ? '2px solid #8B4513' : '2px solid #ddd'
-    d.style.border = mode === 'domicile' ? '2px solid #8B4513' : '2px solid #ddd'
-  }
+  
+  if (r) r.style.border = mode === 'retrait' ? '2px solid #8B4513' : '2px solid #ddd'
+  if (d) d.style.border = mode === 'domicile' ? '2px solid #8B4513' : '2px solid #ddd'
+  
   const bloc = document.getElementById('form-bloc-adresse')
   if (bloc) {
-    if (mode === 'domicile') {
-      bloc.style.display = 'block !important'
-      bloc.classList.remove('hidden')
-    } else {
-      bloc.style.display = 'none'
-      bloc.classList.add('hidden')
-    }
+    bloc.style.display = mode === 'domicile' ? 'block' : 'none'
+    bloc.style.visibility = mode === 'domicile' ? 'visible' : 'hidden'
   }
+  
+  console.log(`Mode sélectionné: ${mode}, bloc display: ${bloc.style.display}`)
 }
 
 async function ajouterCommande() {
