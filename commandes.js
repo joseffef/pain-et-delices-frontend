@@ -129,7 +129,10 @@ async function ajouterCommande() {
       return
     }
     // succès
-    alert('Commande ajoutée')
+    // succès
+    const data = await res.json()
+    const code = data.code
+    alert(`✅ Commande ajoutée !\n\n🔑 Code de confirmation : ${code}\n\nCommuniquer ce code au client.`)
     const f = document.getElementById('formulaire')
     if (f) f.style.display = 'none'
     // rafraîchir la liste des commandes si la fonction existe
