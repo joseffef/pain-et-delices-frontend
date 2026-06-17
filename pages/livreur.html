@@ -91,7 +91,7 @@ async function chargerLivraisons() {
         "Livré": "gris"
       }[cmd.statut] || "gris"
 
-      let estLivree = (cmd.statut || "").toLowerCase().includes("livr")
+      let estLivree = (cmd.statut || "").toLowerCase() === "livrée" || (cmd.statut || "").toLowerCase() === "livré"
 
       // ✅ LOGIQUE SIMPLIFIÉE ET ROBUSTE
       let actionButton = ""
@@ -140,7 +140,7 @@ async function chargerLivraisons() {
             <div>
               <h3>👤 ${cmd.client}</h3>
               <span class="commande-tel">📞 ${cmd.telephone || ""}</span>
-              ${cmd.adresse_livraison ? `<div style="font-size:13px; color:#666; margin-top:4px;">📍 ${cmd.adresse_livraison}</div>` : ""}
+              ${cmd.adresse_livraison ? `<div style="font-size:13px; color:#666; margin-top:6px; font-weight:500;">📍 ${cmd.adresse_livraison}</div>` : '<div style="font-size:13px; color:#999;">📍 Retrait en magasin</div>'}
             </div>
             <span class="badge" style="background:${couleur === 'orange' ? '#fff3cd' : couleur === 'bleu' ? '#cce5ff' : couleur === 'vert' ? '#d4edda' : couleur === '#17a2b8' ? '#d1ecf1' : '#e2e3e5'}; color:${couleur === 'orange' ? '#856404' : couleur === 'bleu' ? '#004085' : couleur === 'vert' ? '#155724' : couleur === '#17a2b8' ? '#0c5460' : '#383d41'}">
               ${cmd.statut}
