@@ -46,7 +46,7 @@ const socket = window.socket;
       chargerLivraisons()
     })
 
-    async function chargerLivraisons() {
+async function chargerLivraisons() {
   try {
     let commandes = await fetch(API + "/commandes").then(r => r.json())
     
@@ -58,6 +58,8 @@ const socket = window.socket;
     
     let div = document.getElementById("liste-livraisons")
     let nomLivreurActuel = user ? user.nom : "Inconnu"
+    
+    console.log("🔍 Livreur actuel:", nomLivreurActuel)
 
     if (livraisons.length === 0) {
       div.innerHTML = '<p style="color:#999; margin-top:20px; text-align:center;">✅ Aucune livraison.</p>'
@@ -65,6 +67,8 @@ const socket = window.socket;
     }
 
     div.innerHTML = livraisons.map(function(cmd) {
+      console.log(`Commande #${cmd.id}: statut="${cmd.statut}", livreur_assigne="${cmd.livreur_assigne}"`)
+      
       let total = cmd.produits
         ? cmd.produits.reduce((s, p) => s + Number(p.prix) * Number(p.quantite), 0)
         : 0
@@ -92,7 +96,8 @@ const socket = window.socket;
       else if (cmd.statut === "Prêt" && !cmd.livreur_assigne) {
         actionButton = `<button class="btn-avancer" style="background:#17a2b8; color:white; font-weight:bold;" onclick="prendreCommande(${cmd.id})">🚀 Prendre la commande</button>`
       } 
-      else if ((cmd.statut === "En livraison" || cmd.statut === "Prêt") && cmd.livreur_assigne === nomLivreurActuel) {
+      else if (cmd.statut === "En livraison" && cmd.livreur_assigne === nomLivreurActuel) {
+        console.log(`✅ Afficher le bouton pour commande #${cmd.id}`)
         actionButton = `
           <div style="background:#fff3cd; padding:12px; border-radius:8px; text-align:center; border:2px solid #ffc107;">
             <div style="font-size:12px; color:#856404; margin-bottom:8px;">📍 Vous avez pris cette commande</div>
