@@ -36,6 +36,28 @@ async function ensureProduitsLoaded() {
   }
 }
 
+function toggleFormulaire() {
+  const f = document.getElementById("formulaire")
+  if (!f) return
+  if (f.style.display === "none" || getComputedStyle(f).display === "none") {
+    f.style.display = "block"
+    formModeLivraison = "retrait"
+    // Réinitialiser le sélecteur de livraison
+    const r = document.getElementById('form-opt-retrait')
+    const d = document.getElementById('form-opt-domicile')
+    if (r) r.style.border = '2px solid #8B4513'
+    if (d) d.style.border = '2px solid #ddd'
+    const bloc = document.getElementById('form-bloc-adresse')
+    if (bloc) bloc.style.display = 'none'
+    // ensure at least one product line
+    if (!document.querySelectorAll('#liste-produits-commande .ligne-produit').length) {
+      ajouterLigneProduit()
+    }
+  } else {
+    f.style.display = "none"
+  }
+}
+
 async function ajouterLigneProduit() {
   await ensureProduitsLoaded()
   const container = document.getElementById('liste-produits-commande')
@@ -86,7 +108,15 @@ function choisirLivraisonForm(mode) {
     d.style.border = mode === 'domicile' ? '2px solid #8B4513' : '2px solid #ddd'
   }
   const bloc = document.getElementById('form-bloc-adresse')
-  if (bloc) bloc.style.display = mode === 'domicile' ? 'block' : 'none'
+  if (bloc) {
+    if (mode === 'domicile') {
+      bloc.style.display = 'block !important'
+      bloc.classList.remove('hidden')
+    } else {
+      bloc.style.display = 'none'
+      bloc.classList.add('hidden')
+    }
+  }
 }
 
 async function ajouterCommande() {
@@ -174,10 +204,24 @@ async function chargerCommandes() {
         "En attente": "orange",
         "En préparation": "bleu",
         "Prêt": "vert",
+        "En livraison": "#17a2b8",
         "Livré": "vert",
+        "Livrée": "vert",
         "Annulée": "gris"
       }
       const couleur = couleurs[cmd.statut] || "orange"
+      
+      // ✅ AFFICHER LE CODE DE CONFIRMATION
+      let affichageCode = ""
+      if (cmd.code_confirmation && !cmd.statut.toLowerCase().includes("livr") && cmd.statut !== "Annulée") {
+        affichageCode = `
+          <div style="background:#fff3cd; border:1px solid #ffeaa7; padding:12px; border-radius:8px; margin-top:10px; text-align:center;">
+            <strong style="color:#d63031;">🔑 Code de confirmation :</strong>
+            <div style="font-size:28px; font-weight:bold; color:#d63031; letter-spacing:4px; margin-top:6px;">${cmd.code_confirmation}</div>
+            <small style="color:#666">À communiquer au client</small>
+          </div>
+        `
+      }
       
       return `
         <div class="carte-commande">
@@ -187,6 +231,7 @@ async function chargerCommandes() {
           </div>
           <div class="commande-tel">${cmd.telephone}</div>
           <ul class="commande-produits">${produitsList.split(',').map(p => `<li>${p.trim()}</li>`).join('')}</ul>
+          ${affichageCode}
           <div class="commande-footer">
             <div>
               <span class="commande-date">${livraison} · 📅 ${date}</span>
