@@ -105,9 +105,15 @@ async function chargerLivraisons() {
           </div>
         `
       } 
-      else if (cmd.livreur_assigne) {
-        actionButton = `<span style="color:#dc3545; font-size:13px; font-weight:bold; background:#f8d7da; padding:6px 12px; border-radius:6px;">🔒 Prise par ${cmd.livreur_assigne}</span>`
-      } 
+      else if (cmd.livreur_assigne === nomLivreurActuel && !estLivree) {
+  console.log(`✅ Afficher le bouton pour commande #${cmd.id}`)
+  actionButton = `
+    <div style="background:#fff3cd; padding:12px; border-radius:8px; text-align:center; border:2px solid #ffc107;">
+      <div style="font-size:12px; color:#856404; margin-bottom:8px;">📍 Vous avez pris cette commande</div>
+      <button class="btn-avancer" style="background:#28a745; color:white; font-weight:bold; width:100%;" onclick="marquerLivre(${cmd.id})">✅ Confirmer la livraison</button>
+    </div>
+  `
+}
       else {
         actionButton = `<span style="color:#999; font-size:13px;">⏳ En attente de préparation</span>`
       }
