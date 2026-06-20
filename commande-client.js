@@ -1,61 +1,54 @@
-// Utiliser les variables globales de config.js
-const API = window.API;
-const socket = window.socket;
+/* ─────────────────────────────────────────────────
+   VARIABLES GLOBALES
+───────────────────────────────────────────────── */
+const API    = window.API
+const socket = window.socket
 
 let userClient = JSON.parse(sessionStorage.getItem("user"))
 if (!userClient || userClient.role !== "client") {
   window.location.href = "login.html"
 }
 
-let panier = {} // { idProduit: { nom, prix, quantite } }
+let panier = {}              // { idProduit: { nom, prix, quantite, max } }
 let modeLivraison = "retrait"
 let tousLesProduits = []
 
-// ============================================
-// SOCKET.IO — Temps réel
-// ============================================
-
-
+/* ─────────────────────────────────────────────────
+   SOCKET.IO — Temps réel
+───────────────────────────────────────────────── */
 socket.on("rafraichir_historique", () => {
-  console.log("🔄 Statut changé côté cuisine, on rafraîchit l'historique")
   if (document.getElementById("onglet-historique").style.display !== "none") {
     chargerHistorique()
   }
 })
 
-// ============================================
-// INITIALISATION
-// ============================================
-document.addEventListener("DOMContentLoaded", function() {
-  document.getElementById("texte-bienvenue").textContent = `Bonjour ${userClient.nom} 👋`
+/* ─────────────────────────────────────────────────
+   INITIALISATION
+───────────────────────────────────────────────── */
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("hero-prenom").textContent = `${userClient.nom} 👋`
   chargerProduits()
   chargerInfosClient()
   document.getElementById("client-date").min = new Date().toISOString().split("T")[0]
 })
 
-// ============================================
-// CHARGER INFOS CLIENT (pour pré-remplir + badge PRO)
-// ============================================
+/* ─────────────────────────────────────────────────
+   PROFIL CLIENT (pré-remplissage formulaire)
+───────────────────────────────────────────────── */
 async function chargerInfosClient() {
   try {
-    const res = await fetch(`${API}/profil/${userClient.id}`)
+    const res    = await fetch(`${API}/profil/${userClient.id}`)
     const profil = await res.json()
-
-    console.log("📥 Profil chargé:", profil)
-
-    // ✅ Pré-remplir le formulaire avec les infos du profil
-    document.getElementById("client-nom").value = profil.nom || ""
+    document.getElementById("client-nom").value = profil.nom       || ""
     document.getElementById("client-tel").value = profil.telephone || ""
-
-    // ✅ Plus de logique badge PRO, type_client ou ICE
   } catch (err) {
     console.error("❌ Erreur chargement infos client:", err)
   }
 }
 
-// ============================================
-// CATALOGUE PRODUITS
-// ============================================
+/* ─────────────────────────────────────────────────
+   CATALOGUE PRODUITS
+───────────────────────────────────────────────── */
 async function chargerProduits() {
   try {
     const res = await fetch(`${API}/produits`)
@@ -70,16 +63,15 @@ async function chargerProduits() {
 function construireFiltres() {
   const categories = [...new Set(tousLesProduits.map(p => p.categorie).filter(Boolean))]
   const container = document.getElementById("filtres-client")
-  container.innerHTML = `<button class="btn-filtre actif-filtre" onclick="filtrer('tous', this)">Tous</button>`
+  container.innerHTML = `<button class="filter-btn actif-filtre" onclick="filtrer('tous', this)">🍽️ Tous</button>`
   categories.forEach(cat => {
-    container.innerHTML += `<button class="btn-filtre" onclick="filtrer('${cat}', this)">${cat}</button>`
+    container.innerHTML += `<button class="filter-btn" onclick="filtrer('${cat}', this)">${cat}</button>`
   })
 }
 
 function filtrer(categorie, btn) {
-  document.querySelectorAll(".btn-filtre").forEach(b => b.classList.remove("actif-filtre"))
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("actif-filtre"))
   btn.classList.add("actif-filtre")
-
   const filtres = categorie === "tous"
     ? tousLesProduits
     : tousLesProduits.filter(p => p.categorie === categorie)
@@ -91,26 +83,32 @@ function afficherCatalogue(produits) {
   catalogue.innerHTML = produits.map(p => {
     const enRupture = p.quantite <= 0
     return `
-      <div class="carte-client ${enRupture ? 'rupture' : ''}" onclick="${enRupture ? '' : `ajouterAuPanier(${p.id})`}">
-        <span class="badge-selection">✓</span>
-        <span class="produit-icone">🥐</span>
-        <h3>${p.nom}</h3>
-        <p class="description-produit">${p.description || ''}</p>
-        <span class="prix">${p.prix} DH</span>
-        <span class="dispo">${enRupture ? '❌ Rupture de stock' : `✅ ${p.quantite} disponibles`}</span>
-        <div class="qte-controle">
-          <button class="btn-qte" onclick="event.stopPropagation(); modifierQte(${p.id}, -1)">−</button>
-          <span class="qte-valeur" id="qte-${p.id}">${panier[p.id]?.quantite || 0}</span>
-          <button class="btn-qte" onclick="event.stopPropagation(); modifierQte(${p.id}, 1)">+</button>
+      <div class="product-card ${enRupture ? 'rupture' : ''}" data-id="${p.id}">
+        <div class="product-img">
+          <span>🥐</span>
+          <span class="fait-maison">Fait Maison</span>
+          <span class="badge-check">✓</span>
+        </div>
+        <div class="product-body">
+          ${p.categorie ? `<div class="product-category">${p.categorie}</div>` : ''}
+          <div class="product-name">${p.nom}</div>
+          <div class="product-desc">${p.description || ''}</div>
+          <div class="product-dispo ${enRupture ? 'rupture-label' : ''}">
+            ${enRupture ? '❌ Rupture de stock' : `✅ ${p.quantite} disponibles`}
+          </div>
+          <div class="product-footer">
+            <div class="product-price">${p.prix} DH</div>
+            <button class="add-btn" ${enRupture ? 'disabled' : ''} onclick="ajouterAuPanier(${p.id})">+ Ajouter</button>
+            <div class="qty-controls-card">
+              <button class="qty-btn" onclick="modifierQte(${p.id}, -1)">−</button>
+              <span class="qty-val" id="qte-${p.id}">${panier[p.id]?.quantite || 0}</span>
+              <button class="qty-btn" onclick="modifierQte(${p.id}, 1)">+</button>
+            </div>
+          </div>
         </div>
       </div>
     `
   }).join("")
-
-  // Réappliquer la classe "selectionnee" aux produits déjà dans le panier
-  Object.keys(panier).forEach(id => {
-    const carte = catalogue.querySelector(`.carte-client:nth-child(${Array.from(catalogue.children).findIndex(c => c.onclick?.toString().includes(id)) + 1})`)
-  })
   rafraichirSelection()
 }
 
@@ -125,66 +123,109 @@ function ajouterAuPanier(idProduit) {
   }
   majAffichagePanier()
   rafraichirSelection()
+  showNotif(produit.nom + ' ajouté ! 🎉')
 }
 
 function modifierQte(idProduit, delta) {
-  event.stopPropagation()
   if (!panier[idProduit]) return
-
   panier[idProduit].quantite += delta
   if (panier[idProduit].quantite <= 0) {
     delete panier[idProduit]
   } else if (panier[idProduit].quantite > panier[idProduit].max) {
     panier[idProduit].quantite = panier[idProduit].max
-    alert("Stock maximum atteint pour ce produit")
+    showNotif("Stock maximum atteint pour ce produit")
   }
   majAffichagePanier()
   rafraichirSelection()
+  renderCartModal()
 }
 
 function rafraichirSelection() {
-  document.querySelectorAll(".carte-client").forEach(carte => carte.classList.remove("selectionnee"))
-  // On ré-affiche le catalogue pour mettre à jour les quantités
-  const catalogue = document.getElementById("catalogue")
+  document.querySelectorAll(".product-card").forEach(carte => carte.classList.remove("selectionnee"))
   Object.keys(panier).forEach(id => {
     const qteSpan = document.getElementById(`qte-${id}`)
     if (qteSpan) {
       qteSpan.textContent = panier[id].quantite
-      qteSpan.closest(".carte-client").classList.add("selectionnee")
+      qteSpan.closest(".product-card").classList.add("selectionnee")
     }
   })
 }
 
-// ============================================
-// PANIER
-// ============================================
+/* ─────────────────────────────────────────────────
+   PANIER
+───────────────────────────────────────────────── */
 function majAffichagePanier() {
   const nbArticles = Object.values(panier).reduce((s, p) => s + p.quantite, 0)
   const total = Object.values(panier).reduce((s, p) => s + p.prix * p.quantite, 0)
 
-  document.getElementById("nb-articles").textContent = nbArticles
-  document.getElementById("btn-panier-fixe").style.display = nbArticles > 0 ? "block" : "none"
+  // Header count
+  const hc = document.getElementById('cartCountHeader')
+  hc.textContent = nbArticles
+  hc.classList.toggle('visible', nbArticles > 0)
 
-  const lignes = document.getElementById("lignes-panier")
-  lignes.innerHTML = Object.entries(panier).map(([id, p]) => `
-    <div class="ligne-panier">
-      <span>${p.nom} × ${p.quantite}</span>
-      <span><strong>${p.prix * p.quantite} DH</strong>
-      <button onclick="modifierQte(${id}, -1)" style="background:none;border:none;color:#8B4513;cursor:pointer;margin-left:8px">✕</button></span>
-    </div>
-  `).join("")
+  // Float btn
+  const fb = document.getElementById('cartFloat')
+  fb.classList.toggle('visible', nbArticles > 0)
+  document.getElementById('cartFloatCount').textContent = nbArticles
 
-  document.getElementById("total-panier").textContent = `Total : ${total} DH`
-  document.getElementById("panier").style.display = nbArticles > 0 ? "block" : "none"
+  document.getElementById('orderTotal').textContent = `${total} DH`
 }
 
-function scrollPanier() {
-  document.getElementById("panier").scrollIntoView({ behavior: "smooth" })
+function renderCartModal() {
+  const items = Object.entries(panier).filter(([,p]) => p.quantite > 0)
+  const el = document.getElementById('cartItems')
+  const sum = document.getElementById('cartSummary')
+
+  if (items.length === 0) {
+    el.innerHTML = `<div class="cart-empty"><div class="icon">🛒</div><p>Votre panier est vide</p></div>`
+    sum.style.display = 'none'
+    return
+  }
+
+  let totalVal = 0
+  el.innerHTML = `<div class="cart-items">${items.map(([id, p]) => {
+    totalVal += p.prix * p.quantite
+    return `<div class="cart-item">
+      <span class="cart-item-emoji">🥐</span>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${p.nom}</div>
+        <div class="cart-item-price">${p.prix} DH × ${p.quantite} = ${p.prix * p.quantite} DH</div>
+      </div>
+      <div class="qty-controls">
+        <button class="qty-btn" onclick="modifierQte(${id}, -1)">−</button>
+        <span class="qty-val">${p.quantite}</span>
+        <button class="qty-btn" onclick="modifierQte(${id}, 1)">+</button>
+      </div>
+    </div>`
+  }).join('')}</div>`
+
+  document.getElementById('cartTotal').textContent = `${totalVal} DH`
+  document.getElementById('orderTotal').textContent = `${totalVal} DH`
+  sum.style.display = 'block'
 }
 
-// ============================================
-// LIVRAISON
-// ============================================
+function openCart(e) {
+  if (e) e.preventDefault()
+  renderCartModal()
+  document.getElementById('cartOverlay').classList.add('open')
+}
+function closeCart(e) {
+  if (e && e.target !== e.currentTarget) return
+  document.getElementById('cartOverlay').classList.remove('open')
+}
+function openOrder() {
+  if (Object.keys(panier).length === 0) { alert("Votre panier est vide !"); return }
+  closeCart()
+  document.getElementById('orderOverlay').classList.add('open')
+}
+function closeOrder(e) {
+  if (e && e.target !== e.currentTarget) return
+  document.getElementById('orderOverlay').classList.remove('open')
+}
+
+/* ─────────────────────────────────────────────────
+   LIVRAISON
+───────────────────────────────────────────────── */
 function choisirLivraison(mode) {
   modeLivraison = mode
   document.getElementById("opt-retrait").classList.toggle("selectionnee", mode === "retrait")
@@ -192,18 +233,18 @@ function choisirLivraison(mode) {
   document.getElementById("bloc-adresse").style.display = mode === "domicile" ? "block" : "none"
 }
 
-// ============================================
-// PASSER COMMANDE
-// ============================================
+/* ─────────────────────────────────────────────────
+   PASSER COMMANDE
+───────────────────────────────────────────────── */
 async function passerCommande() {
   if (Object.keys(panier).length === 0) {
     alert("Votre panier est vide !"); return
   }
 
-  const nom = document.getElementById("client-nom").value.trim()
-  const tel = document.getElementById("client-tel").value.trim()
-  const date = document.getElementById("client-date").value
-  const notes = document.getElementById("client-notes").value.trim()
+  const nom     = document.getElementById("client-nom").value.trim()
+  const tel     = document.getElementById("client-tel").value.trim()
+  const date    = document.getElementById("client-date").value
+  const notes   = document.getElementById("client-notes").value.trim()
   const adresse = document.getElementById("client-adresse").value.trim()
 
   if (!nom || !tel || !date) {
@@ -236,18 +277,17 @@ async function passerCommande() {
 
     if (!res.ok) throw new Error("Erreur serveur")
 
-    // ✅ Notifier la cuisine en temps réel
     socket.emit("nouvelle_commande")
 
-    // Afficher confirmation
-    document.getElementById("onglet-nouvelle").style.display = "none"
+    closeOrder()
+    document.getElementById("catalogue-section").style.display = "none"
     document.getElementById("confirmation").style.display = "block"
     document.getElementById("confirmation-livraison").textContent =
       modeLivraison === "domicile" ? `🚚 Livraison prévue le ${date}` : `🏪 Retrait en magasin le ${date}`
 
-    // Vider le panier
     panier = {}
     majAffichagePanier()
+    afficherCatalogue(tousLesProduits)
   } catch (err) {
     alert("Erreur lors de la commande : " + err.message)
   }
@@ -255,64 +295,59 @@ async function passerCommande() {
 
 function nouvelleCommande() {
   document.getElementById("confirmation").style.display = "none"
-  document.getElementById("onglet-nouvelle").style.display = "block"
+  document.getElementById("catalogue-section").style.display = "block"
   document.getElementById("client-notes").value = ""
   document.getElementById("client-adresse").value = ""
 }
 
-// ============================================
-// HISTORIQUE (avec Socket.io)
-// ============================================
-function changerOnglet(onglet) {
+/* ─────────────────────────────────────────────────
+   ONGLETS
+───────────────────────────────────────────────── */
+function changerOnglet(onglet, event) {
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("actif"))
-  event.target.classList.add("actif")
+  if (event && event.target) event.target.classList.add("actif")
 
-  document.getElementById("onglet-nouvelle").style.display = onglet === "nouvelle" ? "block" : "none"
+  document.getElementById("onglet-nouvelle").style.display   = onglet === "nouvelle"   ? "block" : "none"
   document.getElementById("onglet-historique").style.display = onglet === "historique" ? "block" : "none"
-
-  if (onglet === "historique") chargerHistorique()
 }
 
+/* ─────────────────────────────────────────────────
+   HISTORIQUE (avec Socket.io)
+───────────────────────────────────────────────── */
 async function chargerHistorique() {
   try {
     const res = await fetch(`${API}/commandes/client/${userClient.id}`)
     const commandes = await res.json()
 
-    console.log("📋 Commandes reçues:", commandes) // Log de debug
-
-    // ✅ Accepte "Livrée" ET "Livré" (tolérance aux deux orthographes)
     const enAttente = commandes.filter(c => {
       const s = (c.statut || "").toLowerCase()
       return !["livrée", "livré", "annulée", "annulé"].includes(s)
     })
-    
+
     const terminees = commandes.filter(c => {
       const s = (c.statut || "").toLowerCase()
       return ["livrée", "livré", "annulée", "annulé"].includes(s)
     })
 
-    console.log("⏳ En attente:", enAttente.length, "| ✅ Terminées:", terminees.length)
-
     document.getElementById("historique-en-attente").innerHTML = enAttente.length
       ? enAttente.map(renderCarteHistorique).join("")
-      : `<p style="color:#999;text-align:center;padding:20px">Aucune commande en cours 🎉</p>`
+      : `<div class="empty-state"><div class="empty-icon">🎉</div><p>Aucune commande en cours</p></div>`
 
     document.getElementById("historique-livre").innerHTML = terminees.length
       ? terminees.map(renderCarteHistorique).join("")
-      : `<p style="color:#999;text-align:center;padding:20px">Aucun historique</p>`
+      : `<div class="empty-state"><div class="empty-icon">📋</div><p>Aucun historique</p></div>`
   } catch (err) {
     console.error("Erreur historique:", err)
   }
 }
 
 function renderCarteHistorique(cmd) {
-  // Convertir les prix en nombres
-  const total = cmd.produits 
-    ? cmd.produits.reduce((s, p) => s + Number(p.prix) * Number(p.quantite), 0) 
+  const total = cmd.produits
+    ? cmd.produits.reduce((s, p) => s + Number(p.prix) * Number(p.quantite), 0)
     : 0
-  
+
   const statutNormalise = (cmd.statut || "").replace("Livré", "Livré").replace("Annulé", "Annulée")
-  
+
   const couleurs = {
     "En attente": "orange",
     "Confirmée": "bleu",
@@ -321,94 +356,83 @@ function renderCarteHistorique(cmd) {
     "Annulée": "gris"
   }
   const couleur = couleurs[statutNormalise] || "orange"
-  const produitsList = cmd.produits 
-    ? cmd.produits.map(p => `${p.nom} ×${p.quantite}`).join(", ") 
+  const produitsList = cmd.produits
+    ? cmd.produits.map(p => `${p.nom} ×${p.quantite}`).join(", ")
     : ""
 
-  // ❌ SUPPRESSION DU BOUTON FACTURE
-
-  let affichageCode = "";
+  let affichageCode = ""
   if (cmd.code_confirmation && !statutNormalise.toLowerCase().startsWith("livr") && statutNormalise !== "Annulée") {
     affichageCode = `
-      <div style="background:#fff3cd; border:1px solid #ffeaa7; padding:10px; border-radius:8px; margin-top:10px; text-align:center;">
-        <strong>🔑 Code de remise :</strong> 
-        <span style="font-size:24px; font-weight:bold; color:#d63031; letter-spacing:3px;">${cmd.code_confirmation}</span>
-        <br><small style="color:#666">À communiquer au livreur ou au caissier</small>
+      <div class="code-confirmation">
+        <div class="cc-label">🔑 Code de remise</div>
+        <div class="cc-code">${cmd.code_confirmation}</div>
+        <div class="cc-hint">À communiquer au livreur ou au caissier</div>
       </div>
-    `;
+    `
   }
 
-  // ✅ NOUVEAU : Afficher le bouton d'annulation avec compteur si la commande est en attente et dans le délai
-  let affichageAnnulation = "";
+  let affichageAnnulation = ""
   if (statutNormalise === "En attente") {
-    const dateCreation = new Date(cmd.created_at);
-    const maintenant = new Date();
-    const delaiMs = maintenant - dateCreation;
-    const delaiMaxMs = 90 * 1000; // 1min30
-    const delaiRestantMs = delaiMaxMs - delaiMs;
-    
+    const dateCreation = new Date(cmd.created_at)
+    const maintenant = new Date()
+    const delaiMs = maintenant - dateCreation
+    const delaiMaxMs = 90 * 1000
+    const delaiRestantMs = delaiMaxMs - delaiMs
+
     if (delaiRestantMs > 0) {
-      const secondesRestantes = Math.ceil(delaiRestantMs / 1000);
+      const secondesRestantes = Math.ceil(delaiRestantMs / 1000)
       affichageAnnulation = `
-        <div style="margin-top:10px;">
-          <button id="btn-annul-${cmd.id}" onclick="annulerCommande(${cmd.id})" style="background:#d63031;color:white;border:none;padding:10px 16px;border-radius:6px;cursor:pointer;width:100%;font-weight:bold;">
-            ❌ Annuler (${secondesRestantes}s)
-          </button>
-          <small style="display:block;color:#666;text-align:center;margin-top:4px;font-style:italic;">Annulation possible dans ${secondesRestantes}s</small>
-        </div>
-      `;
-      
-      // ✅ Lancer le compteur
-      lancerCompteurAnnulation(cmd.id, delaiRestantMs);
+        <button id="btn-annul-${cmd.id}" class="btn-annuler" onclick="annulerCommande(${cmd.id})">
+          ❌ Annuler (${secondesRestantes}s)
+        </button>
+        <div class="annulation-hint" id="hint-annul-${cmd.id}">Annulation possible dans ${secondesRestantes}s</div>
+      `
+      setTimeout(() => lancerCompteurAnnulation(cmd.id, delaiRestantMs), 0)
     }
   }
 
   return `
-    <div class="carte-commande-client">
-      <div class="commande-client-header">
+    <div class="carte-commande">
+      <div class="commande-header">
         <strong>Commande #${cmd.id}</strong>
-        <span class="badge ${couleur}">${statutNormalise}</span>
+        <span class="badge-statut ${couleur}">${statutNormalise}</span>
       </div>
-      <div class="commande-client-produits">${produitsList}</div>
-      ${affichageCode} <!-- ✅ AJOUT ICI -->
-      <div class="commande-client-footer">
+      <div class="commande-produits">${produitsList}</div>
+      ${affichageCode}
+      <div class="commande-footer">
         <span>📅 ${cmd.date || new Date(cmd.created_at).toLocaleDateString('fr-FR')}</span>
-        <span class="commande-client-total">${total} DH</span>
+        <span class="commande-total">${total} DH</span>
       </div>
       ${affichageAnnulation}
     </div>
   `
 }
 
-// ✅ NOUVEAU : Compteur régressif pour l'annulation
 function lancerCompteurAnnulation(commandeId, delaiRestantMs) {
-  let secondesRestantes = Math.ceil(delaiRestantMs / 1000);
-  
+  let secondesRestantes = Math.ceil(delaiRestantMs / 1000)
+
   const intervalle = setInterval(() => {
-    secondesRestantes--;
-    const btn = document.getElementById(`btn-annul-${commandeId}`);
-    const small = btn?.nextElementSibling;
-    
+    secondesRestantes--
+    const btn = document.getElementById(`btn-annul-${commandeId}`)
+    const hint = document.getElementById(`hint-annul-${commandeId}`)
+
     if (secondesRestantes <= 0) {
-      clearInterval(intervalle);
+      clearInterval(intervalle)
       if (btn) {
-        btn.disabled = true;
-        btn.style.opacity = "0.5";
-        btn.style.cursor = "not-allowed";
-        btn.textContent = "❌ Délai expiré";
+        btn.disabled = true
+        btn.textContent = "❌ Délai expiré"
       }
-      if (small) small.textContent = "Annulation plus disponible";
+      if (hint) hint.textContent = "Annulation plus disponible"
     } else {
-      if (btn) btn.textContent = `❌ Annuler (${secondesRestantes}s)`;
-      if (small) small.textContent = `Annulation possible dans ${secondesRestantes}s`;
+      if (btn) btn.textContent = `❌ Annuler (${secondesRestantes}s)`
+      if (hint) hint.textContent = `Annulation possible dans ${secondesRestantes}s`
     }
-  }, 1000);
+  }, 1000)
 }
 
-// ✅ NOUVEAU : Fonction d'annulation
 async function annulerCommande(commandeId) {
   if (!confirm("Êtes-vous sûr d'annuler cette commande ? Le stock sera remis en attente.")) {
-    return;
+    return
   }
 
   try {
@@ -416,17 +440,27 @@ async function annulerCommande(commandeId) {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({})
-    });
+    })
 
     if (!res.ok) {
-      const errData = await res.json();
-      alert("Erreur : " + errData.erreur);
-      return;
+      const errData = await res.json()
+      alert("Erreur : " + errData.erreur)
+      return
     }
 
-    alert("✅ Commande annulée avec succès ! Le stock a été remis.");
-    chargerHistorique(); // Rafraîchir l'historique
+    showNotif("✅ Commande annulée avec succès !")
+    chargerHistorique()
   } catch (err) {
-    alert("Erreur lors de l'annulation : " + err.message);
+    alert("Erreur lors de l'annulation : " + err.message)
   }
+}
+
+/* ─────────────────────────────────────────────────
+   NOTIFICATION TOAST
+───────────────────────────────────────────────── */
+function showNotif(msg) {
+  const n = document.getElementById('notif')
+  n.textContent = msg
+  n.classList.add('show')
+  setTimeout(() => n.classList.remove('show'), 3000)
 }
