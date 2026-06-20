@@ -1,19 +1,14 @@
 // Utiliser les variables globales de config.js
-// Utiliser les variables globales de config.js
 const API    = window.API;
 const socket = window.socket;
 
 let user = verifierConnexion(["admin"])
 
-// ✅ INITIALISER SOCKET
-
-
-  // ✅ ÉCOUTER LES MISES À JOUR
-  socket.on("rafraichir_stock_ingredients", () => {
-    console.log("🔄 Le stock a été modifié ailleurs, mise à jour automatique...")
-    chargerStock()
-  })
-
+// ✅ ÉCOUTER LES MISES À JOUR
+socket.on("rafraichir_stock_ingredients", () => {
+  console.log("🔄 Le stock a été modifié ailleurs, mise à jour automatique...")
+  chargerStock()
+})
 
 async function chargerStock() {
   try {
@@ -104,7 +99,7 @@ async function ajouterIngredient() {
   await fetch(API + "/ingredients", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ nom, quantite_stock, unite, seuil_alerte }) // ✅ Noms corrigés
+    body: JSON.stringify({ nom, quantite_stock, unite, seuil_alerte })
   })
 
   toggleFormulaire()
@@ -116,7 +111,7 @@ async function modifierQuantite(id, nouvelleValeur, nom, unite, seuil_alerte) {
   await fetch(API + "/ingredients/" + id, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ quantite_stock: Number(nouvelleValeur), nom, unite, seuil_alerte }) // ✅ Nom corrigé
+    body: JSON.stringify({ quantite_stock: Number(nouvelleValeur), nom, unite, seuil_alerte })
   })
   chargerStock()
 }
@@ -130,10 +125,10 @@ async function ajouterQuantite(id, nom, quantiteActuelle, unite, seuil_alerte) {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      quantite_stock: Number(quantiteActuelle) + Number(qte), // ✅ Nom corrigé
-      nom, 
-      unite, 
-      seuil_alerte // ✅ Nom corrigé
+      quantite_stock: Number(quantiteActuelle) + Number(qte),
+      nom,
+      unite,
+      seuil_alerte
     })
   })
   chargerStock()
@@ -145,27 +140,6 @@ async function ouvrirModificationIngredient(id, nom, quantite_stock, unite, seui
   if (nouveauNom === null) return
   let nouvelleUnite = prompt("Unité (kg, L, sachets...) :", unite)
   if (nouvelleUnite === null) return
-  let nouveauSeuil = prompt("Quantité minimum d'alerte :", seuil_alerte)
-  if (nouveauSeuil === null) return
-
-  await fetch(API + "/ingredients/" + id, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      quantite_stock: Number(quantite_stock), // ✅ On garde la quantité actuelle
-      nom: nouveauNom,
-      unite: nouvelleUnite,
-      seuil_alerte: Number(nouveauSeuil) // ✅ Nom corrigé
-    })
-  })
-  chargerStock()
-}
-
-async function ouvrirModificationIngredient(id, nom, quantite_stock, unite, seuil_alerte) {
-  let nouveauNom         = prompt("Nom de l'ingrédient :", nom)
-  if (nouveauNom === null) return
-  let nouvelleUnite      = prompt("Unité (kg, L, sachets...) :", unite)
-  if (nouvelleUnite === null) return
   let nouveauSeuilAlerte = prompt("Quantité minimum d'alerte :", seuil_alerte)
   if (nouveauSeuilAlerte === null) return
 
@@ -173,10 +147,10 @@ async function ouvrirModificationIngredient(id, nom, quantite_stock, unite, seui
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      quantite_stock: quantite_stock,
-      nom:           nouveauNom,
-      unite:         nouvelleUnite,
-      seuil_alerte:  Number(nouveauSeuilAlerte)
+      quantite_stock: Number(quantite_stock),
+      nom: nouveauNom,
+      unite: nouvelleUnite,
+      seuil_alerte: Number(nouveauSeuilAlerte)
     })
   })
   chargerStock()
