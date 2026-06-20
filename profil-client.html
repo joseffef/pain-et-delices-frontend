@@ -3,160 +3,358 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mon Profil — Petit Délices</title>
+  <title>Mon Profil — Petit Délice</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', sans-serif; background: #f9f4f0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    header {
-      background: #8B4513;
-      color: white;
-      padding: 16px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    :root {
+      --teal:        #1B5E6E;
+      --teal-light:  #2A7A8E;
+      --teal-dark:   #0D3A46;
+      --gold:        #D4A055;
+      --gold-light:  #E8B86D;
+      --cream:       #F5E6C8;
+      --bg:          #FAFAF7;
+      --text:        #2C2C2C;
+      --text-muted:  #6B6B6B;
+      --white:       #FFFFFF;
+      --border:      #E8E0D0;
+      --shadow:      0 4px 20px rgba(27,94,110,0.10);
+      --shadow-hover:0 12px 36px rgba(27,94,110,0.20);
+      --radius:      14px;
+      --radius-sm:   8px;
     }
-    .logo { font-size: 20px; font-weight: bold; }
-    nav a { color: white; text-decoration: none; margin-left: 20px; font-size: 14px; }
-    nav a:hover { text-decoration: underline; }
 
-    main { max-width: 800px; margin: 0 auto; padding: 30px 20px; }
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
 
+    /* ── HEADER ── */
+    header {
+      background: var(--white);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .logo-area img { height: 48px; width: 48px; object-fit: contain; }
+
+    .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+    .logo-text .name {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; font-weight: 700; color: var(--teal);
+    }
+    .logo-text .tagline {
+      font-size: 11px; color: var(--gold); font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+    }
+
+    nav { display: flex; gap: 8px; align-items: center; }
+
+    nav a, nav button {
+      font-size: 14px; font-weight: 700; color: var(--text-muted);
+      text-decoration: none; padding: 8px 14px; border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+      background: transparent; border: none; cursor: pointer;
+      font-family: 'Lato', sans-serif;
+    }
+
+    nav a:hover, nav button:hover { color: var(--teal); background: var(--cream); }
+
+    .btn-logout {
+      border: 2px solid var(--border) !important;
+      color: var(--text-muted) !important;
+    }
+    .btn-logout:hover { border-color: var(--teal) !important; color: var(--teal) !important; background: transparent !important; }
+
+    /* ── MAIN LAYOUT ── */
+    main { max-width: 820px; margin: 0 auto; padding: 36px 24px 60px; }
+
+    /* ── PROFIL HEADER ── */
     .profil-header {
-      background: white;
-      border-radius: 16px;
-      padding: 30px;
+      background: linear-gradient(135deg, var(--teal-dark), var(--teal));
+      border-radius: var(--radius);
+      padding: 32px;
       display: flex;
       align-items: center;
       gap: 24px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      box-shadow: var(--shadow);
       margin-bottom: 24px;
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profil-header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
     }
 
     .avatar-grand {
-      width: 80px;
-      height: 80px;
+      width: 76px; height: 76px;
       border-radius: 50%;
-      background: #fdf6f0;
-      border: 3px solid #8B4513;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
+      background: rgba(212,160,85,0.2);
+      border: 3px solid var(--gold-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
       flex-shrink: 0;
+      position: relative;
     }
 
-    .profil-nom h1 { color: #333; font-size: 22px; margin-bottom: 4px; }
-    .profil-nom p  { color: #888; font-size: 14px; }
-    .profil-nom .badge-client {
-      display: inline-block;
-      background: #fdf6f0;
-      color: #8B4513;
-      border: 1px solid #8B4513;
-      padding: 3px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      margin-top: 6px;
+    .profil-nom { position: relative; }
+    .profil-nom h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px; font-weight: 700; margin-bottom: 4px; color: var(--white);
+    }
+    .profil-nom p { font-size: 14px; opacity: 0.8; }
+
+    .badge-client {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(212,160,85,0.25);
+      border: 1px solid rgba(212,160,85,0.5);
+      color: var(--gold-light);
+      padding: 4px 14px; border-radius: 999px;
+      font-size: 12px; font-weight: 700;
+      margin-top: 8px;
     }
 
+    /* ── SECTION CARDS ── */
     .section {
-      background: white;
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow);
     }
 
-    .section h2 { color: #8B4513; font-size: 17px; margin-bottom: 18px; }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px; font-weight: 700; color: var(--teal);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--cream);
+      display: flex; align-items: center; gap: 8px;
+    }
 
-    .form-groupe { margin-bottom: 14px; }
-    .form-groupe label { display: block; margin-bottom: 6px; font-size: 13px; color: #666; font-weight: 500; }
+    .form-groupe { margin-bottom: 16px; }
+    .form-groupe label {
+      display: block; margin-bottom: 6px;
+      font-size: 13px; font-weight: 700; color: var(--text-muted);
+    }
     .form-groupe input {
       width: 100%;
-      padding: 10px 12px;
-      border: 1.5px solid #ddd;
-      border-radius: 8px;
+      padding: 11px 14px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
       font-size: 14px;
-      font-family: inherit;
-      box-sizing: border-box;
+      font-family: 'Lato', sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      transition: border-color 0.2s;
     }
-    .form-groupe input:focus { outline: none; border-color: #8B4513; }
+    .form-groupe input:focus { outline: none; border-color: var(--teal); }
+    .form-groupe input.input-disabled { background: #F0F0EC; color: var(--text-muted); cursor: not-allowed; }
 
-    .form-ligne { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-ligne { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .sous-section {
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .sous-section-title {
+      font-size: 14px; font-weight: 700; color: var(--text-muted);
+      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 6px;
+    }
 
     .btn-sauvegarder {
-      background: #8B4513;
-      color: white;
+      background: var(--gold);
+      color: var(--white);
       border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 14px;
+      padding: 14px 28px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
       cursor: pointer;
-      font-family: inherit;
+      font-family: 'Lato', sans-serif;
       transition: background 0.2s;
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-top: 6px;
     }
-    .btn-sauvegarder:hover { background: #7a3a10; }
+    .btn-sauvegarder:hover { background: var(--gold-light); }
 
     .succes {
       background: #d4edda;
       color: #155724;
-      padding: 10px 14px;
-      border-radius: 8px;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
       font-size: 13px;
-      margin-bottom: 14px;
+      font-weight: 700;
+      margin-bottom: 16px;
       display: none;
     }
 
+    /* ── HISTORIQUE COMMANDES ── */
     .carte-commande-client {
-      border: 1px solid #f0e0d0;
-      border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 12px;
+      border: 2px solid var(--border);
+      border-left: 4px solid var(--teal);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      margin-bottom: 14px;
+      transition: box-shadow 0.2s;
     }
+    .carte-commande-client:hover { box-shadow: var(--shadow); }
 
     .commande-client-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 8px;
     }
+    .commande-client-header strong {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px; color: var(--text);
+    }
 
-    .commande-client-header strong { font-size: 15px; color: #333; }
-
-    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px; border-radius: 999px;
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
     .badge.orange { background: #fff3cd; color: #856404; }
     .badge.bleu   { background: #cce5ff; color: #004085; }
     .badge.vert   { background: #d4edda; color: #155724; }
-    .badge.gris   { background: #e2e3e5; color: #383d41; }
+    .badge.gris, .badge.rouge { background: #f8d7da; color: #721c24; }
 
-    .commande-client-produits { font-size: 13px; color: #666; margin-bottom: 8px; }
-    .commande-client-footer { display: flex; justify-content: space-between; font-size: 13px; color: #888; }
-    .commande-client-total { font-weight: bold; color: #8B4513; font-size: 15px; }
+    .commande-client-produits { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
 
-    .aucune-commande { text-align: center; padding: 30px; color: #aaa; }
-    .aucune-commande .icone { font-size: 40px; margin-bottom: 10px; }
+    .commande-client-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px; color: var(--text-muted);
+      padding-top: 10px; border-top: 1px solid var(--border);
+    }
+    .commande-client-total {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700; color: var(--teal); font-size: 17px;
+    }
 
+    .code-confirmation-box {
+      background: linear-gradient(135deg, #fff8e6, #fff3cd);
+      border: 2px solid #ffd96a;
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-top: 12px;
+      text-align: center;
+    }
+    .code-confirmation-box .cc-label { font-size: 12px; color: #856404; margin-bottom: 6px; font-weight: 700; }
+    .code-confirmation-box .cc-code {
+      font-size: 28px; font-weight: 700; color: #d63031;
+      letter-spacing: 4px; font-family: 'Playfair Display', serif;
+    }
+
+    .btn-annuler-commande {
+      background: #e74c3c;
+      color: var(--white);
+      border: none;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 12px;
+      width: 100%;
+      transition: background 0.2s;
+      font-family: 'Lato', sans-serif;
+    }
+    .btn-annuler-commande:hover { background: #c0392b; }
+
+    .delai-expire {
+      text-align: center;
+      margin-top: 12px;
+      padding: 12px;
+      background: #f8d7da;
+      border-radius: var(--radius-sm);
+      color: #721c24;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .aucune-commande {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+    .aucune-commande .icone { font-size: 48px; margin-bottom: 12px; }
+    .aucune-commande p { font-size: 14px; margin-bottom: 10px; }
+    .aucune-commande a {
+      color: var(--teal);
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 6px;
+    }
+    .aucune-commande a:hover { text-decoration: underline; }
+
+    /* ── TOAST ── */
+    .notif-toast {
+      position: fixed; bottom: 28px; right: 28px;
+      background: var(--teal); color: var(--white);
+      padding: 12px 20px; border-radius: 10px;
+      font-size: 14px; font-weight: 700; z-index: 300;
+      opacity: 0; transform: translateY(8px);
+      transition: opacity .3s, transform .3s;
+      pointer-events: none;
+    }
+    .notif-toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
       .profil-header { flex-direction: column; text-align: center; }
       .form-ligne { grid-template-columns: 1fr; }
+      nav a:not(.btn-logout) { display: none; }
     }
-    .logo-img { margin: 0; max-width: 100px; }
-    .input-disabled { background:#f5f5f5 }
-    .mt-16 { margin-top:16px }
-    .h3-sub { color:#555; font-size:14px; margin-bottom:10px }
   </style>
-  </script>
 </head>
 <body>
 
   <header>
-    <div class="logo">🥐 Petit Délices</div>
-<img src="./images/logo.png" alt="Logo" class="logo-img">
-    <nav>
-      <a href="commande-client.html">🛍️ Commander</a>
-      <a href="profil-client.html">👤 Mon profil</a>
-      <a href="#" onclick="seDeconnecter()">🚪 Déconnexion</a>
-    </nav>
+    <div class="header-inner">
+      <a href="commande-client.html" class="logo-area">
+        <img src="./images/logo.png" alt="Petit Délice" onerror="this.style.display='none'"/>
+        <div class="logo-text">
+          <span class="name">Petit Délice</span>
+          <span class="tagline">Pâtisserie Artisanale</span>
+        </div>
+      </a>
+      <nav>
+        <a href="commande-client.html">🛍️ Commander</a>
+        <button class="btn-logout" onclick="seDeconnecter()">🚪 Déconnexion</button>
+      </nav>
+    </div>
   </header>
 
   <main>
@@ -173,86 +371,91 @@
 
     <!-- INFORMATIONS PERSONNELLES -->
     <div class="section">
-  <h2>✏️ Mes informations</h2>
-  <div class="succes" id="succes-profil">✅ Profil mis à jour !</div>
+      <div class="section-title">✏️ Mes informations</div>
+      <div class="succes" id="succes-profil">✅ Profil mis à jour !</div>
 
-  <div class="form-ligne">
-    <div class="form-groupe">
-      <label>Nom complet</label>
-      <input type="text" id="profil-nom" placeholder="Votre nom">
-    </div>
-    <div class="form-groupe">
-      <label>Email</label>
-      <input type="email" id="profil-email" placeholder="votre@email.com" disabled class="input-disabled">
-    </div>
-  </div>
+      <div class="form-ligne">
+        <div class="form-groupe">
+          <label>Nom complet</label>
+          <input type="text" id="profil-nom" placeholder="Votre nom">
+        </div>
+        <div class="form-groupe">
+          <label>Email</label>
+          <input type="email" id="profil-email" placeholder="votre@email.com" disabled class="input-disabled">
+        </div>
+      </div>
 
-  <div class="form-ligne">
-    <div class="form-groupe">
-      <label>Téléphone</label>
-      <input type="tel" id="profil-telephone" placeholder="Ex: 06 12 34 56 78">
-    </div>
-    <div class="form-groupe">
-      <label>Ville</label>
-      <input type="text" id="profil-ville" placeholder="Ex: Casablanca">
-    </div>
-  </div>
+      <div class="form-ligne">
+        <div class="form-groupe">
+          <label>Téléphone</label>
+          <input type="tel" id="profil-telephone" placeholder="Ex: 06 12 34 56 78">
+        </div>
+        <div class="form-groupe">
+          <label>Ville</label>
+          <input type="text" id="profil-ville" placeholder="Ex: Marrakech">
+        </div>
+      </div>
 
-  <div class="form-groupe">
-    <label>Adresse de livraison par défaut</label>
-    <input type="text" id="profil-adresse" placeholder="Ex: 12 Rue Hassan II, Casablanca">
-  </div>
+      <div class="form-groupe">
+        <label>Adresse de livraison par défaut</label>
+        <input type="text" id="profil-adresse" placeholder="Ex: 12 Rue Hassan II, Marrakech">
+      </div>
 
-  <!-- ✅ NOUVEAU : Changement de mot de passe -->
-  <div class="mt-16">
-    <h3 class="h3-sub">🔒 Changer de mot de passe (optionnel)</h3>
-    <div class="form-groupe">
-      <label>Nouveau mot de passe</label>
-      <input type="password" id="profil-nouveau-mdp" placeholder="Laisser vide pour ne pas changer">
+      <div class="sous-section">
+        <div class="sous-section-title">🔒 Changer de mot de passe (optionnel)</div>
+        <div class="form-groupe">
+          <label>Nouveau mot de passe</label>
+          <input type="password" id="profil-nouveau-mdp" placeholder="Laisser vide pour ne pas changer">
+        </div>
+      </div>
+
+      <button class="btn-sauvegarder" onclick="sauvegarderProfil()">💾 Sauvegarder</button>
     </div>
-  </div>
-
-  <button class="btn-sauvegarder" onclick="sauvegarderProfil()">💾 Sauvegarder</button>
-</div>
 
     <!-- HISTORIQUE COMMANDES -->
     <div class="section">
-      <h2>📋 Mes commandes</h2>
+      <div class="section-title">📋 Mes commandes</div>
       <div id="historique-commandes"></div>
     </div>
 
   </main>
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="config.js"></script>
 
+  <div class="notif-toast" id="notif-toast"></div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="config.js"></script>
   <script>
-    // Utiliser les variables globales de config.js
-const API = window.API;
-const socket = window.socket;
+// Utiliser les variables globales de config.js
+const API = window.API
+const socket = window.socket
 
-// ✅ Écouter les mises à jour en temps réel de l'historique
+let userClient = JSON.parse(sessionStorage.getItem("user"))
+if (!userClient || userClient.role !== "client") {
+  window.location.href = "login.html"
+}
+
+/* ─────────────────────────────────────────────────
+   SOCKET.IO — Temps réel
+───────────────────────────────────────────────── */
 socket.on("rafraichir_historique", () => {
-  console.log("🔄 Une commande a été mise à jour, rafraîchissement de l'historique...")
-  chargerHistorique() // Recharge la liste des commandes du client
+  console.log("🔄 Une commande a été mise à jour, rafraîchissement de l'historique…")
+  chargerHistorique()
 })
 
+/* ─────────────────────────────────────────────────
+   DÉCONNEXION
+───────────────────────────────────────────────── */
+function seDeconnecter() {
+  sessionStorage.removeItem("user")
+  window.location.href = "login.html"
+}
 
-
-    let userClient = JSON.parse(sessionStorage.getItem("user"))
-    if (!userClient || userClient.role !== "client") {
-      window.location.href = "login.html"
-    }
-
-    function seDeconnecter() {
-      sessionStorage.removeItem("user")
-      window.location.href = "login.html"
-    }
-
-    async function chargerProfil() {
+/* ─────────────────────────────────────────────────
+   CHARGER PROFIL
+───────────────────────────────────────────────── */
+async function chargerProfil() {
   try {
-    let profil = await fetch(API + "/profil/" + userClient.id).then(r => r.json())
-
-    console.log("📥 Profil reçu:", profil)
+    const profil = await fetch(API + "/profil/" + userClient.id).then(r => r.json())
 
     document.getElementById("profil-nom-affiche").textContent   = profil.nom
     document.getElementById("profil-email-affiche").textContent = profil.email
@@ -260,15 +463,16 @@ socket.on("rafraichir_historique", () => {
     document.getElementById("profil-email").value               = profil.email     || ""
     document.getElementById("profil-telephone").value           = profil.telephone || ""
     document.getElementById("profil-adresse").value             = profil.adresse   || ""
-    document.getElementById("profil-ville").value               = profil.ville     || ""
-    
-    // ✅ Plus de badge PRO, plus de ICE, plus de type_client
-  } catch(err) {
+    document.getElementById("profil-ville").value                = profil.ville     || ""
+  } catch (err) {
     console.error("Erreur chargement profil:", err)
   }
 }
+
+/* ─────────────────────────────────────────────────
+   SAUVEGARDER PROFIL
+───────────────────────────────────────────────── */
 async function sauvegarderProfil() {
-  // ✅ Le nom est bien récupéré ici
   const data = {
     nom:         document.getElementById("profil-nom").value.trim(),
     telephone:   document.getElementById("profil-telephone").value.trim(),
@@ -276,8 +480,6 @@ async function sauvegarderProfil() {
     ville:       document.getElementById("profil-ville").value.trim(),
     nouveau_mdp: document.getElementById("profil-nouveau-mdp").value
   }
-
-  console.log("📤 Données envoyées au serveur:", data)
 
   try {
     const res = await fetch(API + "/profil/" + userClient.id, {
@@ -287,32 +489,29 @@ async function sauvegarderProfil() {
     })
 
     const resultat = await res.json()
-    console.log("📥 Réponse du serveur:", resultat)
 
     if (!res.ok) {
-      alert("❌ Erreur : " + (resultat.erreur || "Erreur serveur"))
+      showToast("❌ Erreur : " + (resultat.erreur || "Erreur serveur"))
       return
     }
 
-    // Message de succès
     const succes = document.getElementById("succes-profil")
     succes.style.display = "block"
     setTimeout(() => succes.style.display = "none", 3000)
 
     document.getElementById("profil-nouveau-mdp").value = ""
-
-    // ✅ Mettre à jour l'affichage immédiatement
     document.getElementById("profil-nom-affiche").textContent = data.nom
-    
-    // Recharger le profil complet
+
     await chargerProfil()
-    
   } catch (err) {
     console.error("❌ Erreur fetch:", err)
-    alert("❌ Erreur de connexion : " + err.message)
+    showToast("❌ Erreur de connexion : " + err.message)
   }
 }
 
+/* ─────────────────────────────────────────────────
+   HISTORIQUE COMMANDES
+───────────────────────────────────────────────── */
 async function chargerHistorique() {
   try {
     const commandes = await fetch(API + "/commandes/client/" + userClient.id).then(r => r.json())
@@ -323,216 +522,157 @@ async function chargerHistorique() {
         <div class="aucune-commande">
           <div class="icone">🛍️</div>
           <p>Vous n'avez pas encore passé de commande.</p>
-          <a href="commande-client.html" style="color:#8B4513; font-weight:500; text-decoration:none; display:block; margin-top:10px">
-            Commander maintenant →
-          </a>
+          <a href="commande-client.html">Commander maintenant →</a>
         </div>`
       return
     }
 
-    div.innerHTML = commandes.map(cmd => {
-      const total = cmd.produits ? cmd.produits.reduce((s, p) => s + Number(p.prix) * Number(p.quantite), 0) : 0
-      const produitsList = cmd.produits ? cmd.produits.map(p => `${p.nom} ×${p.quantite}`).join(", ") : ""
-      
-      let statutPropre = (cmd.statut || "").trim()
-      if (statutPropre.toLowerCase().startsWith("livr")) statutPropre = "Livrée"
-      if (statutPropre.toLowerCase().startsWith("annul")) statutPropre = "Annulée"
-      
-      const livraison = cmd.livraison === "domicile" ? "🚚 Domicile" : "🏪 Retrait"
-      let dateAffichee = cmd.date ? new Date(cmd.date).toLocaleDateString('fr-FR') : new Date(cmd.created_at).toLocaleDateString('fr-FR')
-
-      // ✅ CODE DE CONFIRMATION
-      let affichageCode = ""
-      if (cmd.code_confirmation && !statutPropre.toLowerCase().startsWith("livr") && statutPropre !== "Annulée") {
-        affichageCode = `
-          <div style="background:#fff3cd; border:2px solid #ffeaa7; padding:15px; border-radius:10px; margin-top:12px; text-align:center;">
-            <div style="font-size:13px; color:#856404; margin-bottom:8px;">🔑 Code de confirmation</div>
-            <div style="font-size:32px; font-weight:bold; color:#d63031; letter-spacing:4px; font-family:monospace;">${cmd.code_confirmation}</div>
-          </div>`
-      }
-
-      // ✅ DÉBOGAGE VISUEL + BOUTON D'ANNULATION
-      let zoneAnnulation = ""
-      const dateCreation = new Date(cmd.created_at || cmd.date)
-      const maintenant = new Date()
-      const delaiMs = maintenant - dateCreation
-      const delaiMaxMs = 90 * 1000 // 1 minute 30 secondes
-      const tempsRestantMs = delaiMaxMs - delaiMs
-      
-      const minutes = Math.floor(Math.max(0, tempsRestantMs) / 60000)
-      const secondes = Math.floor((Math.max(0, tempsRestantMs) % 60000) / 1000)
-      const tempsAffiche = `${minutes}:${secondes.toString().padStart(2, '0')}`
-
-      // On affiche toujours cette zone de debug pour comprendre ce qui se passe
-      zoneAnnulation = `
-        <div style="margin-top:12px; padding:10px; background:#f8f9fa; border:1px dashed #ccc; border-radius:8px; font-size:12px; color:#666;">
-          <strong>🔍 Debug Annulation :</strong><br>
-          • Statut actuel : <strong>${cmd.statut}</strong><br>
-          • Temps écoulé : <strong>${Math.floor(delaiMs / 1000)} secondes</strong><br>
-          • Temps restant : <strong>${tempsRestantMs > 0 ? tempsAffiche : '0:00 (Délai dépassé)'}</strong>
-        </div>
-      `
-
-      // Si le statut est "En attente", on affiche le bouton (ou le message de délai dépassé)
-      if (cmd.statut === "En attente") {
-        if (tempsRestantMs > 0) {
-          zoneAnnulation += `
-            <button class="btn-annuler-commande" data-id="${cmd.id}" onclick="annulerCommande(${cmd.id})" 
-                    style="background:#dc3545; color:white; border:none; padding:12px; border-radius:8px; cursor:pointer; font-size:15px; font-weight:bold; margin-top:12px; width:100%;">
-              ❌ Annuler la commande (${tempsAffiche})
-            </button>`
-        } else {
-          zoneAnnulation += `
-            <div style="text-align:center; margin-top:12px; padding:12px; background:#f8d7da; border-radius:8px; color:#721c24; font-weight:bold;">
-              ⏰ Délai d'annulation (1min30) dépassé
-            </div>`
-        }
-      }
-
-      return `
-        <div class="carte-commande-client">
-          <div class="commande-client-header">
-            <strong>Commande #${cmd.id}</strong>
-            <span class="badge ${statutPropre === 'Annulée' ? 'rouge' : 'orange'}">${statutPropre}</span>
-          </div>
-          <div class="commande-client-produits">${produitsList}</div>
-          ${affichageCode}
-          <div class="commande-client-footer">
-            <span>${livraison} · 📅 ${dateAffichee}</span>
-            <span class="commande-client-total">${total} DH</span>
-          </div>
-          ${zoneAnnulation}
-        </div>`
-    }).join("")
-  } catch(err) {
+    div.innerHTML = commandes.map(renderCarteCommande).join("")
+  } catch (err) {
     console.error("Erreur historique:", err)
   }
 }
 
-// ✅ Fonction pour annuler une commande
-async function annulerCommande(id) {
-  if (!confirm("⚠️ Êtes-vous sûr de vouloir annuler cette commande ? Cette action est irréversible.")) return
-  
-  try {
-    const res = await fetch(API + "/commandes/" + id + "/annuler", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" }
-    })
-    
-    const result = await res.json()
-    
-    if (!res.ok) {
-      alert(result.erreur || "Erreur lors de l'annulation")
-      return
-    }
-    
-    alert("✅ " + result.message)
-    chargerHistorique() // Recharger la liste
-  } catch (err) {
-    alert("Erreur de connexion : " + err.message)
+function renderCarteCommande(cmd) {
+  const total = cmd.produits
+    ? cmd.produits.reduce((s, p) => s + Number(p.prix) * Number(p.quantite), 0)
+    : 0
+  const produitsList = cmd.produits
+    ? cmd.produits.map(p => `${p.nom} ×${p.quantite}`).join(", ")
+    : ""
+
+  let statutPropre = (cmd.statut || "").trim()
+  if (statutPropre.toLowerCase().startsWith("livr"))  statutPropre = "Livrée"
+  if (statutPropre.toLowerCase().startsWith("annul")) statutPropre = "Annulée"
+
+  const couleurs = { "En attente":"orange", "Confirmée":"bleu", "En préparation":"bleu", "Livrée":"vert", "Annulée":"rouge" }
+  const couleur  = couleurs[statutPropre] || "orange"
+
+  const livraison = cmd.livraison === "domicile" ? "🚚 Domicile" : "🏪 Retrait"
+  const dateAffichee = cmd.date
+    ? new Date(cmd.date).toLocaleDateString('fr-FR')
+    : new Date(cmd.created_at).toLocaleDateString('fr-FR')
+
+  // Code de confirmation
+  let affichageCode = ""
+  if (cmd.code_confirmation && !statutPropre.toLowerCase().startsWith("livr") && statutPropre !== "Annulée") {
+    affichageCode = `
+      <div class="code-confirmation-box">
+        <div class="cc-label">🔑 Code de confirmation</div>
+        <div class="cc-code">${cmd.code_confirmation}</div>
+      </div>`
   }
+
+  // Zone annulation
+  let zoneAnnulation = ""
+  if (cmd.statut === "En attente") {
+    const dateCreation  = new Date(cmd.created_at || cmd.date)
+    const maintenant    = new Date()
+    const delaiMs       = maintenant - dateCreation
+    const delaiMaxMs    = 90 * 1000 // 1 min 30
+    const tempsRestantMs = delaiMaxMs - delaiMs
+
+    if (tempsRestantMs > 0) {
+      const minutes  = Math.floor(tempsRestantMs / 60000)
+      const secondes = Math.floor((tempsRestantMs % 60000) / 1000)
+      const tempsAffiche = `${minutes}:${secondes.toString().padStart(2, '0')}`
+
+      zoneAnnulation = `
+        <button class="btn-annuler-commande" data-id="${cmd.id}" onclick="annulerCommande(${cmd.id})">
+          ❌ Annuler la commande (${tempsAffiche})
+        </button>`
+    } else {
+      zoneAnnulation = `
+        <div class="delai-expire">⏰ Délai d'annulation (1min30) dépassé</div>`
+    }
+  }
+
+  return `
+    <div class="carte-commande-client">
+      <div class="commande-client-header">
+        <strong>Commande #${cmd.id}</strong>
+        <span class="badge ${couleur}">${statutPropre}</span>
+      </div>
+      <div class="commande-client-produits">${produitsList}</div>
+      ${affichageCode}
+      <div class="commande-client-footer">
+        <span>${livraison} · 📅 ${dateAffichee}</span>
+        <span class="commande-client-total">${total} DH</span>
+      </div>
+      ${zoneAnnulation}
+    </div>`
 }
 
-// ✅ Mettre à jour le compte à rebours toutes les secondes
-setInterval(() => {
-  const boutons = document.querySelectorAll('.btn-annuler-commande')
-  boutons.forEach(btn => {
-    const texte = btn.textContent
-    const match = texte.match(/\((\d+):(\d+)\)/)
-    if (match) {
-      let minutes = parseInt(match[1])
-      let secondes = parseInt(match[2])
-      
-      if (secondes > 0) {
-        secondes--
-      } else if (minutes > 0) {
-        minutes--
-        secondes = 59
-      } else {
-        chargerHistorique() // Temps écoulé, on recharge pour afficher "Délai dépassé"
-        return
-      }
-      
-      btn.textContent = `❌ Annuler la commande (${minutes}:${secondes.toString().padStart(2, '0')})`
-    }
-  })
-}, 1000)
-// ✅ Fonction pour annuler une commande
+/* ─────────────────────────────────────────────────
+   ANNULER COMMANDE
+───────────────────────────────────────────────── */
 async function annulerCommande(id) {
   if (!confirm("⚠️ Êtes-vous sûr de vouloir annuler cette commande ? Cette action est irréversible.")) return
-  
-  try {
-    const res = await fetch(API + "/commandes/" + id + "/annuler", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" }
-    })
-    
-    const result = await res.json()
-    
-    if (!res.ok) {
-      alert(result.erreur || "Erreur lors de l'annulation")
-      return
-    }
-    
-    alert("✅ " + result.message)
-    chargerHistorique() // Recharger la liste
-  } catch (err) {
-    alert("Erreur de connexion : " + err.message)
-  }
-}
 
-// ✅ Fonction pour annuler une commande
-async function annulerCommande(id) {
-  if (!confirm("Êtes-vous sûr de vouloir annuler cette commande ?")) return
-  
   try {
     const res = await fetch(API + "/commandes/" + id + "/annuler", {
       method: "PUT",
       headers: { "Content-Type": "application/json" }
     })
-    
+
     const result = await res.json()
-    
+
     if (!res.ok) {
-      alert(result.erreur)
+      showToast("❌ " + (result.erreur || "Erreur lors de l'annulation"))
       return
     }
-    
-    alert(result.message)
-    chargerHistorique() // Recharger la liste
-  } catch (err) {
-    alert("Erreur : " + err.message)
-  }
-}
-    chargerProfil()
+
+    showToast("✅ " + (result.message || "Commande annulée"))
     chargerHistorique()
+  } catch (err) {
+    showToast("❌ Erreur de connexion : " + err.message)
+  }
+}
 
-  // ✅ Mettre à jour le compte à rebours toutes les secondes
+/* ─────────────────────────────────────────────────
+   COMPTE À REBOURS (annulation)
+───────────────────────────────────────────────── */
 setInterval(() => {
   const boutons = document.querySelectorAll('.btn-annuler-commande')
   boutons.forEach(btn => {
     const texte = btn.textContent
     const match = texte.match(/\((\d+):(\d+)\)/)
-    if (match) {
-      let minutes = parseInt(match[1])
-      let secondes = parseInt(match[2])
-      
-      if (secondes > 0) {
-        secondes--
-      } else if (minutes > 0) {
-        minutes--
-        secondes = 59
-      } else {
-        // Temps écoulé, recharger la page
-        chargerHistorique()
-        return
-      }
-      
-      btn.textContent = `❌ Annuler la commande (${minutes}:${secondes.toString().padStart(2, '0')})`
+    if (!match) return
+
+    let minutes  = parseInt(match[1])
+    let secondes = parseInt(match[2])
+
+    if (secondes > 0) {
+      secondes--
+    } else if (minutes > 0) {
+      minutes--
+      secondes = 59
+    } else {
+      chargerHistorique() // Temps écoulé : on recharge pour afficher "Délai dépassé"
+      return
     }
+
+    btn.textContent = `❌ Annuler la commande (${minutes}:${secondes.toString().padStart(2, '0')})`
   })
 }, 1000)
-  </script>
+
+/* ─────────────────────────────────────────────────
+   TOAST NOTIFICATION
+───────────────────────────────────────────────── */
+function showToast(msg) {
+  const t = document.getElementById('notif-toast')
+  t.textContent = msg
+  t.classList.add('show')
+  setTimeout(() => t.classList.remove('show'), 3500)
+}
+
+/* ─────────────────────────────────────────────────
+   INIT
+───────────────────────────────────────────────── */
+chargerProfil()
+chargerHistorique()
+
+</script>
 
 </body>
 </html>
