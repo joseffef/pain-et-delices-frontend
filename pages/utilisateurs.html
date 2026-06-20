@@ -5,28 +5,105 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Utilisateurs — Petit Délices</title>
   <link rel="stylesheet" href="../style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       LAYOUT : SIDEBAR À GAUCHE
-       ============================================ */
+    :root {
+      --teal: #1B5E6E;
+      --teal-dark: #134752;
+      --gold: #D4A055;
+      --gold-dark: #B8843E;
+      --cream: #F5E6C8;
+      --bg: #FAFAF7;
+      --text: #2C2C2C;
+      --muted: #8A8A8A;
+      --vert: #4CAF7D;
+      --rouge: #D9534F;
+      --terracotta: #C17B4F;
+      --terracotta-dark: #8A4F2B;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
       display: flex;
       min-height: 100vh;
       margin: 0;
-      background: #f9f4f0;
-      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      font-family: 'Lato', sans-serif;
+      color: var(--text);
     }
 
-    /* ✅ SIDEBAR (menu à gauche) */
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+    /* ✅ TOPBAR MOBILE */
+    .topbar-mobile {
+      display: none;
+      align-items: center;
+      gap: 14px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 58px;
+      background: var(--teal-dark);
+      color: white;
+      padding: 0 16px;
+      z-index: 90;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+
+    .btn-hamburger {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      font-size: 18px;
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .topbar-titre {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 95;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .sidebar-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .btn-fermer-sidebar {
+      display: none;
+      position: absolute;
+      top: 14px; right: 14px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    /* ✅ SIDEBAR */
     .sidebar {
       width: 260px;
-      background: linear-gradient(180deg, #8B4513 0%, #6d3610 100%);
+      background: linear-gradient(180deg, var(--teal) 0%, var(--teal-dark) 100%);
       color: white;
       position: fixed;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
       height: 100vh;
-      box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+      box-shadow: 2px 0 15px rgba(0,0,0,0.12);
       display: flex;
       flex-direction: column;
       z-index: 100;
@@ -36,26 +113,32 @@
       padding: 30px 20px;
       border-bottom: 1px solid rgba(255,255,255,0.15);
       text-align: center;
+      position: relative;
     }
 
     .sidebar-header .logo-img {
-      max-width: 100px;
+      max-width: 90px;
       height: auto;
       display: block;
       margin: 0 auto 12px auto;
       border-radius: 8px;
+      background: rgba(255,255,255,0.9);
+      padding: 6px;
     }
 
     .sidebar-header .logo-text {
-      font-size: 20px;
-      font-weight: bold;
+      font-family: 'Playfair Display', serif;
+      font-size: 21px;
+      font-weight: 700;
       color: white;
       margin-bottom: 4px;
     }
 
     .sidebar-header .sous-titre {
       font-size: 12px;
-      color: rgba(255, 255, 255, 0.7);
+      color: var(--cream);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
 
     .sidebar-nav {
@@ -72,6 +155,7 @@
       color: rgba(255,255,255,0.85);
       text-decoration: none;
       font-size: 15px;
+      white-space: nowrap;
       transition: all 0.2s;
       border-left: 4px solid transparent;
     }
@@ -79,20 +163,21 @@
     .sidebar-nav a:hover {
       background: rgba(255,255,255,0.1);
       color: white;
-      border-left-color: #ffd700;
+      border-left-color: var(--gold);
     }
 
     .sidebar-nav a.actif {
       background: rgba(255,255,255,0.15);
       color: white;
-      border-left-color: #ffd700;
+      border-left-color: var(--gold);
       font-weight: 600;
     }
 
-    .sidebar-nav a .icone {
-      font-size: 18px;
-      width: 24px;
-      text-align: center;
+    .sidebar-nav a .icone-img {
+      width: 20px; height: 20px;
+      object-fit: contain;
+      flex-shrink: 0;
+      opacity: 0.92;
     }
 
     .sidebar-footer {
@@ -102,7 +187,7 @@
 
     .sidebar-footer .user-info {
       font-size: 13px;
-      opacity: 0.85;
+      opacity: 0.9;
       text-align: center;
       margin-bottom: 12px;
     }
@@ -110,20 +195,22 @@
     .sidebar-footer .btn-deco {
       width: 100%;
       background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.25);
       color: white;
       padding: 10px;
       border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
+      font-family: 'Lato', sans-serif;
       transition: background 0.2s;
     }
 
     .sidebar-footer .btn-deco:hover {
-      background: rgba(220,53,69,0.8);
+      background: rgba(217,83,79,0.85);
+      border-color: rgba(217,83,79,0.85);
     }
 
-    /* ✅ CONTENU PRINCIPAL (à droite de la sidebar) */
+    /* ✅ CONTENU PRINCIPAL */
     .main-content {
       margin-left: 260px;
       flex: 1;
@@ -132,37 +219,94 @@
     }
 
     .main-content h1 {
-      color: #8B4513;
-      margin-bottom: 10px;
-      font-size: 32px;
+      color: var(--teal-dark);
+      margin: 0 0 6px 0;
+      font-size: 30px;
     }
 
     .main-content .sous-titre {
-      color: #888;
-      margin-bottom: 30px;
-      font-size: 16px;
+      color: var(--muted);
+      margin-bottom: 28px;
+      font-size: 15px;
     }
 
-    /* ✅ STYLES SPÉCIFIQUES UTILISATEURS */
+    /* ✅ BOUTONS GÉNÉRIQUES */
+    .barre-actions { margin-bottom: 22px; }
+
+    .btn-principal {
+      background: var(--teal);
+      color: white;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-principal:hover { background: var(--teal-dark); }
+
+    .btn-annuler {
+      background: var(--cream);
+      color: var(--text);
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-annuler:hover { background: #ecdfc2; }
+
+    /* ✅ STATS UTILISATEURS */
+    .stats-users {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+    .stat-user-carte {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(27,94,110,0.07);
+    }
+    .stat-user-carte .nb { font-size: 26px; font-weight: 700; color: var(--teal-dark); }
+    .stat-user-carte .lb { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .section-titre {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--teal-dark);
+      margin: 28px 0 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--cream);
+    }
+
+    /* ✅ GRILLE & CARTES UTILISATEUR */
     .grille-utilisateurs {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 16px;
-      margin-top: 20px;
+      margin-top: 6px;
     }
 
     .carte-user {
       background: white;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-      border-left: 5px solid #8B4513;
+      box-shadow: 0 2px 12px rgba(27,94,110,0.07);
+      border-left: 5px solid var(--teal);
       position: relative;
     }
 
     .carte-user.inactif {
       opacity: 0.6;
-      border-left-color: #ccc;
+      border-left-color: var(--muted);
     }
 
     .user-header {
@@ -173,8 +317,7 @@
     }
 
     .user-avatar {
-      width: 48px;
-      height: 48px;
+      width: 48px; height: 48px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -183,36 +326,34 @@
       flex-shrink: 0;
     }
 
-    .avatar-admin   { background: #cce5ff; }
-    .avatar-chef    { background: #d4edda; }
-    .avatar-achat   { background: #fff3cd; }
-    .avatar-livreur { background: #f8d7da; }
-    .avatar-caissier { background: #d1ecf1; }
-    .avatar-client  { background: #e2e3e5; }
+    .avatar-admin    { background: rgba(27,94,110,0.16); }
+    .avatar-chef      { background: rgba(76,175,125,0.18); }
+    .avatar-achat     { background: rgba(212,160,85,0.22); }
+    .avatar-livreur   { background: rgba(193,123,79,0.22); }
+    .avatar-caissier  { background: rgba(212,160,85,0.14); }
+    .avatar-client    { background: rgba(138,138,138,0.16); }
 
-    .user-info h3 { font-size: 15px; color: #333; margin-bottom: 2px; }
-    .user-info .user-email { font-size: 12px; color: #888; }
+    .user-info h3 { font-size: 15px; color: var(--text); margin: 0 0 2px 0; }
+    .user-info .user-email { font-size: 12px; color: var(--muted); }
 
     .user-role {
       display: inline-block;
       padding: 3px 10px;
-      border-radius: 20px;
+      border-radius: 999px;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       margin-bottom: 12px;
+      white-space: nowrap;
     }
 
-    .role-admin   { background: #cce5ff; color: #004085; }
-    .role-chef    { background: #d4edda; color: #155724; }
-    .role-achat   { background: #fff3cd; color: #856404; }
-    .role-livreur { background: #f8d7da; color: #721c24; }
-    .role-caissier { background: #d1ecf1; color: #0c5460; }
-    .role-client  { background: #e2e3e5; color: #383d41; }
+    .role-admin    { background: rgba(27,94,110,0.14); color: var(--teal-dark); }
+    .role-chef     { background: rgba(76,175,125,0.18); color: #1f7a4d; }
+    .role-achat    { background: rgba(212,160,85,0.24); color: var(--gold-dark); }
+    .role-livreur  { background: rgba(193,123,79,0.24); color: var(--terracotta-dark); }
+    .role-caissier { background: rgba(212,160,85,0.16); color: var(--gold-dark); }
+    .role-client   { background: rgba(138,138,138,0.18); color: var(--muted); }
 
-    .user-statut {
-      font-size: 12px;
-      margin-bottom: 14px;
-    }
+    .user-statut { font-size: 12px; margin-bottom: 14px; }
 
     .user-actions {
       display: flex;
@@ -220,20 +361,27 @@
       flex-wrap: wrap;
     }
 
-    .btn-toggle-actif {
+    .btn-toggle-actif, .btn-modifier-user, .btn-supprimer-user {
       padding: 6px 12px;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
+      font-family: 'Lato', sans-serif;
+      white-space: nowrap;
     }
 
-    .btn-activer    { background: #d4edda; color: #155724; }
-    .btn-desactiver { background: #fff3cd; color: #856404; }
-    .btn-modifier-user  { background: #cce5ff; color: #004085; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; }
-    .btn-supprimer-user { background: #f8d7da; color: #721c24; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; }
+    .btn-activer    { background: rgba(76,175,125,0.18); color: #1f7a4d; }
+    .btn-activer:hover { background: rgba(76,175,125,0.3); }
+    .btn-desactiver { background: rgba(212,160,85,0.24); color: var(--gold-dark); }
+    .btn-desactiver:hover { background: rgba(212,160,85,0.36); }
+    .btn-modifier-user  { background: rgba(27,94,110,0.12); color: var(--teal); }
+    .btn-modifier-user:hover { background: rgba(27,94,110,0.22); }
+    .btn-supprimer-user { background: rgba(217,83,79,0.12); color: var(--rouge); }
+    .btn-supprimer-user:hover { background: rgba(217,83,79,0.22); }
 
+    /* ✅ MODAL */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -243,6 +391,7 @@
       z-index: 200;
       align-items: center;
       justify-content: center;
+      padding: 16px;
     }
     .modal-overlay.visible { display: flex; }
 
@@ -254,21 +403,23 @@
       max-width: 440px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.2);
     }
-    .modal h3 { color: #8B4513; margin-bottom: 20px; font-size: 18px; }
+    .modal h3 { color: var(--teal-dark); margin: 0 0 20px 0; font-size: 18px; }
     .modal .form-groupe { margin-bottom: 14px; }
-    .modal label { display: block; margin-bottom: 5px; font-size: 13px; color: #666; }
+    .modal label { display: block; margin-bottom: 5px; font-size: 13px; color: var(--muted); font-weight: 600; }
     .modal input, .modal select {
       width: 100%;
       padding: 10px 12px;
-      border: 1.5px solid #ddd;
+      border: 1.5px solid var(--cream);
       border-radius: 8px;
       font-size: 14px;
-      font-family: inherit;
+      font-family: 'Lato', sans-serif;
       box-sizing: border-box;
+      background: var(--bg);
+      color: var(--text);
     }
     .modal input:focus, .modal select:focus {
       outline: none;
-      border-color: #8B4513;
+      border-color: var(--gold);
     }
     .modal-boutons {
       display: flex;
@@ -276,88 +427,83 @@
       margin-top: 20px;
     }
 
-    .stats-users {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-    .stat-user-carte {
-      background: white;
-      border-radius: 10px;
-      padding: 14px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-    .stat-user-carte .nb { font-size: 28px; font-weight: bold; color: #8B4513; }
-    .stat-user-carte .lb { font-size: 12px; color: #888; margin-top: 4px; }
-
-    .section-titre {
-      font-size: 16px;
-      font-weight: 600;
-      color: #8B4513;
-      margin: 24px 0 12px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid #f0e0d0;
-    }
-
     /* ✅ RESPONSIVE */
     @media (max-width: 768px) {
+      .topbar-mobile { display: flex; }
+      .btn-fermer-sidebar { display: block; }
+
       .sidebar {
-        width: 220px;
+        width: 260px;
+        max-width: 80vw;
         transform: translateX(-100%);
         transition: transform 0.3s;
       }
-      .sidebar.open {
-        transform: translateX(0);
-      }
+      .sidebar.open { transform: translateX(0); }
+
       .main-content {
         margin-left: 0;
-        padding: 20px;
+        padding: 20px 16px;
+        padding-top: 78px;
       }
-      .grille-utilisateurs {
-        grid-template-columns: 1fr;
-      }
+
+      .grille-utilisateurs { grid-template-columns: 1fr; }
+      .modal { max-width: 100%; }
+    }
+
+    @media (max-width: 420px) {
+      .modal-boutons { flex-direction: column; }
+      .modal-boutons button { width: 100%; }
+      .user-actions { gap: 6px; }
     }
   </style>
 </head>
 <body>
 
+  <!-- ✅ TOPBAR MOBILE -->
+  <div class="topbar-mobile">
+    <button class="btn-hamburger" onclick="toggleSidebar()" aria-label="Ouvrir le menu">☰</button>
+    <span class="topbar-titre">👥 Petit Délices — Utilisateurs</span>
+  </div>
+
+  <!-- ✅ OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
   <!-- ✅ SIDEBAR À GAUCHE -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
+      <button class="btn-fermer-sidebar" onclick="toggleSidebar()" aria-label="Fermer le menu">✕</button>
       <img src="../images/logo.png" alt="Logo Petit Délices" class="logo-img">
       <div class="logo-text">Petit Délices</div>
       <div class="sous-titre">Espace de Gestion</div>
     </div>
-    
+
     <nav class="sidebar-nav">
-  <a href="../index.html">
-    <img src="../images/accueil.png" alt="Accueil" class="icone-img">
-    Accueil
-  </a>
-  <a href="stock.html">
-    <img src="../images/stock.png" alt="Stock" class="icone-img">
-    Stock
-  </a>
-  <a href="produits.html">
-    <img src="../images/produits.png" alt="Produits" class="icone-img">
-    Produits
-  </a>
-  <a href="../commandes.html">
-    <img src="../images/commandes.png" alt="Commandes" class="icone-img">
-    Commandes
-  </a>
-  <a href="dashboard.html">
-    <img src="../images/dashboard.png" alt="Dashboard" class="icone-img">
-    Dashboard
-  </a>
-  <a href="utilisateurs.html">
-    <img src="../images/utilisateurs.png" alt="Utilisateurs" class="icone-img">
-    Utilisateurs
-  </a>
-</nav>
-    
+      <a href="../index.html">
+        <img src="../images/accueil.png" alt="Accueil" class="icone-img">
+        Accueil
+      </a>
+      <a href="stock.html">
+        <img src="../images/stock.png" alt="Stock" class="icone-img">
+        Stock
+      </a>
+      <a href="produits.html">
+        <img src="../images/produits.png" alt="Produits" class="icone-img">
+        Produits
+      </a>
+      <a href="../commandes.html">
+        <img src="../images/commandes.png" alt="Commandes" class="icone-img">
+        Commandes
+      </a>
+      <a href="dashboard.html">
+        <img src="../images/dashboard.png" alt="Dashboard" class="icone-img">
+        Dashboard
+      </a>
+      <a href="utilisateurs.html" class="actif">
+        <img src="../images/utilisateurs.png" alt="Utilisateurs" class="icone-img">
+        Utilisateurs
+      </a>
+    </nav>
+
     <div class="sidebar-footer">
       <div class="user-info" id="header-user">Chargement...</div>
       <button class="btn-deco" onclick="seDeconnecter()">🚪 Déconnexion</button>
@@ -416,9 +562,9 @@
       </div>
     </div>
   </div>
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="../config.js"></script>
 
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="../config.js"></script>
   <script src="../auth.js"></script>
   <script>
     // Afficher le nom de l'utilisateur connecté
@@ -431,11 +577,24 @@
       sessionStorage.removeItem("user");
       window.location.href = "../login.html";
     }
+
+    // ✅ Menu mobile : ouvrir/fermer la sidebar
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("open");
+      document.getElementById("sidebarOverlay").classList.toggle("open");
+    }
+
+    document.querySelectorAll(".sidebar-nav a").forEach(lien => {
+      lien.addEventListener("click", () => {
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("sidebarOverlay").classList.remove("open");
+      });
+    });
   </script>
   <script>
     // Utiliser les variables globales de config.js
-const API    = window.API;
-const socket = window.socket;
+    const API    = window.API;
+    const socket = window.socket;
     let userEnModification = null
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -482,15 +641,15 @@ const socket = window.socket;
           <div class="lb">Employés</div>
         </div>
         <div class="stat-user-carte">
-          <div class="nb" style="color:#28a745">${actifs}</div>
+          <div class="nb" style="color:#1f7a4d">${actifs}</div>
           <div class="lb">Actifs</div>
         </div>
         <div class="stat-user-carte">
-          <div class="nb" style="color:#dc3545">${desactives}</div>
+          <div class="nb" style="color:#D9534F">${desactives}</div>
           <div class="lb">Désactivés</div>
         </div>
-        <div class="stat-user-carte" style="border: 2px solid #f0e0d0">
-          <div class="nb" style="color:#8B4513">${clients.length}</div>
+        <div class="stat-user-carte" style="border: 2px solid #F5E6C8">
+          <div class="nb" style="color:#B8843E">${clients.length}</div>
           <div class="lb">👤 Clients</div>
         </div>
       ` + rolesEmployes.map(role => `
@@ -509,7 +668,7 @@ const socket = window.socket;
       grille.innerHTML = ""
 
       if (employes.length === 0) {
-        grille.innerHTML = '<p style="color:#999">Aucun employé.</p>'
+        grille.innerHTML = '<p style="color:#8A8A8A">Aucun employé.</p>'
         return
       }
 
@@ -526,7 +685,7 @@ const socket = window.socket;
       grille.innerHTML = ""
 
       if (clients.length === 0) {
-        grille.innerHTML = '<p style="color:#999">Aucun client inscrit.</p>'
+        grille.innerHTML = '<p style="color:#8A8A8A">Aucun client inscrit.</p>'
         return
       }
 
@@ -562,7 +721,7 @@ const socket = window.socket;
       `
 
       let boutonSupprimer = estMoi
-        ? `<span style="font-size:11px; color:#888">👈 Vous</span>`
+        ? `<span style="font-size:11px; color:#8A8A8A">👈 Vous</span>`
         : `<button class="btn-supprimer-user" onclick="supprimerUtilisateur(${u.id}, '${u.nom.replace(/'/g, "\\'")}')">🗑️ Supprimer</button>`
 
       return `
@@ -579,8 +738,8 @@ const socket = window.socket;
 
           <div class="user-statut">
             ${estActif
-              ? '<span style="color:#28a745">🟢 Compte actif</span>'
-              : '<span style="color:#dc3545">🔴 Compte désactivé</span>'
+              ? '<span style="color:#1f7a4d">🟢 Compte actif</span>'
+              : '<span style="color:#D9534F">🔴 Compte désactivé</span>'
             }
             ${date ? `<span style="color:#bbb; margin-left:10px; font-size:11px">Créé le ${date}</span>` : ""}
           </div>
