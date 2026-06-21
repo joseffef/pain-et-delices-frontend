@@ -5,15 +5,316 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Livreur — Petit Délices</title>
   <link rel="stylesheet" href="../style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --teal: #1B5E6E;
+      --teal-dark: #134752;
+      --gold: #D4A055;
+      --gold-dark: #B8843E;
+      --cream: #F5E6C8;
+      --bg: #FAFAF7;
+      --text: #2C2C2C;
+      --muted: #8A8A8A;
+      --vert: #4CAF7D;
+      --rouge: #D9534F;
+      --terracotta: #C17B4F;
+      --terracotta-dark: #8A4F2B;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'Lato', sans-serif;
+      color: var(--text);
+    }
+
+    /* ✅ HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 14px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+
+    .entete-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .entete-logo img {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.9);
+      padding: 4px;
+      flex-shrink: 0;
+      object-fit: contain;
+    }
+
+    .entete-texte {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+      min-width: 0;
+    }
+
+    .entete-texte .nom-marque {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 18px;
+      white-space: nowrap;
+    }
+
+    .entete-texte .role-espace {
+      font-size: 11px;
+      color: var(--cream);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .entete-droite {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    #header-user {
+      font-size: 13px;
+      opacity: 0.92;
+      white-space: nowrap;
+    }
+
+    .btn-header-deco {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'Lato', sans-serif;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .btn-header-deco:hover { background: rgba(217,83,79,0.85); }
+
+    /* ✅ CONTENU */
+    main {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 28px 20px 60px;
+    }
+
+    main h1 {
+      font-family: 'Playfair Display', serif;
+      color: var(--teal-dark);
+      margin: 0 0 4px 0;
+      font-size: 26px;
+    }
+
+    main > p {
+      color: var(--muted);
+      margin: 0 0 26px 0;
+      font-size: 14px;
+    }
+
+    /* ✅ CARTES COMMANDE */
+    .carte-commande {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 12px rgba(27,94,110,0.08);
+      border-left: 5px solid var(--teal);
+    }
+
+    .carte-commande.carte-livree {
+      border-left-color: var(--vert);
+      opacity: 0.85;
+    }
+
+    .carte-commande.carte-mienne {
+      border-left-color: var(--gold);
+      border-left-width: 7px;
+    }
+
+    .commande-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .commande-header h3 {
+      margin: 0 0 4px 0;
+      font-size: 16px;
+      font-family: 'Lato', sans-serif;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .commande-tel { font-size: 12px; color: var(--muted); }
+
+    .commande-adresse {
+      font-size: 13px;
+      color: var(--text);
+      margin-top: 6px;
+      font-weight: 500;
+    }
+    .commande-adresse.retrait { color: var(--muted); font-weight: 400; }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .badge-attente     { background: rgba(212,160,85,0.22); color: var(--gold-dark); }
+    .badge-preparation { background: rgba(27,94,110,0.14); color: var(--teal-dark); }
+    .badge-pret        { background: rgba(76,175,125,0.18); color: #1f7a4d; }
+    .badge-transit     { background: rgba(193,123,79,0.22); color: var(--terracotta-dark); }
+    .badge-livree      { background: rgba(138,138,138,0.16); color: var(--muted); }
+
+    .commande-produits {
+      list-style: none;
+      margin: 8px 0 12px 0;
+      padding: 0;
+      font-size: 13px;
+      color: var(--text);
+    }
+    .commande-produits li {
+      padding: 3px 0;
+      border-bottom: 1px dashed var(--cream);
+    }
+    .commande-produits li:last-child { border-bottom: none; }
+
+    .info-tracabilite {
+      font-size: 12px;
+      margin-top: 4px;
+      font-style: italic;
+    }
+
+    .commande-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--cream);
+    }
+
+    .commande-total {
+      display: block;
+      font-weight: 700;
+      color: var(--teal-dark);
+      font-size: 15px;
+    }
+    .commande-date, .commande-notes {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .commande-actions {
+      min-width: 200px;
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .texte-livree { color: #1f7a4d; font-size: 13px; font-weight: 700; }
+    .texte-muted  { color: var(--muted); font-size: 13px; }
+
+    .box-assignee-moi {
+      background: rgba(212,160,85,0.15);
+      border: 2px solid var(--gold);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      width: 100%;
+    }
+    .box-assignee-moi .label {
+      font-size: 12px;
+      color: var(--gold-dark);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .btn-confirmer, .btn-prendre {
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      font-weight: 700;
+    }
+    .btn-confirmer {
+      background: var(--vert);
+      color: white;
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+    }
+    .btn-confirmer:hover { background: #3d9468; }
+    .btn-prendre {
+      background: var(--teal);
+      color: white;
+      padding: 10px 20px;
+      font-size: 14px;
+    }
+    .btn-prendre:hover { background: var(--teal-dark); }
+
+    /* ✅ RESPONSIVE */
+    @media (max-width: 700px) {
+      header { padding: 12px 16px; }
+      .entete-texte .nom-marque { font-size: 16px; }
+      main { padding: 20px 14px 50px; }
+      .commande-footer { flex-direction: column; align-items: stretch; }
+      .commande-actions { min-width: 0; width: 100%; justify-content: stretch; }
+      .btn-prendre { width: 100%; }
+    }
+
+    @media (max-width: 420px) {
+      .entete-droite { gap: 8px; }
+      #header-user { display: none; } /* évite que le nom déborde sur très petit écran ; le bouton de déconnexion reste visible */
+    }
+  </style>
 </head>
 <body>
 
   <header>
-    <div class="logo">🥐 Petit Délices</div>
-    <img src="../images/logo.png" alt="Logo" class="logo-img" style="margin: 0; max-width: 100px;">
-    <div style="display:flex; align-items:center; gap:16px">
-      <span id="header-user" style="font-size:13px; opacity:0.85"></span>
-      <button onclick="seDeconnecter()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:6px; cursor:pointer;">🚪 Déconnexion</button>
+    <div class="entete-logo">
+      <img src="../images/logo.png" alt="Logo Petit Délices">
+      <div class="entete-texte">
+        <span class="nom-marque">Petit Délices</span>
+        <span class="role-espace">Espace Livreur</span>
+      </div>
+    </div>
+    <div class="entete-droite">
+      <span id="header-user"></span>
+      <button class="btn-header-deco" onclick="seDeconnecter()">🚪 Déconnexion</button>
     </div>
   </header>
 
@@ -22,16 +323,15 @@
     <p>Historique et commandes à domicile</p>
     <div id="liste-livraisons"></div>
   </main>
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="../config.js"></script>
 
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="../config.js"></script>
   <script src="../auth.js"></script>
   <script>
     // Utiliser les variables globales de config.js
-const API    = window.API;
-const socket = window.socket;
+    const API    = window.API;
+    const socket = window.socket;
     let user = null
-
 
     document.addEventListener("DOMContentLoaded", function() {
       user = verifierConnexion(["livreur", "admin"])
@@ -46,150 +346,140 @@ const socket = window.socket;
       chargerLivraisons()
     })
 
-async function chargerLivraisons() {
-  try {
-    let commandes = await fetch(API + "/commandes").then(r => r.json())
-    
-    let livraisons = commandes.filter(c => 
-      c.livraison === "domicile" && c.statut !== "Annulée"
-    )
-    
-    livraisons.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-    
-    let div = document.getElementById("liste-livraisons")
-    // ✅ Nettoyage du nom pour comparaison fiable
-    let nomLivreurActuel = user ? user.nom.trim() : "Inconnu"
-    
-    console.log("🔍 Livreur actuel:", `"${nomLivreurActuel}"`)
+    async function chargerLivraisons() {
+      try {
+        let commandes = await fetch(API + "/commandes").then(r => r.json())
 
-    if (livraisons.length === 0) {
-      div.innerHTML = '<p style="color:#999; margin-top:20px; text-align:center;">✅ Aucune livraison.</p>'
-      return
+        let livraisons = commandes.filter(c =>
+          c.livraison === "domicile" && c.statut !== "Annulée"
+        )
+
+        livraisons.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+
+        let div = document.getElementById("liste-livraisons")
+        let nomLivreurActuel = user ? user.nom.trim() : "Inconnu"
+
+        if (livraisons.length === 0) {
+          div.innerHTML = '<p style="color:#8A8A8A; margin-top:20px; text-align:center;">✅ Aucune livraison.</p>'
+          return
+        }
+
+        div.innerHTML = livraisons.map(function(cmd) {
+          let livreurAssigneNettoye = (cmd.livreur_assigne || "").trim()
+          let estMonAssignation = livreurAssigneNettoye === nomLivreurActuel
+
+          let total = cmd.produits
+            ? cmd.produits.reduce((s, p) => s + Number(p.prix) * Number(p.quantite), 0)
+            : 0
+
+          let produitsList = cmd.produits
+            ? cmd.produits.map(p => `<li>${p.nom} × ${p.quantite}</li>`).join("")
+            : ""
+
+          let classeBadge = {
+            "En attente":     "badge-attente",
+            "En préparation": "badge-preparation",
+            "Prêt":           "badge-pret",
+            "En livraison":   "badge-transit",
+            "Livrée":         "badge-livree",
+            "Livré":          "badge-livree"
+          }[cmd.statut] || "badge-livree"
+
+          let estLivree = (cmd.statut || "").toLowerCase() === "livrée" || (cmd.statut || "").toLowerCase() === "livré"
+
+          // ✅ Logique d'action inchangée, juste habillée avec des classes CSS du thème
+          let actionButton = ""
+
+          if (estLivree) {
+            actionButton = `<span class="texte-livree">✅ Commande livrée</span>`
+          }
+          else if (estMonAssignation) {
+            actionButton = `
+              <div class="box-assignee-moi">
+                <div class="label">📍 Vous avez pris cette commande</div>
+                <button class="btn-confirmer" onclick="marquerLivre(${cmd.id})">✅ Confirmer la livraison</button>
+              </div>
+            `
+          }
+          else if (cmd.statut === "Prêt" && !cmd.livreur_assigne) {
+            actionButton = `<button class="btn-prendre" onclick="prendreCommande(${cmd.id})">🚀 Prendre la commande</button>`
+          }
+          else if (!cmd.livreur_assigne) {
+            actionButton = `<span class="texte-muted">⏳ En attente de préparation</span>`
+          }
+          else {
+            actionButton = `<span class="texte-muted">🚚 Assignée à ${cmd.livreur_assigne}</span>`
+          }
+
+          let infoTraçabilité = ""
+          if (cmd.pris_par_chef) {
+            infoTraçabilité += `<div class="info-tracabilite" style="color:var(--teal)">👨‍🍳 Préparée par : <strong>${cmd.pris_par_chef}</strong></div>`
+          }
+          if (cmd.livreur_assigne) {
+            infoTraçabilité += `<div class="info-tracabilite" style="color:#1f7a4d">🚚 Assignée à : <strong>${cmd.livreur_assigne}</strong></div>`
+          }
+          if (cmd.livre_par) {
+            infoTraçabilité += `<div class="info-tracabilite" style="color:#1f7a4d">✅ Livrée par : <strong>${cmd.livre_par}</strong></div>`
+          }
+
+          let classeCarte = estLivree ? "carte-livree" : (estMonAssignation ? "carte-mienne" : "")
+
+          return `
+            <div class="carte-commande ${classeCarte}">
+              <div class="commande-header">
+                <div>
+                  <h3>👤 ${cmd.client}</h3>
+                  <span class="commande-tel">📞 ${cmd.telephone || ""}</span>
+                  ${cmd.adresse_livraison
+                    ? `<div class="commande-adresse">📍 ${cmd.adresse_livraison}</div>`
+                    : `<div class="commande-adresse retrait">📍 Retrait en magasin</div>`}
+                </div>
+                <span class="badge ${classeBadge}">${cmd.statut}</span>
+              </div>
+              <ul class="commande-produits">${produitsList}</ul>
+              ${infoTraçabilité}
+              <div class="commande-footer">
+                <div>
+                  <span class="commande-total">Total : ${total} DH</span>
+                  ${cmd.date ? `<span class="commande-date">📅 ${cmd.date}</span>` : ""}
+                  ${cmd.notes ? `<span class="commande-notes">📝 ${cmd.notes}</span>` : ""}
+                </div>
+                <div class="commande-actions">
+                  ${actionButton}
+                </div>
+              </div>
+            </div>
+          `
+        }).join("")
+      } catch(err) {
+        console.error("Erreur:", err)
+      }
     }
-
-    div.innerHTML = livraisons.map(function(cmd) {
-      // ✅ Nettoyage du nom du livreur assigné pour comparaison fiable
-      let livreurAssigneNettoye = (cmd.livreur_assigne || "").trim()
-      let estMonAssignation = livreurAssigneNettoye === nomLivreurActuel
-      
-      console.log(`📦 Commande #${cmd.id}: statut="${cmd.statut}", livreur_assigne="${livreurAssigneNettoye}", estMonAssignation=${estMonAssignation}`)
-      
-      let total = cmd.produits
-        ? cmd.produits.reduce((s, p) => s + Number(p.prix) * Number(p.quantite), 0)
-        : 0
-
-      let produitsList = cmd.produits
-        ? cmd.produits.map(p => `<li>${p.nom} × ${p.quantite}</li>`).join("")
-        : ""
-
-      let couleur = {
-        "En attente": "orange",
-        "En préparation": "bleu",
-        "Prêt": "vert",
-        "En livraison": "#17a2b8",
-        "Livrée": "gris",
-        "Livré": "gris"
-      }[cmd.statut] || "gris"
-
-      let estLivree = (cmd.statut || "").toLowerCase() === "livrée" || (cmd.statut || "").toLowerCase() === "livré"
-
-      // ✅ LOGIQUE SIMPLIFIÉE ET ROBUSTE
-      let actionButton = ""
-      
-      if (estLivree) {
-        // Déjà livrée → on affiche juste le statut
-        actionButton = `<span style="color:#28a745; font-size:13px; font-weight:bold;">✅ Commande livrée</span>`
-      } 
-      else if (estMonAssignation) {
-        // ✅ C'EST MA COMMANDE → toujours afficher le bouton confirmer
-        console.log(`✅ AFFICHAGE bouton confirmer pour commande #${cmd.id}`)
-        actionButton = `
-          <div style="background:#fff3cd; padding:12px; border-radius:8px; text-align:center; border:2px solid #ffc107;">
-            <div style="font-size:12px; color:#856404; margin-bottom:8px;">📍 Vous avez pris cette commande</div>
-            <button class="btn-avancer" style="background:#28a745; color:white; font-weight:bold; width:100%; padding:12px; font-size:15px;" onclick="marquerLivre(${cmd.id})">✅ Confirmer la livraison</button>
-          </div>
-        `
-      } 
-      else if (cmd.statut === "Prêt" && !cmd.livreur_assigne) {
-        // Prête et pas encore assignée → bouton prendre
-        actionButton = `<button class="btn-avancer" style="background:#17a2b8; color:white; font-weight:bold; padding:10px 20px;" onclick="prendreCommande(${cmd.id})">🚀 Prendre la commande</button>`
-      } 
-      else if (!cmd.livreur_assigne) {
-        // Pas assignée mais pas encore prête
-        actionButton = `<span style="color:#999; font-size:13px;">⏳ En attente de préparation</span>`
-      }
-      else {
-        // Assignée à un autre livreur
-        actionButton = `<span style="color:#999; font-size:13px;">🚚 Assignée à ${cmd.livreur_assigne}</span>`
-      }
-
-      let infoTraçabilité = ""
-      if (cmd.pris_par_chef) {
-        infoTraçabilité += `<div style="font-size:12px; color:#17a2b8; margin-top:8px; font-style:italic;">👨‍🍳 Préparée par : <strong>${cmd.pris_par_chef}</strong></div>`
-      }
-      if (cmd.livreur_assigne) {
-        infoTraçabilité += `<div style="font-size:12px; color:#28a745; margin-top:4px; font-style:italic;">🚚 Assignée à : <strong>${cmd.livreur_assigne}</strong></div>`
-      }
-      if (cmd.livre_par) {
-        infoTraçabilité += `<div style="font-size:12px; color:#28a745; margin-top:4px; font-style:italic;">✅ Livrée par : <strong>${cmd.livre_par}</strong></div>`
-      }
-
-      return `
-        <div class="carte-commande" style="${estLivree ? 'opacity: 0.8; border-left-color: #28a745;' : (estMonAssignation ? 'border-left-color: #17a2b8; border-left-width: 8px;' : '')}">
-          <div class="commande-header">
-            <div>
-              <h3>👤 ${cmd.client}</h3>
-              <span class="commande-tel">📞 ${cmd.telephone || ""}</span>
-              ${cmd.adresse_livraison ? `<div style="font-size:13px; color:#666; margin-top:6px; font-weight:500;">📍 ${cmd.adresse_livraison}</div>` : '<div style="font-size:13px; color:#999;">📍 Retrait en magasin</div>'}
-            </div>
-            <span class="badge" style="background:${couleur === 'orange' ? '#fff3cd' : couleur === 'bleu' ? '#cce5ff' : couleur === 'vert' ? '#d4edda' : couleur === '#17a2b8' ? '#d1ecf1' : '#e2e3e5'}; color:${couleur === 'orange' ? '#856404' : couleur === 'bleu' ? '#004085' : couleur === 'vert' ? '#155724' : couleur === '#17a2b8' ? '#0c5460' : '#383d41'}">
-              ${cmd.statut}
-            </span>
-          </div>
-          <ul class="commande-produits">${produitsList}</ul>
-          ${infoTraçabilité}
-          <div class="commande-footer">
-            <div>
-              <span class="commande-total">Total : ${total} DH</span>
-              ${cmd.date ? `<span class="commande-date">📅 ${cmd.date}</span>` : ""}
-              ${cmd.notes ? `<span class="commande-notes">📝 ${cmd.notes}</span>` : ""}
-            </div>
-            <div class="commande-actions" style="min-width:200px;">
-              ${actionButton}
-            </div>
-          </div>
-        </div>
-      `
-    }).join("")
-  } catch(err) {
-    console.error("Erreur:", err)
-  }
-}
 
     async function prendreCommande(id) {
       if (!confirm("Voulez-vous prendre cette commande en charge ?")) return;
-      
+
       let nomLivreur = user ? user.nom : "Inconnu";
-      
+
       try {
         let response = await fetch(API + "/commandes/" + id + "/assigner-livreur", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ utilisateur_nom: nomLivreur })
         });
-        
+
         let result = await response.json();
-        
+
         if (!response.ok) {
           alert(result.erreur);
           chargerLivraisons();
           return;
         }
-        
+
         alert("✅ " + result.message);
         socket.emit("changement_statut");
         chargerLivraisons();
-        
+
       } catch (err) {
         alert("Erreur : " + err.message);
       }
@@ -197,37 +487,37 @@ async function chargerLivraisons() {
 
     async function marquerLivre(id) {
       let codeSaisi = prompt("🔒 Entrez le code de confirmation à 6 chiffres donné par le client :");
-      
+
       if (codeSaisi === null) return;
       if (codeSaisi.length !== 6 || isNaN(codeSaisi)) {
         alert("❌ Le code doit contenir exactement 6 chiffres.");
         return;
       }
-      
+
       let nomLivreur = user ? user.nom : "Inconnu";
-      
+
       try {
         let response = await fetch(API + "/commandes/" + id + "/statut", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             statut: "Livrée",
             code_confirmation: codeSaisi,
             utilisateur_nom: nomLivreur
           })
         });
-        
+
         let result = await response.json();
-        
+
         if (!response.ok) {
           alert(result.erreur);
           return;
         }
-        
+
         alert("✅ " + result.message);
         socket.emit("changement_statut");
         chargerLivraisons();
-        
+
       } catch (err) {
         alert("Erreur : " + err.message);
       }

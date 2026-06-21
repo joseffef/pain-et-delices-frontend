@@ -4,31 +4,77 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🧾 Espace Caissier — Petit Délices</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', sans-serif; background: #f9f4f0; }
-    header {
-      background: #8B4513;
-      color: white;
-      padding: 16px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    :root {
+      --teal: #1B5E6E;
+      --teal-dark: #134752;
+      --gold: #D4A055;
+      --gold-dark: #B8843E;
+      --cream: #F5E6C8;
+      --bg: #FAFAF7;
+      --text: #2C2C2C;
+      --muted: #8A8A8A;
+      --vert: #4CAF7D;
+      --rouge: #D9534F;
     }
-    .logo { font-size: 20px; font-weight: bold; }
-    .user-info { display: flex; align-items: center; gap: 15px; }
-    .user-info span { font-size: 14px; }
-    .btn-deco {
-      background: rgba(255,255,255,0.2);
-      border: none;
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Lato', sans-serif; background: var(--bg); color: var(--text); }
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+    /* ✅ HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
       color: white;
-      padding: 6px 14px;
-      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 14px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+
+    .entete-logo { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .entete-logo img {
+      width: 42px; height: 42px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.9);
+      padding: 4px;
+      flex-shrink: 0;
+      object-fit: contain;
+    }
+    .entete-texte { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+    .entete-texte .nom-marque { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; white-space: nowrap; }
+    .entete-texte .role-espace { font-size: 11px; color: var(--cream); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .user-info { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .user-info span { font-size: 13px; opacity: 0.92; white-space: nowrap; }
+
+    .btn-deco {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 13px;
+      font-family: 'Lato', sans-serif;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: background 0.2s;
     }
-    main { max-width: 1400px; margin: 0 auto; padding: 30px 20px; }
+    .btn-deco:hover { background: rgba(217,83,79,0.85); }
+
+    /* ✅ CONTENU */
+    main { max-width: 1400px; margin: 0 auto; padding: 28px 20px 60px; }
+    main h1 { color: var(--teal-dark); margin-bottom: 20px; font-size: 26px; }
+
+    /* ✅ STATS */
     .stats-bar {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -39,42 +85,64 @@
       background: white;
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      box-shadow: 0 2px 10px rgba(27,94,110,0.07);
       text-align: center;
+      border-top: 4px solid var(--teal);
     }
-    .stat-card .nombre { font-size: 32px; font-weight: bold; color: #8B4513; }
-    .stat-card .label { font-size: 13px; color: #888; margin-top: 4px; }
+    .stat-card:nth-child(1) { border-top-color: var(--gold); }
+    .stat-card:nth-child(2) { border-top-color: var(--teal); }
+    .stat-card:nth-child(3) { border-top-color: var(--vert); }
+    .stat-card:nth-child(4) { border-top-color: var(--teal-dark); }
+    .stat-card .nombre { font-size: 30px; font-weight: 700; color: var(--teal-dark); }
+    .stat-card .label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    /* ✅ RECHERCHE & FILTRES */
     .search-bar {
       background: white;
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      box-shadow: 0 2px 10px rgba(27,94,110,0.07);
       display: flex;
       gap: 12px;
       align-items: center;
+      flex-wrap: wrap;
     }
     .search-bar input {
       flex: 1;
+      min-width: 200px;
       padding: 10px 14px;
-      border: 1.5px solid #ddd;
+      border: 1.5px solid var(--cream);
       border-radius: 8px;
       font-size: 14px;
+      font-family: 'Lato', sans-serif;
+      background: var(--bg);
+      color: var(--text);
     }
+    .search-bar input:focus { outline: none; border-color: var(--gold); }
+
     .filtres { display: flex; gap: 8px; flex-wrap: wrap; }
     .btn-filtre {
       background: white;
-      border: 1.5px solid #ddd;
+      border: 1.5px solid var(--cream);
+      color: var(--teal-dark);
       padding: 8px 16px;
-      border-radius: 20px;
+      border-radius: 999px;
       cursor: pointer;
       font-size: 13px;
+      font-weight: 600;
+      font-family: 'Lato', sans-serif;
+      white-space: nowrap;
+      transition: all 0.2s;
     }
+    .btn-filtre:hover { background: var(--cream); }
     .btn-filtre.actif-filtre {
-      background: #8B4513;
+      background: var(--gold);
       color: white;
-      border-color: #8B4513;
+      border-color: var(--gold);
     }
+
+    /* ✅ CARTES COMMANDE */
     .grille-commandes {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -84,68 +152,67 @@
       background: white;
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-      border-left: 5px solid #ddd;
-    }
-    .carte-commande.urgence { border-left-color: #dc3545; }
-    .carte-commande.prete { border-left-color: #28a745; }
-    .commande-header {
+      box-shadow: 0 2px 10px rgba(27,94,110,0.07);
+      border-left: 5px solid var(--teal);
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
+      flex-direction: column;
     }
-    .commande-header h3 { font-size: 16px; color: #333; margin-bottom: 4px; }
-    .commande-tel { font-size: 13px; color: #666; }
-    .commande-id { font-size: 12px; color: #888; }
+    .carte-commande.urgence { border-left-color: var(--gold); }
+    .carte-commande.prete { border-left-color: var(--vert); }
+
+    .commande-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 10px; }
+    .commande-header h3 { font-size: 16px; color: var(--text); margin: 4px 0 4px 0; font-family: 'Lato', sans-serif; font-weight: 700; }
+    .commande-tel { font-size: 13px; color: var(--muted); }
+    .commande-id { font-size: 12px; color: var(--muted); }
+
     .badge {
       display: inline-block;
       padding: 4px 12px;
-      border-radius: 20px;
+      border-radius: 999px;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
+      white-space: nowrap;
     }
-    .badge.orange { background: #fff3cd; color: #856404; }
-    .badge.bleu { background: #cce5ff; color: #004085; }
-    .badge.vert { background: #d4edda; color: #155724; }
-    .badge.gris { background: #e2e3e5; color: #383d41; }
+    .badge.orange { background: rgba(212,160,85,0.2); color: var(--gold-dark); }
+    .badge.bleu   { background: rgba(27,94,110,0.12); color: var(--teal); }
+    .badge.vert   { background: rgba(76,175,125,0.15); color: #1f7a4d; }
+    .badge.gris   { background: rgba(138,138,138,0.15); color: var(--muted); }
+    .badge.rouge  { background: rgba(217,83,79,0.15); color: var(--rouge); }
+
     .commande-produits {
       list-style: none;
       margin: 12px 0;
       padding: 12px;
-      background: #fdf6f0;
+      background: var(--bg);
       border-radius: 8px;
       font-size: 13px;
     }
-    .commande-produits li {
-      padding: 4px 0;
-      display: flex;
-      justify-content: space-between;
+    .commande-produits li { padding: 4px 0; display: flex; justify-content: space-between; gap: 8px; }
+
+    .commande-notes {
+      display: block;
+      font-size: 12px;
+      color: var(--gold-dark);
+      background: rgba(212,160,85,0.15);
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin-top: 8px;
     }
+
+    .info-tracabilite { font-size: 12px; margin-top: 6px; font-style: italic; }
+
     .commande-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-top: 12px;
       padding-top: 12px;
-      border-top: 1px solid #f0e0d0;
+      border-top: 1px solid var(--cream);
     }
-    .commande-total { font-size: 18px; font-weight: bold; color: #8B4513; }
-    .commande-date { font-size: 12px; color: #888; }
-    .commande-notes {
-      display: block;
-      font-size: 12px;
-      color: #856404;
-      background: #fff3cd;
-      padding: 6px 10px;
-      border-radius: 6px;
-      margin-top: 8px;
-    }
-    .commande-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
+    .commande-total { font-size: 18px; font-weight: 700; color: var(--teal-dark); }
+    .commande-date { font-size: 12px; color: var(--muted); }
+
+    .commande-actions { display: flex; gap: 8px; margin-top: 12px; }
     .btn-action {
       flex: 1;
       padding: 10px;
@@ -153,21 +220,54 @@
       border-radius: 8px;
       cursor: pointer;
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 600;
+      font-family: 'Lato', sans-serif;
+      color: white;
     }
-    .btn-remettre { background: #28a745; color: white; }
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: #aaa;
+    .btn-valider  { background: var(--vert); }
+    .btn-valider:hover { background: #3d9468; }
+    .btn-suivant  { background: var(--teal); }
+    .btn-suivant:hover { background: var(--teal-dark); }
+    .btn-remettre { background: var(--gold); }
+    .btn-remettre:hover { background: var(--gold-dark); }
+
+    .texte-info  { color: var(--teal); font-size: 13px; text-align: center; flex: 1; }
+    .texte-fin   { color: #1f7a4d; font-size: 13px; text-align: center; flex: 1; }
+    .texte-annule{ color: var(--rouge); font-size: 13px; text-align: center; flex: 1; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+
+    /* ✅ RESPONSIVE */
+    @media (max-width: 900px) {
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 700px) {
+      header { padding: 12px 16px; }
+      .entete-texte .nom-marque { font-size: 16px; }
+      main { padding: 20px 14px 50px; }
+      .search-bar { flex-direction: column; align-items: stretch; }
+      .filtres { width: 100%; }
+    }
+
+    @media (max-width: 420px) {
+      .stats-bar { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .stat-card { padding: 14px; }
+      .stat-card .nombre { font-size: 24px; }
+      .user-info span { display: none; }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="logo">🥐 Petit Délices</div>
-<img src="./images/logo.png" alt="Logo" class="logo-img" style="margin: 0; max-width: 100px;">
+    <div class="entete-logo">
+      <img src="./images/logo.png" alt="Logo Petit Délices">
+      <div class="entete-texte">
+        <span class="nom-marque">Petit Délices</span>
+        <span class="role-espace">Espace Caissier</span>
+      </div>
+    </div>
     <div class="user-info">
       <span id="caissier-nom">Chargement...</span>
       <button class="btn-deco" onclick="seDeconnecter()">🚪 Déconnexion</button>
@@ -207,22 +307,22 @@
 
     <div id="liste-commandes" class="grille-commandes"></div>
   </main>
+
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="config.js"></script>
+  <script src="config.js"></script>
 
   <script>
     // Utiliser les variables globales de config.js
-const API = window.API;
-const socket = window.socket;
+    const API = window.API;
+    const socket = window.socket;
     let userCaissier = JSON.parse(sessionStorage.getItem("user"))
-    
+
     if (!userCaissier || !["caissier", "admin"].includes(userCaissier.role)) {
       window.location.href = "login.html"
     }
 
     let toutesLesCommandes = []
     let statutFiltre = "tous"
-
 
     socket.on("rafraichir_commandes", () => {
       chargerCommandes()
@@ -235,9 +335,9 @@ const socket = window.socket;
       try {
         const res = await fetch(API + "/commandes")
         let data = await res.json()
-        
+
         if (!Array.isArray(data)) return
-        
+
         toutesLesCommandes = data
         afficherCommandes()
         mettreAJourStats()
@@ -274,10 +374,10 @@ const socket = window.socket;
           "Livré": "gris",
           "Annulée": "rouge"
         }
-        
+
         let statutAffiche = cmd.statut
         if (statutAffiche.toLowerCase().startsWith("livr")) statutAffiche = "Livrée"
-        
+
         const couleur = couleurs[statutAffiche] || "orange"
         const produitsList = cmd.produits ? cmd.produits.map(p => `<li><span>${p.nom} × ${p.quantite}</span><strong>${Number(p.prix) * Number(p.quantite)} DH</strong></li>`).join("") : "<li>Aucun produit</li>"
 
@@ -286,51 +386,50 @@ const socket = window.socket;
         else if (cmd.statut === "Prêt") classeCarte = "prete"
 
         let labelOrigine = cmd.origine === "admin"
-          ? `<span class="badge bleu" style="font-size:11px; margin-bottom:8px; display:inline-block;">👨‍🍳 Créée pour le Chef</span>`
-          : `<span class="badge orange" style="font-size:11px; margin-bottom:8px; display:inline-block;">🧾 Créée pour le Caissier</span>`
+          ? `<span class="badge bleu" style="margin-bottom:8px; display:inline-block;">👨‍🍳 Créée pour le Chef</span>`
+          : `<span class="badge orange" style="margin-bottom:8px; display:inline-block;">🧾 Créée pour le Caissier</span>`
 
-        // ✅ DEBUG : Affichage FORCÉ des champs pour vérification
-        let infoTraçabilité = `
-          <div style="font-size:12px; color:#17a2b8; margin-top:8px; border:1px dashed #17a2b8; padding:5px; border-radius:4px;">
-            👨‍🍳 Chef : <strong>${cmd.pris_par_chef || '⚠️ Non enregistré (vide)'}</strong>
-          </div>
-          <div style="font-size:12px; color:#28a745; margin-top:4px; border:1px dashed #28a745; padding:5px; border-radius:4px;">
-            ✅ Livreur/Caissier : <strong>${cmd.livre_par || '⚠️ Non enregistré (vide)'}</strong>
-          </div>
-        `;
+        // Traçabilité : on n'affiche que ce qui existe réellement (pas de placeholder de debug)
+        let infoTraçabilité = ""
+        if (cmd.pris_par_chef) {
+          infoTraçabilité += `<div class="info-tracabilite" style="color:var(--teal)">👨‍🍳 Préparée par : <strong>${cmd.pris_par_chef}</strong></div>`
+        }
+        if (cmd.livre_par) {
+          infoTraçabilité += `<div class="info-tracabilite" style="color:#1f7a4d">✅ Remise/livrée par : <strong>${cmd.livre_par}</strong></div>`
+        }
 
         let boutons = ""
         const estLivree = (cmd.statut || "").toLowerCase().startsWith("livr")
 
         if (cmd.origine === "client") {
           if (cmd.statut === "En attente") {
-            boutons = `<button class="btn-action" style="background:#28a745; color:white;" onclick="changerStatutCaissier(${cmd.id}, 'En préparation')">✅ Valider et envoyer en cuisine</button>`
+            boutons = `<button class="btn-action btn-valider" onclick="changerStatutCaissier(${cmd.id}, 'En préparation')">✅ Valider et envoyer en cuisine</button>`
           } else if (cmd.statut === "En préparation") {
-            boutons = `<button class="btn-action" style="background:#17a2b8; color:white;" onclick="changerStatutCaissier(${cmd.id}, 'Prêt')">➡️ Marquer comme Prêt</button>`
+            boutons = `<button class="btn-action btn-suivant" onclick="changerStatutCaissier(${cmd.id}, 'Prêt')">➡️ Marquer comme Prêt</button>`
           } else if (cmd.statut === "Prêt") {
             if (cmd.livraison === "domicile") {
-              boutons = `<span style="color:#17a2b8; font-size:13px; text-align:center; flex:1;">🚚 En attente du livreur</span>`
+              boutons = `<span class="texte-info">🚚 En attente du livreur</span>`
             } else {
               boutons = `<button class="btn-action btn-remettre" onclick="marquerRemise(${cmd.id})">🔑 Remise au client (Code)</button>`
             }
           } else if (estLivree) {
-            boutons = `<span style="color:#28a745; font-size:13px; text-align:center; flex:1;">✅ Commande finalisée</span>`
+            boutons = `<span class="texte-fin">✅ Commande finalisée</span>`
           } else if (cmd.statut === "Annulée") {
-            boutons = `<span style="color:#dc3545; font-size:13px; text-align:center; flex:1;">❌ Annulée</span>`
+            boutons = `<span class="texte-annule">❌ Annulée</span>`
           }
         } else if (cmd.origine === "admin") {
           if (cmd.statut === "En préparation") {
-            boutons = `<span style="color:#17a2b8; font-size:13px; text-align:center; flex:1;">👨‍🍳 En préparation par le chef...</span>`
+            boutons = `<span class="texte-info">👨‍🍳 En préparation par le chef...</span>`
           } else if (cmd.statut === "Prêt") {
             if (cmd.livraison === "domicile") {
-              boutons = `<span style="color:#17a2b8; font-size:13px; text-align:center; flex:1;">🚚 En attente du livreur</span>`
+              boutons = `<span class="texte-info">🚚 En attente du livreur</span>`
             } else {
               boutons = `<button class="btn-action btn-remettre" onclick="marquerRemise(${cmd.id})">🔑 Remise au client (Code)</button>`
             }
           } else if (estLivree) {
-            boutons = `<span style="color:#28a745; font-size:13px; text-align:center; flex:1;">✅ Commande finalisée</span>`
+            boutons = `<span class="texte-fin">✅ Commande finalisée</span>`
           } else if (cmd.statut === "Annulée") {
-            boutons = `<span style="color:#dc3545; font-size:13px; text-align:center; flex:1;">❌ Annulée</span>`
+            boutons = `<span class="texte-annule">❌ Annulée</span>`
           }
         }
 
@@ -349,9 +448,9 @@ const socket = window.socket;
             </div>
             <ul class="commande-produits">${produitsList}</ul>
             ${cmd.notes ? `<span class="commande-notes">📝 ${cmd.notes}</span>` : ""}
-            
+
             ${infoTraçabilité}
-            
+
             <div class="commande-footer">
               <span class="commande-date">📅 ${dateAffichee}</span>
               <span class="commande-total">${total} DH</span>
@@ -366,7 +465,7 @@ const socket = window.socket;
       const enAttente = toutesLesCommandes.filter(c => c.statut === "En attente").length
       const enPrep = toutesLesCommandes.filter(c => c.statut === "En préparation").length
       const pretes = toutesLesCommandes.filter(c => c.statut === "Prêt").length
-      
+
       const aujourdhui = new Date().toISOString().split('T')[0]
       const caJour = toutesLesCommandes
         .filter(c => new Date(c.created_at).toISOString().split('T')[0] === aujourdhui && c.statut !== "Annulée")
@@ -394,16 +493,16 @@ const socket = window.socket;
 
     async function changerStatutCaissier(id, nouveauStatut) {
       if (!confirm(`Passer au statut "${nouveauStatut}" ?`)) return
-      
+
       let nomCaissier = userCaissier ? userCaissier.nom : "Inconnu"
-      
+
       try {
         let response = await fetch(API + "/commandes/" + id + "/statut", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ statut: nouveauStatut, utilisateur_nom: nomCaissier })
         })
-        
+
         let result = await response.json()
         if (!response.ok) {
           alert("❌ " + result.erreur)
@@ -419,33 +518,33 @@ const socket = window.socket;
 
     async function marquerRemise(id) {
       let codeSaisi = prompt("🔒 Entrez le code de confirmation à 6 chiffres :");
-      
+
       if (codeSaisi === null) return;
       if (codeSaisi.length !== 6 || isNaN(codeSaisi)) {
         alert("❌ Le code doit contenir exactement 6 chiffres.");
         return;
       }
-      
+
       let nomCaissier = userCaissier ? userCaissier.nom : "Inconnu"
-      
+
       try {
         let response = await fetch(API + "/commandes/" + id + "/statut", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             statut: "Livrée",
             code_confirmation: codeSaisi,
             utilisateur_nom: nomCaissier
           })
         })
-        
+
         let result = await response.json();
-        
+
         if (!response.ok) {
           alert(result.erreur);
           return;
         }
-        
+
         alert("✅ " + result.message);
         socket.emit("changement_statut")
         chargerCommandes()

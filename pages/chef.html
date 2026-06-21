@@ -5,14 +5,269 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chef — Petit Délices</title>
   <link rel="stylesheet" href="../style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --teal: #1B5E6E;
+      --teal-dark: #134752;
+      --gold: #D4A055;
+      --gold-dark: #B8843E;
+      --cream: #F5E6C8;
+      --bg: #FAFAF7;
+      --text: #2C2C2C;
+      --muted: #8A8A8A;
+      --vert: #4CAF7D;
+      --rouge: #D9534F;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'Lato', sans-serif;
+      color: var(--text);
+    }
+
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+    /* ✅ HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 14px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+
+    .entete-logo { display: flex; align-items: center; gap: 12px; min-width: 0; }
+
+    .entete-logo img {
+      width: 42px; height: 42px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.9);
+      padding: 4px;
+      flex-shrink: 0;
+      object-fit: contain;
+    }
+
+    .entete-texte { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+    .entete-texte .nom-marque { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; white-space: nowrap; }
+    .entete-texte .role-espace { font-size: 11px; color: var(--cream); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .entete-droite { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    #header-user { font-size: 13px; opacity: 0.92; white-space: nowrap; }
+
+    .btn-header-deco {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'Lato', sans-serif;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .btn-header-deco:hover { background: rgba(217,83,79,0.85); }
+
+    /* ✅ CONTENU */
+    main { max-width: 1000px; margin: 0 auto; padding: 28px 20px 60px; }
+    main h1 { color: var(--teal-dark); margin: 0 0 4px 0; font-size: 26px; }
+    main > p { color: var(--muted); margin: 0 0 24px 0; font-size: 14px; }
+
+    h2 { color: var(--teal-dark); font-size: 18px; margin-bottom: 16px; }
+
+    /* ✅ ONGLETS / FILTRES (pilules) */
+    .filtres { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .btn-filtre {
+      background: white;
+      border: 1px solid var(--cream);
+      color: var(--teal-dark);
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 13px;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-filtre:hover { background: var(--cream); }
+    .btn-filtre.actif-filtre {
+      background: var(--gold);
+      color: white;
+      border-color: var(--gold);
+      box-shadow: 0 2px 8px rgba(184,132,62,0.35);
+    }
+
+    /* ✅ ALERTES */
+    .alerte-box {
+      background: rgba(217,83,79,0.08);
+      border-left: 4px solid var(--rouge);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .ok-message { color: var(--vert); font-weight: 600; margin-bottom: 18px; }
+
+    /* ✅ TABLEAUX */
+    .tableau-wrapper {
+      overflow-x: auto;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(27,94,110,0.07);
+      margin-bottom: 10px;
+    }
+    .tableau { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 600px; }
+    .tableau thead { background: var(--teal); color: white; }
+    .tableau th { padding: 14px 16px; text-align: left; font-weight: 600; font-size: 13px; white-space: nowrap; }
+    .tableau td { padding: 12px 16px; border-bottom: 1px solid var(--cream); vertical-align: middle; }
+    .tableau tbody tr:last-child td { border-bottom: none; }
+    .tableau tbody tr:hover { background: rgba(245,230,200,0.3); }
+    .tableau td:last-child { white-space: nowrap; }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .badge.rouge  { background: rgba(217,83,79,0.15); color: var(--rouge); }
+    .badge.orange { background: rgba(212,160,85,0.2); color: var(--gold-dark); }
+    .badge.vert   { background: rgba(76,175,125,0.15); color: #1f7a4d; }
+    .badge.bleu   { background: rgba(27,94,110,0.12); color: var(--teal); }
+    .badge.gris   { background: rgba(138,138,138,0.15); color: var(--muted); }
+
+    .btn-ajouter-qte {
+      background: rgba(76,175,125,0.15);
+      color: #1f7a4d;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      white-space: nowrap;
+    }
+    .btn-ajouter-qte:hover { background: rgba(76,175,125,0.3); }
+
+    /* ✅ CARTES COMMANDE */
+    .carte-commande {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 12px rgba(27,94,110,0.08);
+      border-left: 5px solid var(--teal);
+    }
+
+    .commande-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .commande-header h3 {
+      margin: 0 0 4px 0;
+      font-size: 16px;
+      font-family: 'Lato', sans-serif;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .commande-tel { font-size: 12px; color: var(--muted); }
+
+    .commande-produits { list-style: none; margin: 8px 0 12px 0; padding: 0; font-size: 13px; color: var(--text); }
+    .commande-produits li { padding: 3px 0; border-bottom: 1px dashed var(--cream); }
+    .commande-produits li:last-child { border-bottom: none; }
+
+    .info-tracabilite { font-size: 12px; margin-top: 4px; font-style: italic; }
+
+    .commande-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--cream);
+    }
+    .commande-total { display: block; font-weight: 700; color: var(--teal-dark); font-size: 15px; }
+    .commande-date, .commande-notes { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .commande-actions { min-width: 200px; flex: 1; display: flex; justify-content: flex-end; }
+
+    .btn-avancer {
+      background: var(--teal);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      white-space: nowrap;
+    }
+    .btn-avancer:hover { background: var(--teal-dark); }
+
+    .texte-livree { color: #1f7a4d; font-size: 13px; font-weight: 600; }
+    .texte-muted  { color: var(--muted); font-size: 13px; }
+
+    /* ✅ RESPONSIVE */
+    @media (max-width: 700px) {
+      header { padding: 12px 16px; }
+      .entete-texte .nom-marque { font-size: 16px; }
+      main { padding: 20px 14px 50px; }
+      .commande-footer { flex-direction: column; align-items: stretch; }
+      .commande-actions { min-width: 0; width: 100%; justify-content: stretch; }
+      .btn-avancer { width: 100%; }
+    }
+
+    @media (max-width: 420px) {
+      .entete-droite { gap: 8px; }
+      #header-user { display: none; }
+      .filtres { width: 100%; }
+      .btn-filtre { flex: 1; text-align: center; padding: 10px 8px; }
+    }
+  </style>
 </head>
 <body>
 
   <header>
-    <div class="logo">🥐 Petit Délices</div>
-    <img src="../images/logo.png" alt="Logo" class="logo-img" style="margin: 0; max-width: 100px;">
-      <span id="header-user" style="font-size:13px; opacity:0.85"></span>
-      <button onclick="seDeconnecter()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:6px; cursor:pointer;">🚪 Déconnexion</button>
+    <div class="entete-logo">
+      <img src="../images/logo.png" alt="Logo Petit Délices">
+      <div class="entete-texte">
+        <span class="nom-marque">Petit Délices</span>
+        <span class="role-espace">Espace Chef</span>
+      </div>
+    </div>
+    <div class="entete-droite">
+      <span id="header-user"></span>
+      <button class="btn-header-deco" onclick="seDeconnecter()">🚪 Déconnexion</button>
     </div>
   </header>
 
@@ -27,29 +282,33 @@
     </div>
 
     <div id="section-ingredients">
-      <h2 style="color:#8B4513; margin-bottom:16px">🥚 Stock des ingrédients</h2>
+      <h2>🥚 Stock des ingrédients</h2>
       <div id="alertes-ingredients"></div>
-      <table class="tableau">
-        <thead>
-          <tr><th>Ingrédient</th><th>Quantité actuelle</th><th>Unité</th><th>Statut</th><th>Action</th></tr>
-        </thead>
-        <tbody id="tableau-ingredients"></tbody>
-      </table>
+      <div class="tableau-wrapper">
+        <table class="tableau">
+          <thead>
+            <tr><th>Ingrédient</th><th>Quantité actuelle</th><th>Unité</th><th>Statut</th><th>Action</th></tr>
+          </thead>
+          <tbody id="tableau-ingredients"></tbody>
+        </table>
+      </div>
     </div>
 
     <div id="section-produits" style="display:none">
-      <h2 style="color:#8B4513; margin-bottom:16px">🧁 Stock des produits</h2>
+      <h2>🧁 Stock des produits</h2>
       <div id="alertes-produits"></div>
-      <table class="tableau">
-        <thead>
-          <tr><th>Produit</th><th>Catégorie</th><th>Quantité</th><th>Prix</th><th>Statut</th><th>Action</th></tr>
-        </thead>
-        <tbody id="tableau-produits"></tbody>
-      </table>
+      <div class="tableau-wrapper">
+        <table class="tableau">
+          <thead>
+            <tr><th>Produit</th><th>Catégorie</th><th>Quantité</th><th>Prix</th><th>Statut</th><th>Action</th></tr>
+          </thead>
+          <tbody id="tableau-produits"></tbody>
+        </table>
+      </div>
     </div>
 
     <div id="section-commandes" style="display:none">
-      <h2 style="color:#8B4513; margin-bottom:16px">📋 Commandes à préparer</h2>
+      <h2>📋 Commandes à préparer</h2>
       <div class="filtres" style="margin-bottom:16px">
         <button class="btn-filtre actif-filtre" onclick="filtrerStatut('tous', this)">Toutes</button>
         <button class="btn-filtre" onclick="filtrerStatut('En attente', this)">⏳ En attente</button>
@@ -61,16 +320,15 @@
     </div>
   </main>
 
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="../config.js"></script>
-
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="../config.js"></script>
   <script src="../auth.js"></script>
-  
-  <!-- ✅ 2. Tout le script du chef dans un seul bloc pour éviter les conflits -->
+
+  <!-- ✅ Tout le script du chef dans un seul bloc pour éviter les conflits -->
   <script>
     // Utiliser les variables globales de config.js
     const API    = window.API;
-const socket = window.socket;
+    const socket = window.socket;
 
     // ✅ Écouteurs Socket.io pour le temps réel (sans son ni alertes)
     socket.on("rafraichir_commandes", () => {
@@ -105,7 +363,7 @@ const socket = window.socket;
       document.getElementById("section-ingredients").style.display = onglet === "ingredients" ? "block" : "none";
       document.getElementById("section-produits").style.display    = onglet === "produits"    ? "block" : "none";
       document.getElementById("section-commandes").style.display   = onglet === "commandes"   ? "block" : "none";
-      
+
       document.getElementById("onglet-ingredients").classList.toggle("actif-filtre", onglet === "ingredients");
       document.getElementById("onglet-produits").classList.toggle("actif-filtre",    onglet === "produits");
       document.getElementById("onglet-commandes").classList.toggle("actif-filtre",   onglet === "commandes");
@@ -154,7 +412,7 @@ const socket = window.socket;
     async function ajouterQuantiteIngredient(id, nom, quantiteActuelle, unite, seuil_alerte) {
       let qte = prompt("Combien voulez-vous ajouter au stock de " + nom + " ?");
       if (qte === null || qte === "" || isNaN(qte) || Number(qte) <= 0) return;
-      
+
       await fetch(API + "/ingredients/" + id, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -211,7 +469,7 @@ const socket = window.socket;
     async function ajouterQuantiteProduit(id, nom, quantiteActuelle, categorie, prix, description) {
       let qte = prompt("Combien voulez-vous ajouter au stock de " + nom + " ?");
       if (qte === null || qte === "" || isNaN(qte) || Number(qte) <= 0) return;
-      
+
       await fetch(API + "/produits/" + id, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -230,7 +488,6 @@ const socket = window.socket;
         // Le chef ne reçoit que les commandes créées par l'admin (filtrage effectué côté API)
         toutesCommandes = toutes.filter(c => c.statut !== "Annulée" && !c.statut.toLowerCase().startsWith("livr"));
 
-        console.log("👨‍🍳 Chef voit", toutesCommandes.length, "commandes à préparer");
         afficherCommandes();
       } catch(err) {
         console.error("Erreur commandes:", err);
@@ -253,7 +510,7 @@ const socket = window.socket;
         : toutesCommandes.filter(c => c.statut === statutActifChef);
 
       if (filtrees.length === 0) {
-        div.innerHTML = '<p style="color:#999; margin-top:20px">Aucune commande pour ce statut.</p>';
+        div.innerHTML = '<p style="color:#8A8A8A; margin-top:20px">Aucune commande pour ce statut.</p>';
         return;
       }
 
@@ -281,8 +538,8 @@ const socket = window.socket;
         let boutonAvancer = prochainStatut
           ? `<button class="btn-avancer" onclick="avancerStatut(${cmd.id}, '${prochainStatut}')">➡️ Passer à "${prochainStatut}"</button>`
           : cmd.statut === "Prêt"
-          ? `<span style="color:#28a745; font-size:13px">✅ Prêt — en attente du livreur/caissier</span>`
-          : `<span style="color:#999; font-size:13px">✅ Commande terminée/annulée</span>`;
+          ? `<span class="texte-livree">✅ Prêt — en attente du livreur/caissier</span>`
+          : `<span class="texte-muted">✅ Commande terminée/annulée</span>`;
 
         let badgeLivraison = cmd.livraison === "domicile"
           ? '<span class="badge bleu" style="font-size:11px">🚚 Domicile</span>'
@@ -290,10 +547,10 @@ const socket = window.socket;
 
         let infoTraçabilité = "";
         if (cmd.pris_par_chef) {
-          infoTraçabilité += `<div style="font-size:12px; color:#17a2b8; margin-top:8px; font-style:italic;">👨‍🍳 Prise en charge par : <strong>${cmd.pris_par_chef}</strong></div>`;
+          infoTraçabilité += `<div class="info-tracabilite" style="color:var(--teal)">👨‍🍳 Prise en charge par : <strong>${cmd.pris_par_chef}</strong></div>`;
         }
         if (cmd.livre_par) {
-          infoTraçabilité += `<div style="font-size:12px; color:#28a745; margin-top:4px; font-style:italic;">✅ Livrée par : <strong>${cmd.livre_par}</strong></div>`;
+          infoTraçabilité += `<div class="info-tracabilite" style="color:#1f7a4d">✅ Livrée par : <strong>${cmd.livre_par}</strong></div>`;
         }
 
         div.innerHTML += `
@@ -325,16 +582,16 @@ const socket = window.socket;
     async function avancerStatut(id, nouveauStatut) {
       let userChef = JSON.parse(sessionStorage.getItem("user"));
       let nomChef = userChef ? userChef.nom : "Inconnu";
-      
+
       await fetch(API + "/commandes/" + id + "/statut", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           statut: nouveauStatut,
           utilisateur_nom: nomChef
         })
       });
-      
+
       socket.emit("changement_statut");
       chargerCommandes();
     }

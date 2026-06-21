@@ -5,28 +5,103 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Petit Délices — Produits</title>
   <link rel="stylesheet" href="../style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       LAYOUT : SIDEBAR À GAUCHE
-       ============================================ */
+    :root {
+      --teal: #1B5E6E;
+      --teal-dark: #134752;
+      --gold: #D4A055;
+      --gold-dark: #B8843E;
+      --cream: #F5E6C8;
+      --bg: #FAFAF7;
+      --text: #2C2C2C;
+      --muted: #8A8A8A;
+      --vert: #4CAF7D;
+      --rouge: #D9534F;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
       display: flex;
       min-height: 100vh;
       margin: 0;
-      background: #f9f4f0;
-      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      font-family: 'Lato', sans-serif;
+      color: var(--text);
     }
 
-    /* ✅ SIDEBAR (menu à gauche) */
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+    /* ✅ TOPBAR MOBILE */
+    .topbar-mobile {
+      display: none;
+      align-items: center;
+      gap: 14px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 58px;
+      background: var(--teal-dark);
+      color: white;
+      padding: 0 16px;
+      z-index: 90;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+
+    .btn-hamburger {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      font-size: 18px;
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .topbar-titre {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 95;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .sidebar-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .btn-fermer-sidebar {
+      display: none;
+      position: absolute;
+      top: 14px; right: 14px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    /* ✅ SIDEBAR */
     .sidebar {
       width: 260px;
-      background: linear-gradient(180deg, #8B4513 0%, #6d3610 100%);
+      background: linear-gradient(180deg, var(--teal) 0%, var(--teal-dark) 100%);
       color: white;
       position: fixed;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
       height: 100vh;
-      box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+      box-shadow: 2px 0 15px rgba(0,0,0,0.12);
       display: flex;
       flex-direction: column;
       z-index: 100;
@@ -36,26 +111,32 @@
       padding: 30px 20px;
       border-bottom: 1px solid rgba(255,255,255,0.15);
       text-align: center;
+      position: relative;
     }
 
     .sidebar-header .logo-img {
-      max-width: 100px;
+      max-width: 90px;
       height: auto;
       display: block;
       margin: 0 auto 12px auto;
       border-radius: 8px;
+      background: rgba(255,255,255,0.9);
+      padding: 6px;
     }
 
     .sidebar-header .logo-text {
-      font-size: 20px;
-      font-weight: bold;
+      font-family: 'Playfair Display', serif;
+      font-size: 21px;
+      font-weight: 700;
       color: white;
       margin-bottom: 4px;
     }
 
     .sidebar-header .sous-titre {
       font-size: 12px;
-      color: rgba(255, 255, 255, 0.7);
+      color: var(--cream);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
 
     .sidebar-nav {
@@ -72,6 +153,7 @@
       color: rgba(255,255,255,0.85);
       text-decoration: none;
       font-size: 15px;
+      white-space: nowrap;
       transition: all 0.2s;
       border-left: 4px solid transparent;
     }
@@ -79,20 +161,21 @@
     .sidebar-nav a:hover {
       background: rgba(255,255,255,0.1);
       color: white;
-      border-left-color: #ffd700;
+      border-left-color: var(--gold);
     }
 
     .sidebar-nav a.actif {
       background: rgba(255,255,255,0.15);
       color: white;
-      border-left-color: #ffd700;
+      border-left-color: var(--gold);
       font-weight: 600;
     }
 
-    .sidebar-nav a .icone {
-      font-size: 18px;
-      width: 24px;
-      text-align: center;
+    .sidebar-nav a .icone-img {
+      width: 20px; height: 20px;
+      object-fit: contain;
+      flex-shrink: 0;
+      opacity: 0.92;
     }
 
     .sidebar-footer {
@@ -102,7 +185,7 @@
 
     .sidebar-footer .user-info {
       font-size: 13px;
-      opacity: 0.85;
+      opacity: 0.9;
       text-align: center;
       margin-bottom: 12px;
     }
@@ -110,20 +193,22 @@
     .sidebar-footer .btn-deco {
       width: 100%;
       background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.25);
       color: white;
       padding: 10px;
       border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
+      font-family: 'Lato', sans-serif;
       transition: background 0.2s;
     }
 
     .sidebar-footer .btn-deco:hover {
-      background: rgba(220,53,69,0.8);
+      background: rgba(217,83,79,0.85);
+      border-color: rgba(217,83,79,0.85);
     }
 
-    /* ✅ CONTENU PRINCIPAL (à droite de la sidebar) */
+    /* ✅ CONTENU PRINCIPAL */
     .main-content {
       margin-left: 260px;
       flex: 1;
@@ -132,71 +217,268 @@
     }
 
     .main-content h1 {
-      color: #8B4513;
-      margin-bottom: 10px;
-      font-size: 32px;
+      color: var(--teal-dark);
+      margin: 0 0 6px 0;
+      font-size: 30px;
     }
 
     .main-content .sous-titre {
-      color: #888;
-      margin-bottom: 30px;
-      font-size: 16px;
+      color: var(--muted);
+      margin-bottom: 26px;
+      font-size: 15px;
     }
+
+    /* ✅ FILTRES PAR CATÉGORIE */
+    .filtres {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .btn-filtre {
+      background: white;
+      border: 1px solid var(--cream);
+      color: var(--teal-dark);
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 13px;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-filtre:hover { background: var(--cream); }
+    .btn-filtre.actif-filtre {
+      background: var(--gold);
+      color: white;
+      border-color: var(--gold);
+      box-shadow: 0 2px 8px rgba(184,132,62,0.35);
+    }
+
+    /* ✅ BOUTONS & FORMULAIRE */
+    .barre-actions { margin-bottom: 22px; }
+
+    .btn-principal {
+      background: var(--teal);
+      color: white;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-principal:hover { background: var(--teal-dark); }
+
+    .btn-annuler {
+      background: var(--cream);
+      color: var(--text);
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-annuler:hover { background: #ecdfc2; }
+
+    .formulaire {
+      background: white;
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 12px rgba(27,94,110,0.07);
+      max-width: 480px;
+    }
+
+    .formulaire h3 { color: var(--teal-dark); margin: 0 0 16px 0; font-size: 18px; }
+
+    .form-groupe {
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-groupe label { font-size: 13px; color: var(--muted); font-weight: 600; }
+
+    .form-groupe input, .form-groupe select {
+      padding: 10px 12px;
+      border: 1px solid var(--cream);
+      border-radius: 8px;
+      font-family: 'Lato', sans-serif;
+      font-size: 14px;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .form-groupe input:focus, .form-groupe select:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    .form-boutons { display: flex; gap: 10px; margin-top: 8px; }
+
+    /* ✅ GRILLE PRODUITS */
+    .grille-produits {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      margin-top: 6px;
+    }
+
+    .carte-produit {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 2px 12px rgba(27,94,110,0.07);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .carte-produit:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 22px rgba(27,94,110,0.13);
+    }
+
+    .produit-icone { font-size: 38px; line-height: 1; margin-bottom: 4px; }
+
+    .produit-info h3 { font-size: 16px; color: var(--text); margin: 0 0 4px 0; }
+    .produit-description {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 10px 0;
+      min-height: 18px;
+    }
+
+    .produit-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .produit-prix { font-size: 18px; font-weight: 700; color: var(--teal-dark); }
+    .produit-quantite { font-size: 12px; color: var(--muted); }
+
+    .produit-statut { margin-bottom: 10px; }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .badge.rouge  { background: rgba(217,83,79,0.15); color: var(--rouge); }
+    .badge.orange { background: rgba(212,160,85,0.2); color: var(--gold-dark); }
+    .badge.vert   { background: rgba(76,175,125,0.15); color: #1f7a4d; }
+
+    .produit-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: auto;
+    }
+
+    .btn-modifier, .btn-supprimer {
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-modifier { background: rgba(27,94,110,0.12); color: var(--teal); }
+    .btn-modifier:hover { background: rgba(27,94,110,0.22); }
+    .btn-supprimer { background: rgba(217,83,79,0.12); color: var(--rouge); }
+    .btn-supprimer:hover { background: rgba(217,83,79,0.22); }
 
     /* ✅ RESPONSIVE */
     @media (max-width: 768px) {
+      .topbar-mobile { display: flex; }
+      .btn-fermer-sidebar { display: block; }
+
       .sidebar {
-        width: 220px;
+        width: 260px;
+        max-width: 80vw;
         transform: translateX(-100%);
         transition: transform 0.3s;
       }
-      .sidebar.open {
-        transform: translateX(0);
-      }
+      .sidebar.open { transform: translateX(0); }
+
       .main-content {
         margin-left: 0;
-        padding: 20px;
+        padding: 20px 16px;
+        padding-top: 78px;
       }
+
+      .formulaire { max-width: 100%; }
+    }
+
+    @media (max-width: 420px) {
+      .form-boutons { flex-direction: column; }
+      .btn-principal, .btn-annuler { width: 100%; }
+      .filtres { width: 100%; }
+      .btn-filtre { flex: 1; text-align: center; padding: 10px 8px; }
     }
   </style>
 </head>
 <body>
 
+  <!-- ✅ TOPBAR MOBILE -->
+  <div class="topbar-mobile">
+    <button class="btn-hamburger" onclick="toggleSidebar()" aria-label="Ouvrir le menu">☰</button>
+    <span class="topbar-titre">🧁 Petit Délices — Produits</span>
+  </div>
+
+  <!-- ✅ OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
   <!-- ✅ SIDEBAR À GAUCHE -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
+      <button class="btn-fermer-sidebar" onclick="toggleSidebar()" aria-label="Fermer le menu">✕</button>
       <img src="../images/logo.png" alt="Logo Petit Délices" class="logo-img">
       <div class="logo-text">Petit Délices</div>
       <div class="sous-titre">Espace de Gestion</div>
     </div>
-    
+
     <nav class="sidebar-nav">
-  <a href="../index.html">
-    <img src="../images/accueil.png" alt="Accueil" class="icone-img">
-    Accueil
-  </a>
-  <a href="stock.html">
-    <img src="../images/stock.png" alt="Stock" class="icone-img">
-    Stock
-  </a>
-  <a href="produits.html">
-    <img src="../images/produits.png" alt="Produits" class="icone-img">
-    Produits
-  </a>
-  <a href="../commandes.html">
-    <img src="../images/commandes.png" alt="Commandes" class="icone-img">
-    Commandes
-  </a>
-  <a href="dashboard.html">
-    <img src="../images/dashboard.png" alt="Dashboard" class="icone-img">
-    Dashboard
-  </a>
-  <a href="utilisateurs.html">
-    <img src="../images/utilisateurs.png" alt="Utilisateurs" class="icone-img">
-    Utilisateurs
-  </a>
-</nav>
-    
+      <a href="../index.html">
+        <img src="../images/accueil.png" alt="Accueil" class="icone-img">
+        Accueil
+      </a>
+      <a href="stock.html">
+        <img src="../images/stock.png" alt="Stock" class="icone-img">
+        Stock
+      </a>
+      <a href="produits.html" class="actif">
+        <img src="../images/produits.png" alt="Produits" class="icone-img">
+        Produits
+      </a>
+      <a href="../commandes.html">
+        <img src="../images/commandes.png" alt="Commandes" class="icone-img">
+        Commandes
+      </a>
+      <a href="dashboard.html">
+        <img src="../images/dashboard.png" alt="Dashboard" class="icone-img">
+        Dashboard
+      </a>
+      <a href="utilisateurs.html">
+        <img src="../images/utilisateurs.png" alt="Utilisateurs" class="icone-img">
+        Utilisateurs
+      </a>
+    </nav>
+
     <div class="sidebar-footer">
       <div class="user-info" id="header-user">Chargement...</div>
       <button class="btn-deco" onclick="seDeconnecter()">🚪 Déconnexion</button>
@@ -258,23 +540,35 @@
     <div id="grille-produits" class="grille-produits"></div>
 
   </main>
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="../config.js"></script>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="../config.js"></script>
   <script src="../auth.js"></script>
   <script src="produits.js"></script>
   <script>
     // Afficher le nom de l'utilisateur connecté
-
-  (function() {
-    var u = JSON.parse(sessionStorage.getItem("user"));
-    if (u) document.getElementById("header-user").textContent = "👋 " + u.nom;
+    (function() {
+      var u = JSON.parse(sessionStorage.getItem("user"));
+      if (u) document.getElementById("header-user").textContent = "👋 " + u.nom;
     })();
-
 
     function seDeconnecter() {
       sessionStorage.removeItem("user");
       window.location.href = "../login.html";
     }
+
+    // ✅ Menu mobile : ouvrir/fermer la sidebar
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("open");
+      document.getElementById("sidebarOverlay").classList.toggle("open");
+    }
+
+    document.querySelectorAll(".sidebar-nav a").forEach(lien => {
+      lien.addEventListener("click", () => {
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("sidebarOverlay").classList.remove("open");
+      });
+    });
   </script>
 </body>
 </html>

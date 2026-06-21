@@ -4,12 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Petit Délices — Inscription</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --teal: #1B5E6E;
+      --teal-dark: #134752;
+      --gold: #D4A055;
+      --gold-dark: #B8843E;
+      --cream: #F5E6C8;
+      --bg: #FAFAF7;
+      --text: #2C2C2C;
+      --muted: #8A8A8A;
+      --vert: #4CAF7D;
+      --rouge: #D9534F;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f9f4f0;
+      font-family: 'Lato', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -19,84 +34,97 @@
 
     .box {
       background: white;
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 40px;
       width: 100%;
       max-width: 420px;
-      box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 30px rgba(27,94,110,0.12);
     }
 
-    .logo {
-      text-align: center;
-      margin-bottom: 28px;
+    .logo { text-align: center; margin-bottom: 28px; }
+    .logo .logo-img {
+      max-width: 90px;
+      height: auto;
+      display: block;
+      margin: 0 auto 14px auto;
     }
-    .logo span { font-size: 50px; display: block; margin-bottom: 10px; }
-    .logo h1 { color: #8B4513; font-size: 22px; }
-    .logo p { color: #999; font-size: 13px; margin-top: 4px; }
+    .logo h1 {
+      font-family: 'Playfair Display', serif;
+      color: var(--teal-dark);
+      font-size: 23px;
+      font-weight: 700;
+    }
+    .logo p { color: var(--muted); font-size: 13px; margin-top: 6px; }
 
     .form-groupe { margin-bottom: 16px; }
     .form-groupe label {
       display: block;
       margin-bottom: 6px;
       font-size: 13px;
-      color: #666;
-      font-weight: 500;
+      color: var(--muted);
+      font-weight: 600;
     }
     .form-groupe input {
       width: 100%;
       padding: 12px 14px;
-      border: 1.5px solid #ddd;
+      border: 1.5px solid var(--cream);
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 15px;
       font-family: inherit;
+      background: var(--bg);
+      color: var(--text);
       transition: border-color 0.2s;
       box-sizing: border-box;
     }
     .form-groupe input:focus {
       outline: none;
-      border-color: #8B4513;
+      border-color: var(--gold);
+      background: white;
     }
 
     .btn {
       width: 100%;
-      background: #8B4513;
+      background: var(--teal);
       color: white;
       border: none;
       padding: 14px;
       border-radius: 10px;
       font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
       font-family: inherit;
       margin-top: 6px;
       transition: background 0.2s;
     }
-    .btn:hover { background: #7a3a10; }
+    .btn:hover { background: var(--teal-dark); }
     .btn:disabled { background: #ccc; cursor: not-allowed; }
 
     .erreur {
-      background: #f8d7da;
-      color: #721c24;
+      background: rgba(217,83,79,0.12);
+      color: var(--rouge);
       padding: 10px 14px;
       border-radius: 8px;
       font-size: 13px;
       margin-bottom: 16px;
       display: none;
+      font-weight: 600;
     }
 
     .succes {
-      background: #d4edda;
-      color: #155724;
+      background: rgba(76,175,125,0.12);
+      color: #1f7a4d;
       padding: 10px 14px;
       border-radius: 8px;
       font-size: 13px;
       margin-bottom: 16px;
       display: none;
+      font-weight: 600;
     }
 
     .separateur {
       text-align: center;
-      color: #ccc;
-      margin: 20px 0;
+      color: var(--cream);
+      margin: 22px 0;
       font-size: 13px;
       position: relative;
     }
@@ -106,7 +134,7 @@
       top: 50%;
       width: 40%;
       height: 1px;
-      background: #eee;
+      background: var(--cream);
     }
     .separateur::before { left: 0; }
     .separateur::after  { right: 0; }
@@ -114,21 +142,28 @@
     .lien-login {
       text-align: center;
       font-size: 13px;
-      color: #888;
+      color: var(--muted);
     }
     .lien-login a {
-      color: #8B4513;
+      color: var(--teal);
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 700;
     }
-    .lien-login a:hover { text-decoration: underline; }
+    .lien-login a:hover { text-decoration: underline; color: var(--teal-dark); }
+
+    /* ✅ RESPONSIVE */
+    @media (max-width: 420px) {
+      .box { padding: 28px 22px; border-radius: 14px; }
+      .logo .logo-img { max-width: 72px; }
+      .logo h1 { font-size: 20px; }
+    }
   </style>
 </head>
 <body>
 
   <div class="box">
     <div class="logo">
-<img src="./images/logo.png" alt="Logo" class="logo-img" style="margin: 0; max-width: 100px;">
+      <img src="./images/logo.png" alt="Logo" class="logo-img">
       <h1>Petit Délices</h1>
       <p>Créez votre compte pour commander</p>
     </div>
@@ -137,22 +172,22 @@
     <div class="succes" id="succes"></div>
 
     <div class="form-groupe">
-      <label>Nom complet *</label>
+      <label for="nom">Nom complet *</label>
       <input type="text" id="nom" placeholder="Ex: Mohamed Alami">
     </div>
 
     <div class="form-groupe">
-      <label>Email *</label>
+      <label for="email">Email *</label>
       <input type="email" id="email" placeholder="votre@email.com">
     </div>
 
     <div class="form-groupe">
-      <label>Mot de passe * (6 caractères minimum)</label>
+      <label for="mdp">Mot de passe * (6 caractères minimum)</label>
       <input type="password" id="mdp" placeholder="••••••••">
     </div>
 
     <div class="form-groupe">
-      <label>Confirmer le mot de passe *</label>
+      <label for="mdp2">Confirmer le mot de passe *</label>
       <input type="password" id="mdp2" placeholder="••••••••" onkeydown="if(event.key==='Enter') sInscrire()">
     </div>
 
@@ -164,24 +199,27 @@
       Déjà un compte ? <a href="login.html">Se connecter</a>
     </div>
   </div>
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="config.js"></script>
 
   <script>
     // Utiliser les variables globales de config.js
-const API = window.API;
-const socket = window.socket;
+    const API = window.API;
+    const socket = window.socket;
 
     // Si déjà connecté en tant que client, rediriger directement
     let userExistant = JSON.parse(sessionStorage.getItem("user"))
     if (userExistant && userExistant.role === "client") {
       window.location.href = "commande-client.html"
     }
+
     // Fonction pour afficher/masquer l'ICE
-  function toggleIce() {
-    let type = document.querySelector('input[name="type_client"]:checked').value;
-    document.getElementById("bloc-ice").style.display = type === "entreprise" ? "block" : "none";
-  }
+    function toggleIce() {
+      let type = document.querySelector('input[name="type_client"]:checked').value;
+      document.getElementById("bloc-ice").style.display = type === "entreprise" ? "block" : "none";
+    }
+
     async function sInscrire() {
       let nom   = document.getElementById("nom").value.trim()
       let email = document.getElementById("email").value.trim()
@@ -194,7 +232,6 @@ const socket = window.socket;
 
       erreurDiv.style.display = "none"
       succesDiv.style.display = "none"
-
 
       if (!nom || !email || !mdp || !mdp2) {
         erreurDiv.textContent = "Veuillez remplir tous les champs !"
@@ -218,54 +255,52 @@ const socket = window.socket;
       btn.textContent = "Création en cours..."
 
       try {
-  let response = await fetch(API + "/auth/inscription", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    // ✅ AJOUTER ice ET type_client
-    body: JSON.stringify({ 
-      nom, 
-      email, 
-      mot_de_passe: mdp
-    })
-  })
+        let response = await fetch(API + "/auth/inscription", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nom,
+            email,
+            mot_de_passe: mdp
+          })
+        })
 
-  let data = await response.json()
+        let data = await response.json()
 
-  if (!response.ok) {
-    erreurDiv.textContent = data.erreur || "Erreur lors de l'inscription"
-    erreurDiv.style.display = "block"
-    btn.disabled = false
-    btn.textContent = "✅ Créer mon compte"
-    return
-  }
+        if (!response.ok) {
+          erreurDiv.textContent = data.erreur || "Erreur lors de l'inscription"
+          erreurDiv.style.display = "block"
+          btn.disabled = false
+          btn.textContent = "✅ Créer mon compte"
+          return
+        }
 
-  // Connexion automatique après inscription
-  sessionStorage.setItem("user", JSON.stringify(data))
-  succesDiv.textContent = "✅ Compte créé ! Redirection vers la boutique..."
-  succesDiv.style.display = "block"
+        // Connexion automatique après inscription
+        sessionStorage.setItem("user", JSON.stringify(data))
+        succesDiv.textContent = "✅ Compte créé ! Redirection vers la boutique..."
+        succesDiv.style.display = "block"
 
-  setTimeout(() => {
-  // ✅ Recharger les données utilisateur depuis le serveur
-  fetch(API + "/profil/" + data.id)
-    .then(r => r.json())
-    .then(profil => {
-      // Mettre à jour sessionStorage avec les vraies données
-      data.ice = profil.ice
-      data.type_client = profil.type_client
-      sessionStorage.setItem("user", JSON.stringify(data))
-      window.location.href = "commande-client.html"
-    })
-    .catch(() => {
-      window.location.href = "commande-client.html"
-    })
-}, 1200)
+        setTimeout(() => {
+          // ✅ Recharger les données utilisateur depuis le serveur
+          fetch(API + "/profil/" + data.id)
+            .then(r => r.json())
+            .then(profil => {
+              data.ice = profil.ice
+              data.type_client = profil.type_client
+              sessionStorage.setItem("user", JSON.stringify(data))
+              window.location.href = "commande-client.html"
+            })
+            .catch(() => {
+              window.location.href = "commande-client.html"
+            })
+        }, 1200)
 
-} catch(err) {
-  erreurDiv.textContent = "Impossible de contacter le serveur"
-  erreurDiv.style.display = "block"
-  btn.disabled = false
-  btn.textContent = "✅ Créer mon compte"
-}
+      } catch(err) {
+        erreurDiv.textContent = "Impossible de contacter le serveur"
+        erreurDiv.style.display = "block"
+        btn.disabled = false
+        btn.textContent = "✅ Créer mon compte"
+      }
     }
   </script>
 

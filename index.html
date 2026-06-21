@@ -5,28 +5,101 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Petit Délices — Gestion</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ============================================
-       LAYOUT : SIDEBAR À GAUCHE
-       ============================================ */
+    :root {
+      --teal: #1B5E6E;
+      --teal-dark: #134752;
+      --gold: #D4A055;
+      --gold-dark: #B8843E;
+      --cream: #F5E6C8;
+      --bg: #FAFAF7;
+      --text: #2C2C2C;
+      --muted: #8A8A8A;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
       display: flex;
       min-height: 100vh;
       margin: 0;
-      background: #f9f4f0;
-      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      font-family: 'Lato', sans-serif;
+      color: var(--text);
     }
 
-    /* ✅ SIDEBAR (menu à gauche) */
+    h1, h2 { font-family: 'Playfair Display', serif; }
+
+    /* ✅ TOPBAR MOBILE */
+    .topbar-mobile {
+      display: none;
+      align-items: center;
+      gap: 14px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 58px;
+      background: var(--teal-dark);
+      color: white;
+      padding: 0 16px;
+      z-index: 90;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+
+    .btn-hamburger {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      font-size: 18px;
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .topbar-titre {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 95;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .sidebar-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .btn-fermer-sidebar {
+      display: none;
+      position: absolute;
+      top: 14px; right: 14px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    /* ✅ SIDEBAR */
     .sidebar {
       width: 260px;
-      background: linear-gradient(180deg, #8B4513 0%, #6d3610 100%);
+      background: linear-gradient(180deg, var(--teal) 0%, var(--teal-dark) 100%);
       color: white;
       position: fixed;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
       height: 100vh;
-      box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+      box-shadow: 2px 0 15px rgba(0,0,0,0.12);
       display: flex;
       flex-direction: column;
       z-index: 100;
@@ -36,34 +109,32 @@
       padding: 30px 20px;
       border-bottom: 1px solid rgba(255,255,255,0.15);
       text-align: center;
+      position: relative;
     }
-
     .sidebar-header .logo-img {
-      max-width: 100px;
+      max-width: 90px;
       height: auto;
       display: block;
       margin: 0 auto 12px auto;
       border-radius: 8px;
+      background: rgba(255,255,255,0.9);
+      padding: 6px;
     }
-
     .sidebar-header .logo-text {
-      font-size: 20px;
-      font-weight: bold;
+      font-family: 'Playfair Display', serif;
+      font-size: 21px;
+      font-weight: 700;
       color: white;
       margin-bottom: 4px;
     }
-
     .sidebar-header .sous-titre {
       font-size: 12px;
-      color: rgba(255, 255, 255, 0.7);
+      color: var(--cream);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
 
-    .sidebar-nav {
-      flex: 1;
-      padding: 20px 0;
-      overflow-y: auto;
-    }
-
+    .sidebar-nav { flex: 1; padding: 20px 0; overflow-y: auto; }
     .sidebar-nav a {
       display: flex;
       align-items: center;
@@ -72,166 +143,150 @@
       color: rgba(255,255,255,0.85);
       text-decoration: none;
       font-size: 15px;
+      white-space: nowrap;
       transition: all 0.2s;
       border-left: 4px solid transparent;
     }
+    .sidebar-nav a:hover { background: rgba(255,255,255,0.1); color: white; border-left-color: var(--gold); }
+    .sidebar-nav a.actif { background: rgba(255,255,255,0.15); color: white; border-left-color: var(--gold); font-weight: 600; }
+    .sidebar-nav a .icone-img { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; opacity: 0.92; }
 
-    .sidebar-nav a:hover {
-      background: rgba(255,255,255,0.1);
-      color: white;
-      border-left-color: #ffd700;
-    }
-
-    .sidebar-nav a.actif {
-      background: rgba(255,255,255,0.15);
-      color: white;
-      border-left-color: #ffd700;
-      font-weight: 600;
-    }
-
-    .sidebar-nav a .icone {
-      font-size: 18px;
-      width: 24px;
-      text-align: center;
-    }
-
-    .sidebar-footer {
-      padding: 16px 20px;
-      border-top: 1px solid rgba(255,255,255,0.15);
-    }
-
+    .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.15); }
+    .sidebar-footer .user-info { font-size: 13px; opacity: 0.9; text-align: center; margin-bottom: 12px; }
     .sidebar-footer .btn-deco {
       width: 100%;
       background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.25);
       color: white;
       padding: 10px;
       border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
+      font-family: 'Lato', sans-serif;
       transition: background 0.2s;
     }
+    .sidebar-footer .btn-deco:hover { background: rgba(217,83,79,0.85); border-color: rgba(217,83,79,0.85); }
 
-    .sidebar-footer .btn-deco:hover {
-      background: rgba(220,53,69,0.8);
-    }
-
-    /* ✅ CONTENU PRINCIPAL (à droite de la sidebar) */
-    .main-content {
-      margin-left: 260px;
-      flex: 1;
-      padding: 40px;
-      min-height: 100vh;
-    }
-
-    .main-content h1 {
-      color: #8B4513;
-      margin-bottom: 10px;
-      font-size: 32px;
-    }
-
-    .main-content .sous-titre {
-      color: #888;
-      margin-bottom: 40px;
-      font-size: 16px;
-    }
+    /* ✅ CONTENU PRINCIPAL */
+    .main-content { margin-left: 260px; flex: 1; padding: 40px; min-height: 100vh; }
+    .main-content h1 { color: var(--teal-dark); margin: 0 0 6px 0; font-size: 30px; }
+    .main-content .sous-titre { color: var(--muted); margin-bottom: 36px; font-size: 15px; }
 
     /* ✅ CARTES RACCOURCIS */
     .cartes {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 24px;
-      margin-top: 30px;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 22px;
+      margin-top: 10px;
     }
 
     .carte {
       background: white;
-      border-radius: 12px;
-      padding: 30px;
+      border-radius: 14px;
+      padding: 30px 24px;
       text-align: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      box-shadow: 0 2px 12px rgba(27,94,110,0.08);
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.25s;
       border: 2px solid transparent;
     }
-
     .carte:hover {
       transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(139,69,19,0.2);
-      border-color: #8B4513;
+      box-shadow: 0 10px 24px rgba(27,94,110,0.18);
+      border-color: var(--gold);
     }
 
     .carte-icone {
-      font-size: 50px;
-      margin-bottom: 15px;
+      width: 56px; height: 56px;
+      margin: 0 auto 16px auto;
+      background: rgba(212,160,85,0.12);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+    .carte-icone img { width: 30px; height: 30px; object-fit: contain; }
 
-    .carte h2 {
-      color: #8B4513;
-      font-size: 20px;
-      margin-bottom: 8px;
-    }
-
-    .carte p {
-      color: #888;
-      font-size: 14px;
-    }
+    .carte h2 { color: var(--teal-dark); font-size: 18px; margin: 0 0 6px 0; }
+    .carte p { color: var(--muted); font-size: 13px; margin: 0; }
 
     /* ✅ RESPONSIVE */
     @media (max-width: 768px) {
+      .topbar-mobile { display: flex; }
+      .btn-fermer-sidebar { display: block; }
+
       .sidebar {
-        width: 220px;
+        width: 260px;
+        max-width: 80vw;
         transform: translateX(-100%);
         transition: transform 0.3s;
       }
-      .sidebar.open {
-        transform: translateX(0);
-      }
+      .sidebar.open { transform: translateX(0); }
+
       .main-content {
         margin-left: 0;
-        padding: 20px;
+        padding: 20px 16px;
+        padding-top: 78px;
       }
+    }
+
+    @media (max-width: 420px) {
+      .cartes { grid-template-columns: 1fr 1fr; gap: 14px; }
+      .carte { padding: 20px 14px; }
+      .carte h2 { font-size: 15px; }
+      .carte p { font-size: 12px; }
     }
   </style>
 </head>
 <body>
 
+  <!-- ✅ TOPBAR MOBILE -->
+  <div class="topbar-mobile">
+    <button class="btn-hamburger" onclick="toggleSidebar()" aria-label="Ouvrir le menu">☰</button>
+    <span class="topbar-titre">🥐 Petit Délices — Gestion</span>
+  </div>
+
+  <!-- ✅ OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
   <!-- ✅ SIDEBAR À GAUCHE -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
+      <button class="btn-fermer-sidebar" onclick="toggleSidebar()" aria-label="Fermer le menu">✕</button>
       <img src="./images/logo.png" alt="Logo Petit Délices" class="logo-img">
       <div class="logo-text">Petit Délices</div>
       <div class="sous-titre">Espace de Gestion</div>
     </div>
-    
+
     <nav class="sidebar-nav">
-  <a href="index.html">
-    <img src="images/accueil.png" alt="Accueil" class="icone-img">
-    Accueil
-  </a>
-  <a href="pages/stock.html">
-    <img src="images/stock.png" alt="Stock" class="icone-img">
-    Stock
-  </a>
-  <a href="pages/produits.html">
-    <img src="images/produits.png" alt="Produits" class="icone-img">
-    Produits
-  </a>
-  <a href="commandes.html">
-    <img src="images/commandes.png" alt="Commandes" class="icone-img">
-    Commandes
-  </a>
-  <a href="pages/dashboard.html">
-    <img src="images/dashboard.png" alt="Dashboard" class="icone-img">
-    Dashboard
-  </a>
-  <a href="pages/utilisateurs.html">
-    <img src="images/utilisateurs.png" alt="Utilisateurs" class="icone-img">
-    Utilisateurs
-  </a>
-</nav>
-    
+      <a href="index.html" class="actif">
+        <img src="images/accueil.png" alt="Accueil" class="icone-img">
+        Accueil
+      </a>
+      <a href="pages/stock.html">
+        <img src="images/stock.png" alt="Stock" class="icone-img">
+        Stock
+      </a>
+      <a href="pages/produits.html">
+        <img src="images/produits.png" alt="Produits" class="icone-img">
+        Produits
+      </a>
+      <a href="commandes.html">
+        <img src="images/commandes.png" alt="Commandes" class="icone-img">
+        Commandes
+      </a>
+      <a href="pages/dashboard.html">
+        <img src="images/dashboard.png" alt="Dashboard" class="icone-img">
+        Dashboard
+      </a>
+      <a href="pages/utilisateurs.html">
+        <img src="images/utilisateurs.png" alt="Utilisateurs" class="icone-img">
+        Utilisateurs
+      </a>
+    </nav>
+
     <div class="sidebar-footer">
+      <div class="user-info" id="header-user"></div>
       <button class="btn-deco" onclick="seDeconnecter()">🚪 Déconnexion</button>
     </div>
   </aside>
@@ -244,55 +299,64 @@
     <!-- CARTES RACCOURCIS -->
     <div class="cartes">
       <div class="carte" onclick="window.location='pages/stock.html'">
-        <div class="carte-icone">
-          <img src="images/stock.png" alt="Stock" class="icone-img" style="width: 50px; height: 50px;">
-        </div>
+        <div class="carte-icone"><img src="images/stock.png" alt="Stock"></div>
         <h2>Stock</h2>
         <p>Gérer les ingrédients</p>
       </div>
 
       <div class="carte" onclick="window.location='pages/produits.html'">
-        <div class="carte-icone">
-          <img src="images/produits.png" alt="Produits" class="icone-img" style="width: 50px; height: 50px;">
-        </div>
+        <div class="carte-icone"><img src="images/produits.png" alt="Produits"></div>
         <h2>Produits</h2>
         <p>Croissants, pains, gâteaux...</p>
       </div>
 
       <div class="carte" onclick="window.location='commandes.html'">
-        <div class="carte-icone">
-          <img src="images/commandes.png" alt="Commandes" class="icone-img" style="width: 50px; height: 50px;">
-        </div>
+        <div class="carte-icone"><img src="images/commandes.png" alt="Commandes"></div>
         <h2>Commandes</h2>
         <p>Suivre les commandes clients</p>
       </div>
 
       <div class="carte" onclick="window.location='pages/dashboard.html'">
-        <div class="carte-icone">
-          <img src="images/dashboard.png" alt="Dashboard" class="icone-img" style="width: 50px; height: 50px;">
-        </div>
+        <div class="carte-icone"><img src="images/dashboard.png" alt="Dashboard"></div>
         <h2>Dashboard</h2>
         <p>Statistiques et résumé</p>
       </div>
 
       <div class="carte" onclick="window.location='pages/utilisateurs.html'">
-        <div class="carte-icone">
-          <img src="images/utilisateurs.png" alt="Utilisateurs" class="icone-img" style="width: 50px; height: 50px;">
-        </div>
+        <div class="carte-icone"><img src="images/utilisateurs.png" alt="Utilisateurs"></div>
         <h2>Utilisateurs</h2>
         <p>Gérer les comptes</p>
       </div>
     </div>
   </main>
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="config.js"></script>
 
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="config.js"></script>
   <script src="app.js"></script>
   <script>
+    // Afficher le nom de l'utilisateur connecté (si dispo)
+    let user = JSON.parse(sessionStorage.getItem("user") || "null");
+    if (user && user.nom) {
+      document.getElementById("header-user").textContent = `👋 ${user.nom}`;
+    }
+
     function seDeconnecter() {
       sessionStorage.removeItem("user");
       window.location.href = "login.html";
     }
+
+    // ✅ Menu mobile : ouvrir/fermer la sidebar
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("open");
+      document.getElementById("sidebarOverlay").classList.toggle("open");
+    }
+
+    document.querySelectorAll(".sidebar-nav a").forEach(lien => {
+      lien.addEventListener("click", () => {
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("sidebarOverlay").classList.remove("open");
+      });
+    });
   </script>
 </body>
 </html>

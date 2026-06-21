@@ -5,15 +5,233 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Achat — Petit Délices</title>
   <link rel="stylesheet" href="../style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --teal: #1B5E6E;
+      --teal-dark: #134752;
+      --gold: #D4A055;
+      --gold-dark: #B8843E;
+      --cream: #F5E6C8;
+      --bg: #FAFAF7;
+      --text: #2C2C2C;
+      --muted: #8A8A8A;
+      --vert: #4CAF7D;
+      --rouge: #D9534F;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'Lato', sans-serif;
+      color: var(--text);
+    }
+
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+    /* ✅ HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 14px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+
+    .entete-logo { display: flex; align-items: center; gap: 12px; min-width: 0; }
+
+    .entete-logo img {
+      width: 42px; height: 42px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.9);
+      padding: 4px;
+      flex-shrink: 0;
+      object-fit: contain;
+    }
+
+    .entete-texte { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+    .entete-texte .nom-marque { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; white-space: nowrap; }
+    .entete-texte .role-espace { font-size: 11px; color: var(--cream); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .entete-droite { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    #header-user { font-size: 13px; opacity: 0.92; white-space: nowrap; }
+
+    .btn-header-deco {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'Lato', sans-serif;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .btn-header-deco:hover { background: rgba(217,83,79,0.85); }
+
+    /* ✅ CONTENU */
+    main { max-width: 1000px; margin: 0 auto; padding: 28px 20px 60px; }
+    main h1 { color: var(--teal-dark); margin: 0 0 4px 0; font-size: 26px; }
+    main > p { color: var(--muted); margin: 0 0 24px 0; font-size: 14px; }
+
+    /* ✅ BOUTONS & FORMULAIRE */
+    .barre-actions { margin-bottom: 22px; }
+
+    .btn-principal {
+      background: var(--teal);
+      color: white;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-principal:hover { background: var(--teal-dark); }
+
+    .btn-annuler {
+      background: var(--cream);
+      color: var(--text);
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-annuler:hover { background: #ecdfc2; }
+
+    .formulaire {
+      background: white;
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 12px rgba(27,94,110,0.07);
+      max-width: 480px;
+    }
+    .formulaire h3 { color: var(--teal-dark); margin: 0 0 16px 0; font-size: 18px; }
+
+    .form-groupe { margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px; }
+    .form-groupe label { font-size: 13px; color: var(--muted); font-weight: 600; }
+    .form-groupe input, .form-groupe select {
+      padding: 10px 12px;
+      border: 1px solid var(--cream);
+      border-radius: 8px;
+      font-family: 'Lato', sans-serif;
+      font-size: 14px;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .form-groupe input:focus, .form-groupe select:focus { outline: none; border-color: var(--gold); }
+
+    .form-boutons { display: flex; gap: 10px; margin-top: 8px; }
+
+    /* ✅ ALERTES */
+    .alerte-box {
+      background: rgba(217,83,79,0.08);
+      border-left: 4px solid var(--rouge);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    /* ✅ TABLEAU */
+    .tableau-wrapper {
+      overflow-x: auto;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(27,94,110,0.07);
+    }
+    .tableau { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 680px; }
+    .tableau thead { background: var(--teal); color: white; }
+    .tableau th { padding: 14px 16px; text-align: left; font-weight: 600; font-size: 13px; white-space: nowrap; }
+    .tableau td { padding: 12px 16px; border-bottom: 1px solid var(--cream); vertical-align: middle; }
+    .tableau tbody tr:last-child td { border-bottom: none; }
+    .tableau tbody tr:hover { background: rgba(245,230,200,0.3); }
+    .tableau td:last-child { white-space: nowrap; }
+
+    .input-quantite {
+      width: 80px;
+      padding: 6px 8px;
+      border: 1px solid var(--cream);
+      border-radius: 6px;
+      font-family: 'Lato', sans-serif;
+    }
+    .input-quantite:focus { outline: none; border-color: var(--gold); }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .badge.rouge  { background: rgba(217,83,79,0.15); color: var(--rouge); }
+    .badge.orange { background: rgba(212,160,85,0.2); color: var(--gold-dark); }
+    .badge.vert   { background: rgba(76,175,125,0.15); color: #1f7a4d; }
+
+    .btn-ajouter-qte {
+      background: rgba(76,175,125,0.15);
+      color: #1f7a4d;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      white-space: nowrap;
+    }
+    .btn-ajouter-qte:hover { background: rgba(76,175,125,0.3); }
+
+    /* ✅ RESPONSIVE */
+    @media (max-width: 700px) {
+      header { padding: 12px 16px; }
+      .entete-texte .nom-marque { font-size: 16px; }
+      main { padding: 20px 14px 50px; }
+      .formulaire { max-width: 100%; }
+    }
+
+    @media (max-width: 420px) {
+      .entete-droite { gap: 8px; }
+      #header-user { display: none; }
+      .form-boutons { flex-direction: column; }
+      .btn-principal, .btn-annuler { width: 100%; }
+    }
+  </style>
 </head>
 <body>
 
   <header>
-    <div class="logo">🥐 Petit Délices</div>
-<img src="../images/logo.png" alt="Logo" class="logo-img" style="margin: 0; max-width: 100px;">
-    <div style="display:flex; align-items:center; gap:16px">
-      <span id="header-user" style="font-size:13px; opacity:0.85"></span>
-      <button onclick="seDeconnecter()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:6px 12px; border-radius:6px; cursor:pointer;">🚪 Déconnexion</button>
+    <div class="entete-logo">
+      <img src="../images/logo.png" alt="Logo Petit Délices">
+      <div class="entete-texte">
+        <span class="nom-marque">Petit Délices</span>
+        <span class="role-espace">Espace Achat</span>
+      </div>
+    </div>
+    <div class="entete-droite">
+      <span id="header-user"></span>
+      <button class="btn-header-deco" onclick="seDeconnecter()">🚪 Déconnexion</button>
     </div>
   </header>
 
@@ -57,45 +275,49 @@
 
     <div id="alertes"></div>
 
-    <table class="tableau">
-      <thead>
-        <tr>
-          <th>Ingrédient</th>
-          <th>Quantité</th>
-          <th>Unité</th>
-          <th>Minimum</th>
-          <th>Statut</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="tableau-stock"></tbody>
-    </table>
+    <div class="tableau-wrapper">
+      <table class="tableau">
+        <thead>
+          <tr>
+            <th>Ingrédient</th>
+            <th>Quantité</th>
+            <th>Unité</th>
+            <th>Minimum</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableau-stock"></tbody>
+      </table>
+    </div>
   </main>
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="../config.js"></script>
 
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="../config.js"></script>
   <script src="../auth.js"></script>
   <script>
     const API    = window.API;
-const socket = window.socket;
+    const socket = window.socket;
     let user = null
-    // ✅ INITIALISER SOCKET
 
-  // ✅ ÉCOUTER LES MISES À JOUR
-  // ✅ Écouter la mise à jour des produits
-socket.on("rafraichir_stock_produits", () => {
-  console.log("🔄 Le stock des produits a été modifié, mise à jour automatique...")
-  if (typeof chargerProduits === "function") chargerProduits()
-})
+    // ✅ Écouter la mise à jour des produits
+    socket.on("rafraichir_stock_produits", () => {
+      console.log("🔄 Le stock des produits a été modifié, mise à jour automatique...")
+      if (typeof chargerProduits === "function") chargerProduits()
+    })
 
-// ✅ Écouter la mise à jour des ingrédients
-socket.on("rafraichir_stock_ingredients", () => {
-  console.log("🔄 Le stock des ingrédients a été modifié, mise à jour automatique...")
-  if (typeof chargerIngredients === "function") chargerIngredients()
-})
+    // ✅ Écouter la mise à jour des ingrédients
+    socket.on("rafraichir_stock_ingredients", () => {
+      console.log("🔄 Le stock des ingrédients a été modifié, mise à jour automatique...")
+      if (typeof chargerIngredients === "function") chargerIngredients()
+    })
+
     document.addEventListener("DOMContentLoaded", function() {
       user = verifierConnexion(["achat", "admin"])
-      if (user) chargerStock()
+      if (user) {
+        document.getElementById("header-user").textContent = `👋 ${user.nom}`
+        chargerStock()
+      }
     })
 
     async function chargerStock() {
@@ -151,10 +373,10 @@ socket.on("rafraichir_stock_ingredients", () => {
       await fetch(API + "/ingredients/" + id, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           quantite_stock: Number(quantiteActuelle) + Number(qte),
-          nom, 
-          unite, 
+          nom,
+          unite,
           seuil_alerte
         })
       })
@@ -165,10 +387,10 @@ socket.on("rafraichir_stock_ingredients", () => {
       await fetch(API + "/ingredients/" + id, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           quantite_stock: Number(val),
-          nom, 
-          unite, 
+          nom,
+          unite,
           seuil_alerte
         })
       })
@@ -180,16 +402,16 @@ socket.on("rafraichir_stock_ingredients", () => {
       let quantite_stock = Number(document.getElementById("input-quantite").value)
       let unite          = document.getElementById("input-unite").value
       let seuil_alerte   = Number(document.getElementById("input-minimum").value)
-      
+
       if (!nom) { alert("Entrez un nom !"); return }
-      
+
       await fetch(API + "/ingredients", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          nom, 
+        body: JSON.stringify({
+          nom,
           quantite_stock,
-          unite, 
+          unite,
           seuil_alerte
         })
       })
